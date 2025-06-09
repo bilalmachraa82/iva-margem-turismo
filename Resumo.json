@@ -1,0 +1,210 @@
+[
+  {
+    "Invoice_No":"NC E2025\/2 \/ JJGSTD94-2",
+    "Total_PVP":-375.0,
+    "Total_Cost":null,
+    "Margem_Bruta":-375.0,
+    "IVA_Due":-70.1219512195,
+    "Margem_Liquida":-304.8780487805
+  },
+  {
+    "Invoice_No":"FR E2025\/7 \/ JJGWTD95-7",
+    "Total_PVP":11484.6,
+    "Total_Cost":null,
+    "Margem_Bruta":11484.6,
+    "IVA_Due":2147.5268292683,
+    "Margem_Liquida":9337.0731707317
+  },
+  {
+    "Invoice_No":"FT E2025\/17 \/ JJGBTD9W-17",
+    "Total_PVP":400.0,
+    "Total_Cost":null,
+    "Margem_Bruta":400.0,
+    "IVA_Due":74.7967479675,
+    "Margem_Liquida":325.2032520325
+  },
+  {
+    "Invoice_No":"FR E2025\/6 \/ JJGWTD95-6",
+    "Total_PVP":750.0,
+    "Total_Cost":null,
+    "Margem_Bruta":750.0,
+    "IVA_Due":140.243902439,
+    "Margem_Liquida":609.756097561
+  },
+  {
+    "Invoice_No":"NC E2025\/1 \/ JJGSTD94-1",
+    "Total_PVP":420.0,
+    "Total_Cost":null,
+    "Margem_Bruta":420.0,
+    "IVA_Due":78.5365853659,
+    "Margem_Liquida":341.4634146341
+  },
+  {
+    "Invoice_No":"FT E2025\/14 \/ JJGBTD9W-14",
+    "Total_PVP":220.0,
+    "Total_Cost":null,
+    "Margem_Bruta":220.0,
+    "IVA_Due":41.1382113821,
+    "Margem_Liquida":178.8617886179
+  },
+  {
+    "Invoice_No":"FT E2025\/15 \/ JJGBTD9W-15",
+    "Total_PVP":200.0,
+    "Total_Cost":null,
+    "Margem_Bruta":200.0,
+    "IVA_Due":37.3983739837,
+    "Margem_Liquida":162.6016260163
+  },
+  {
+    "Invoice_No":"FT E2025\/16 \/ JJGBTD9W-16",
+    "Total_PVP":1759.0,
+    "Total_Cost":null,
+    "Margem_Bruta":1759.0,
+    "IVA_Due":328.918699187,
+    "Margem_Liquida":1430.081300813
+  },
+  {
+    "Invoice_No":"FT E2025\/12 \/ JJGBTD9W-12",
+    "Total_PVP":280.0,
+    "Total_Cost":null,
+    "Margem_Bruta":280.0,
+    "IVA_Due":52.3577235772,
+    "Margem_Liquida":227.6422764228
+  },
+  {
+    "Invoice_No":"FT E2025\/13 \/ JJGBTD9W-13",
+    "Total_PVP":420.0,
+    "Total_Cost":null,
+    "Margem_Bruta":420.0,
+    "IVA_Due":78.5365853659,
+    "Margem_Liquida":341.4634146341
+  },
+  {
+    "Invoice_No":"FT E2025\/11 \/ JJGBTD9W-11",
+    "Total_PVP":360.0,
+    "Total_Cost":null,
+    "Margem_Bruta":360.0,
+    "IVA_Due":67.3170731707,
+    "Margem_Liquida":292.6829268293
+  },
+  {
+    "Invoice_No":"FT E2025\/10 \/ JJGBTD9W-10",
+    "Total_PVP":945.0,
+    "Total_Cost":null,
+    "Margem_Bruta":945.0,
+    "IVA_Due":176.7073170732,
+    "Margem_Liquida":768.2926829268
+  },
+  {
+    "Invoice_No":"FR E2025\/5 \/ JJGWTD95-5",
+    "Total_PVP":351.78,
+    "Total_Cost":null,
+    "Margem_Bruta":351.78,
+    "IVA_Due":65.78,
+    "Margem_Liquida":286.0
+  },
+  {
+    "Invoice_No":"FT E2025\/7 \/ JJGBTD9W-7",
+    "Total_PVP":560.0,
+    "Total_Cost":null,
+    "Margem_Bruta":560.0,
+    "IVA_Due":104.7154471545,
+    "Margem_Liquida":455.2845528455
+  },
+  {
+    "Invoice_No":"FT E2025\/9 \/ JJGBTD9W-9",
+    "Total_PVP":161.0,
+    "Total_Cost":null,
+    "Margem_Bruta":161.0,
+    "IVA_Due":30.1056910569,
+    "Margem_Liquida":130.8943089431
+  },
+  {
+    "Invoice_No":"FT E2025\/8 \/ JJGBTD9W-8",
+    "Total_PVP":125.0,
+    "Total_Cost":null,
+    "Margem_Bruta":125.0,
+    "IVA_Due":23.3739837398,
+    "Margem_Liquida":101.6260162602
+  },
+  {
+    "Invoice_No":"FR E2025\/3 \/ JJGWTD95-3",
+    "Total_PVP":12763.95,
+    "Total_Cost":null,
+    "Margem_Bruta":12763.95,
+    "IVA_Due":2386.7548780488,
+    "Margem_Liquida":10377.1951219512
+  },
+  {
+    "Invoice_No":"FR E2025\/4 \/ JJGWTD95-4",
+    "Total_PVP":109.94,
+    "Total_Cost":null,
+    "Margem_Bruta":109.94,
+    "IVA_Due":20.5578861789,
+    "Margem_Liquida":89.3821138211
+  },
+  {
+    "Invoice_No":"FR E2025\/2 \/ JJGWTD95-2",
+    "Total_PVP":335.0,
+    "Total_Cost":null,
+    "Margem_Bruta":335.0,
+    "IVA_Due":62.6422764228,
+    "Margem_Liquida":272.3577235772
+  },
+  {
+    "Invoice_No":"FT E2025\/2 \/ JJGBTD9W-2",
+    "Total_PVP":1215.0,
+    "Total_Cost":null,
+    "Margem_Bruta":1215.0,
+    "IVA_Due":227.1951219512,
+    "Margem_Liquida":987.8048780488
+  },
+  {
+    "Invoice_No":"FR E2025\/1 \/ JJGWTD95-1",
+    "Total_PVP":492.66,
+    "Total_Cost":null,
+    "Margem_Bruta":492.66,
+    "IVA_Due":92.1234146341,
+    "Margem_Liquida":400.5365853659
+  },
+  {
+    "Invoice_No":"FT E2025\/1 \/ JJGBTD9W-1",
+    "Total_PVP":300.0,
+    "Total_Cost":null,
+    "Margem_Bruta":300.0,
+    "IVA_Due":56.0975609756,
+    "Margem_Liquida":243.9024390244
+  },
+  {
+    "Invoice_No":"FT E2025\/4 \/ JJGBTD9W-4",
+    "Total_PVP":161.0,
+    "Total_Cost":null,
+    "Margem_Bruta":161.0,
+    "IVA_Due":30.1056910569,
+    "Margem_Liquida":130.8943089431
+  },
+  {
+    "Invoice_No":"FT E2025\/5 \/ JJGBTD9W-5",
+    "Total_PVP":161.0,
+    "Total_Cost":null,
+    "Margem_Bruta":161.0,
+    "IVA_Due":30.1056910569,
+    "Margem_Liquida":130.8943089431
+  },
+  {
+    "Invoice_No":"FT E2025\/3 \/ JJGBTD9W-3",
+    "Total_PVP":406.0,
+    "Total_Cost":null,
+    "Margem_Bruta":406.0,
+    "IVA_Due":75.918699187,
+    "Margem_Liquida":330.081300813
+  },
+  {
+    "Invoice_No":"FT E2025\/6 \/ JJGBTD9W-6",
+    "Total_PVP":195.0,
+    "Total_Cost":null,
+    "Margem_Bruta":195.0,
+    "IVA_Due":36.4634146341,
+    "Margem_Liquida":158.5365853659
+  }
+]

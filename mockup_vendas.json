@@ -1,0 +1,210 @@
+[
+  {
+    "Invoice_No":"NC E2025\/2 \/ JJGSTD94-2",
+    "Date":1741737600000,
+    "Customer":92314397720,
+    "Total_PVP":-375.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Nota de crédito"
+  },
+  {
+    "Invoice_No":"FR E2025\/7 \/ JJGWTD95-7",
+    "Date":1740787200000,
+    "Customer":999999990,
+    "Total_PVP":11484.6,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FT E2025\/17 \/ JJGBTD9W-17",
+    "Date":1740700800000,
+    "Customer":517425840,
+    "Total_PVP":400.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FR E2025\/6 \/ JJGWTD95-6",
+    "Date":1740700800000,
+    "Customer":92314397720,
+    "Total_PVP":750.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"NC E2025\/1 \/ JJGSTD94-1",
+    "Date":1740700800000,
+    "Customer":516540688,
+    "Total_PVP":420.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Nota de crédito"
+  },
+  {
+    "Invoice_No":"FT E2025\/14 \/ JJGBTD9W-14",
+    "Date":1740700800000,
+    "Customer":516540688,
+    "Total_PVP":220.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/15 \/ JJGBTD9W-15",
+    "Date":1740700800000,
+    "Customer":516540688,
+    "Total_PVP":200.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/16 \/ JJGBTD9W-16",
+    "Date":1740700800000,
+    "Customer":"B01305903",
+    "Total_PVP":1759.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/12 \/ JJGBTD9W-12",
+    "Date":1740700800000,
+    "Customer":508821363,
+    "Total_PVP":280.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/13 \/ JJGBTD9W-13",
+    "Date":1740700800000,
+    "Customer":516540688,
+    "Total_PVP":420.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/11 \/ JJGBTD9W-11",
+    "Date":1739923200000,
+    "Customer":"B42726612",
+    "Total_PVP":360.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/10 \/ JJGBTD9W-10",
+    "Date":1739923200000,
+    "Customer":"B42726612",
+    "Total_PVP":945.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FR E2025\/5 \/ JJGWTD95-5",
+    "Date":1739232000000,
+    "Customer":10276170015,
+    "Total_PVP":351.78,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FT E2025\/7 \/ JJGBTD9W-7",
+    "Date":1738540800000,
+    "Customer":508821363,
+    "Total_PVP":560.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/9 \/ JJGBTD9W-9",
+    "Date":1738540800000,
+    "Customer":516540688,
+    "Total_PVP":161.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/8 \/ JJGBTD9W-8",
+    "Date":1738540800000,
+    "Customer":516540688,
+    "Total_PVP":125.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FR E2025\/3 \/ JJGWTD95-3",
+    "Date":1738281600000,
+    "Customer":999999990,
+    "Total_PVP":12763.95,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FR E2025\/4 \/ JJGWTD95-4",
+    "Date":1738281600000,
+    "Customer":999999990,
+    "Total_PVP":109.94,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FR E2025\/2 \/ JJGWTD95-2",
+    "Date":1736380800000,
+    "Customer":999999990,
+    "Total_PVP":335.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FT E2025\/2 \/ JJGBTD9W-2",
+    "Date":1735862400000,
+    "Customer":508821363,
+    "Total_PVP":1215.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FR E2025\/1 \/ JJGWTD95-1",
+    "Date":1735862400000,
+    "Customer":999999990,
+    "Total_PVP":492.66,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura-recibo"
+  },
+  {
+    "Invoice_No":"FT E2025\/1 \/ JJGBTD9W-1",
+    "Date":1735862400000,
+    "Customer":"B09837386",
+    "Total_PVP":300.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/4 \/ JJGBTD9W-4",
+    "Date":1735862400000,
+    "Customer":516540688,
+    "Total_PVP":161.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/5 \/ JJGBTD9W-5",
+    "Date":1735862400000,
+    "Customer":516540688,
+    "Total_PVP":161.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/3 \/ JJGBTD9W-3",
+    "Date":1735862400000,
+    "Customer":516540688,
+    "Total_PVP":406.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  },
+  {
+    "Invoice_No":"FT E2025\/6 \/ JJGBTD9W-6",
+    "Date":1735862400000,
+    "Customer":500927162,
+    "Total_PVP":195.0,
+    "IVA_Rate":0.23,
+    "Doc_Type":"Fatura"
+  }
+]

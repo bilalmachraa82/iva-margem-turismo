@@ -1,0 +1,1680 @@
+{
+  "Vendas": [
+    {
+      "Invoice_No": "NC E2025/2 / JJGSTD94-2",
+      "Date": 1741737600000,
+      "Customer": 92314397720,
+      "Total_PVP": -375.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Nota de crédito"
+    },
+    {
+      "Invoice_No": "FR E2025/7 / JJGWTD95-7",
+      "Date": 1740787200000,
+      "Customer": 999999990,
+      "Total_PVP": 11484.6,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FT E2025/17 / JJGBTD9W-17",
+      "Date": 1740700800000,
+      "Customer": 517425840,
+      "Total_PVP": 400.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FR E2025/6 / JJGWTD95-6",
+      "Date": 1740700800000,
+      "Customer": 92314397720,
+      "Total_PVP": 750.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "NC E2025/1 / JJGSTD94-1",
+      "Date": 1740700800000,
+      "Customer": 516540688,
+      "Total_PVP": 420.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Nota de crédito"
+    },
+    {
+      "Invoice_No": "FT E2025/14 / JJGBTD9W-14",
+      "Date": 1740700800000,
+      "Customer": 516540688,
+      "Total_PVP": 220.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/15 / JJGBTD9W-15",
+      "Date": 1740700800000,
+      "Customer": 516540688,
+      "Total_PVP": 200.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/16 / JJGBTD9W-16",
+      "Date": 1740700800000,
+      "Customer": "B01305903",
+      "Total_PVP": 1759.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/12 / JJGBTD9W-12",
+      "Date": 1740700800000,
+      "Customer": 508821363,
+      "Total_PVP": 280.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/13 / JJGBTD9W-13",
+      "Date": 1740700800000,
+      "Customer": 516540688,
+      "Total_PVP": 420.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/11 / JJGBTD9W-11",
+      "Date": 1739923200000,
+      "Customer": "B42726612",
+      "Total_PVP": 360.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/10 / JJGBTD9W-10",
+      "Date": 1739923200000,
+      "Customer": "B42726612",
+      "Total_PVP": 945.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FR E2025/5 / JJGWTD95-5",
+      "Date": 1739232000000,
+      "Customer": 10276170015,
+      "Total_PVP": 351.78,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FT E2025/7 / JJGBTD9W-7",
+      "Date": 1738540800000,
+      "Customer": 508821363,
+      "Total_PVP": 560.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/9 / JJGBTD9W-9",
+      "Date": 1738540800000,
+      "Customer": 516540688,
+      "Total_PVP": 161.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/8 / JJGBTD9W-8",
+      "Date": 1738540800000,
+      "Customer": 516540688,
+      "Total_PVP": 125.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FR E2025/3 / JJGWTD95-3",
+      "Date": 1738281600000,
+      "Customer": 999999990,
+      "Total_PVP": 12763.95,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FR E2025/4 / JJGWTD95-4",
+      "Date": 1738281600000,
+      "Customer": 999999990,
+      "Total_PVP": 109.94,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FR E2025/2 / JJGWTD95-2",
+      "Date": 1736380800000,
+      "Customer": 999999990,
+      "Total_PVP": 335.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FT E2025/2 / JJGBTD9W-2",
+      "Date": 1735862400000,
+      "Customer": 508821363,
+      "Total_PVP": 1215.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FR E2025/1 / JJGWTD95-1",
+      "Date": 1735862400000,
+      "Customer": 999999990,
+      "Total_PVP": 492.66,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "Invoice_No": "FT E2025/1 / JJGBTD9W-1",
+      "Date": 1735862400000,
+      "Customer": "B09837386",
+      "Total_PVP": 300.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/4 / JJGBTD9W-4",
+      "Date": 1735862400000,
+      "Customer": 516540688,
+      "Total_PVP": 161.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/5 / JJGBTD9W-5",
+      "Date": 1735862400000,
+      "Customer": 516540688,
+      "Total_PVP": 161.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/3 / JJGBTD9W-3",
+      "Date": 1735862400000,
+      "Customer": 516540688,
+      "Total_PVP": 406.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "Invoice_No": "FT E2025/6 / JJGBTD9W-6",
+      "Date": 1735862400000,
+      "Customer": 500927162,
+      "Total_PVP": 195.0,
+      "IVA_Rate": 0.23,
+      "Doc_Type": "Fatura"
+    }
+  ],
+  "Custos": [
+    {
+      "SaleInvoice": "NC E2025/2 / JJGSTD94-2,FR E2025/7 / JJGWTD95-7",
+      "SupplierInvoice": "FT VD202509261AAA002/0000389 / JJ427H6B-0000389",
+      "Date": 1739145600000,
+      "Supplier": "510573037 - Gms-Store Informa‹o e Tecnologia S A",
+      "Cost": 2955.98,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT AFT/254 / JFWB93T6-254",
+      "Date": 1742342400000,
+      "Supplier": "500927162 - Auto Taxis Andrafer Lda",
+      "Cost": 5310.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 1043200/1116 / JFCHC4D2-1116",
+      "Date": 1738540800000,
+      "Supplier": "514025239 - Land Of Alandroal - Agricultura e Turismo, Lda",
+      "Cost": 1343.53,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 2025/3 / JJ7TVJ5Y-3",
+      "Date": 1740960000000,
+      "Supplier": "518186350 - Tangomaos Unipessoal Lda",
+      "Cost": 319.8,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/8055 / JJ3X6VWM-8055",
+      "Date": 1741737600000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 315.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/40 / JJXH4BMR-40",
+      "Date": 1741651200000,
+      "Supplier": "210942649 - Ana Margarida Cruz Caldas da Costa",
+      "Cost": 307.5,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/3794 / JJ3X6VWM-3794",
+      "Date": 1739232000000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 245.7,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR A2531/620 / JJ99KCD9-620",
+      "Date": 1741996800000,
+      "Supplier": "501081704 - Paberesbares Actividades Hotelaria Lda",
+      "Cost": 278.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR A2531/67 / JJ99KCD9-67",
+      "Date": 1736208000000,
+      "Supplier": "501081704 - Paberesbares Actividades Hotelaria Lda",
+      "Cost": 264.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FACBAR_CF-N 3/28121 / JFNDZ8WD-28121",
+      "Date": 1737676800000,
+      "Supplier": "503393207 - Mugasa Restaurante Lda",
+      "Cost": 254.35,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/6970 / JJ3X6VWM-6970",
+      "Date": 1741132800000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 140.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/4721 / JJ3X6VWM-4721",
+      "Date": 1739836800000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 140.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FA FA2025/287 / JJ4CSP54-287",
+      "Date": 1739491200000,
+      "Supplier": "510649629 - Amiroad, Lda",
+      "Cost": 450.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/3795 / JJ3X6VWM-3795",
+      "Date": 1739232000000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 123.14,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 218/156 / JJP9V6H6-156",
+      "Date": 1742169600000,
+      "Supplier": "510195032 - Acustica Suave Lda",
+      "Cost": 114.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FA FA2025/111 / JJ4CSP54-111",
+      "Date": 1737331200000,
+      "Supplier": "510649629 - Amiroad, Lda",
+      "Cost": 361.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 218/150 / JJP9V6H6-150",
+      "Date": 1741910400000,
+      "Supplier": "510195032 - Acustica Suave Lda",
+      "Cost": 60.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/10287 / JJ3X6VWM-10287",
+      "Date": 1742860800000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 52.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/10491 / JJ3X6VWM-10491",
+      "Date": 1742947200000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 41.6,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/9729 / JJ3X6VWM-9729",
+      "Date": 1742515200000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 35.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/2335 / JJ3X6VWM-2335",
+      "Date": 1737936000000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 35.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/1406 / JJ3X6VWM-1406",
+      "Date": 1736985600000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 34.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 012/30736 / JJRMMDH4-30736",
+      "Date": 1741132800000,
+      "Supplier": "510601316 - Nata da Nata Lda",
+      "Cost": 42.15,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 003/374749 / JF286D9F-374749",
+      "Date": 1743379200000,
+      "Supplier": "500776199 - Manuel Castanheira Martinez Lda",
+      "Cost": 25.5,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 003/367274 / JF286D9F-367274",
+      "Date": 1740182400000,
+      "Supplier": "500776199 - Manuel Castanheira Martinez Lda",
+      "Cost": 24.5,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/7357 / JJ4354HH-7357",
+      "Date": 1737590400000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 17.05,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 25092/931 / JJS7VT82-931",
+      "Date": 1743292800000,
+      "Supplier": "515684503 - Luis Os—rio Sociedade Por Quotas, Unipessoal Lda",
+      "Cost": 16.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/22640 / JJ4354HH-22640",
+      "Date": 1741132800000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 14.65,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 IDE23/41556 / JF9Y9PR9-41556",
+      "Date": 1740182400000,
+      "Supplier": "516537032 - Ideias Circulares Lda",
+      "Cost": 12.15,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 202212/1299 / JFWXS6WS-1299",
+      "Date": 1737504000000,
+      "Supplier": "500541760 - Auto Taxis Ludovino Lda",
+      "Cost": 40.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 0000000253/0001504595 / JFHXXF2G-0001504595",
+      "Date": 1739232000000,
+      "Supplier": "508668050 - Blueticket - Servios de Bilhetica S A",
+      "Cost": 10.7,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 2301A1/41641 / JFRVGR7D-41641",
+      "Date": 1742515200000,
+      "Supplier": "514704349 - Solar da Rua da Madalena Unipessoal Lda",
+      "Cost": 10.4,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "TV T022/008522 / JF722DZX",
+      "Date": 1741478400000,
+      "Supplier": "515163848 - True Talented Company Lda",
+      "Cost": 9.5,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 002/208129 / JJKWSCZX-208129",
+      "Date": 1737590400000,
+      "Supplier": "510601316 - Nata da Nata Lda",
+      "Cost": 15.4,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 2301A1/42575 / JFRVGR7D-42575",
+      "Date": 1743379200000,
+      "Supplier": "514704349 - Solar da Rua da Madalena Unipessoal Lda",
+      "Cost": 9.4,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/120262 / JFSZFTRG-120262",
+      "Date": 1740355200000,
+      "Supplier": "515602752 - Vn‰ncio & Santos Unipessoal, Lda",
+      "Cost": 30.07,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 6/32782 / JJZWRS68-32782",
+      "Date": 1743292800000,
+      "Supplier": "514703130 - D R a - Produtos Regionais Lda",
+      "Cost": 13.5,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "TV TV0124/770 / JJXPRDHG-770",
+      "Date": 1743292800000,
+      "Supplier": "507799658 - Salsicharia Amarantina Lda",
+      "Cost": 13.5,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 022/3127407 / JFF2B6SN-3127407",
+      "Date": 1743292800000,
+      "Supplier": "504273183 - Prime Food, S.A.",
+      "Cost": 13.3,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 IDE23/42389 / JF9Y9PR9-42389",
+      "Date": 1741392000000,
+      "Supplier": "516537032 - Ideias Circulares Lda",
+      "Cost": 8.1,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 25092/967 / JJS7VT82-967",
+      "Date": 1743292800000,
+      "Supplier": "515684503 - Luis Os—rio Sociedade Por Quotas, Unipessoal Lda",
+      "Cost": 8.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 2301A1/40725 / JFRVGR7D-40725",
+      "Date": 1741651200000,
+      "Supplier": "514704349 - Solar da Rua da Madalena Unipessoal Lda",
+      "Cost": 7.8,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/32247 / JJ4354HH-32247",
+      "Date": 1743292800000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 7.75,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 901/6842046 / JFSTT664-6842046",
+      "Date": 1742342400000,
+      "Supplier": "500228779 - Antiga Confeitaria Belem Lda",
+      "Cost": 12.3,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/2932 / JF8ZV758-2932",
+      "Date": 1740355200000,
+      "Supplier": "514022558 - Motivos Apressados Servios e Consultoria Lda",
+      "Cost": 23.16,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/18301 / JJ4354HH-18301",
+      "Date": 1740182400000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 6.2,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 2301A1/40559 / JFRVGR7D-40559",
+      "Date": 1741392000000,
+      "Supplier": "514704349 - Solar da Rua da Madalena Unipessoal Lda",
+      "Cost": 6.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 101/522422 / JFSPZGMC-522422",
+      "Date": 1743379200000,
+      "Supplier": "500773157 - Casa do Alentejo",
+      "Cost": 9.3,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 45A2506/5663 / JJS8MXY8-5663",
+      "Date": 1743292800000,
+      "Supplier": "500000506 - A Brasileira Lda",
+      "Cost": 9.1,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 IDE23/43875 / JF9Y9PR9-43875",
+      "Date": 1743292800000,
+      "Supplier": "516537032 - Ideias Circulares Lda",
+      "Cost": 5.4,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 25002/4252 / JJS36NN2-4252",
+      "Date": 1741651200000,
+      "Supplier": "515638927 - Casa S‹o Miguel Unipessoal Lda",
+      "Cost": 5.4,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 A/171005 / JFNXH8JF-171005",
+      "Date": 1743292800000,
+      "Supplier": "500513856 - Moinhos Espinheira Lda",
+      "Cost": 8.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/23689 / JJ4354HH-23689",
+      "Date": 1741392000000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 4.65,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FTR 25001/10259 / JJ3X6VWM-10259",
+      "Date": 1742860800000,
+      "Supplier": "505174839 - Parques de Sintra - Monte da Lua S A",
+      "Cost": 14.25,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 0000000253/0001579250 / JFHXXF2G-0001579250",
+      "Date": 1742515200000,
+      "Supplier": "508668050 - Blueticket - Servios de Bilhetica S A",
+      "Cost": 3.69,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 202213/876 / JFHC9MTJ-876",
+      "Date": 1741651200000,
+      "Supplier": "503155616 - Terlinda Taxis Lda",
+      "Cost": 12.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/8346 / JJWZNG2W-8346",
+      "Date": 1742774400000,
+      "Supplier": "517048752 - Jotoservice - Servios Empresariais Unipessoal Lda",
+      "Cost": 11.45,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS A25VSEVFO20/113168 / JFCHYSZK-113168",
+      "Date": 1743379200000,
+      "Supplier": "510601316 - Nata da Nata Lda",
+      "Cost": 5.6,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 125/1612252 / JFFSBXVK-1612252",
+      "Date": 1740182400000,
+      "Supplier": "504273183 - Prime Food, S.A.",
+      "Cost": 5.6,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/97306 / JFY853TK-97306",
+      "Date": 1737849600000,
+      "Supplier": "517334925 - Abcissa Festiva, Unipessoal Lda",
+      "Cost": 11.06,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 202212/3613 / JFT58YCD-3613",
+      "Date": 1741564800000,
+      "Supplier": "500457034 - Auto Taxis Central Vila Verde Lda",
+      "Cost": 10.95,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/4405 / JFC32M2M-4405",
+      "Date": 1735862400000,
+      "Supplier": "517756242 - Angelo Rodrigo - Transporte de Passageiros Unipessoal Lda",
+      "Cost": 10.96,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/5897 / JFY6DWYJ-5897",
+      "Date": 1742860800000,
+      "Supplier": "513938290 - Weekendocean Lda",
+      "Cost": 10.53,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 C25/1 / JJG3NXKT-1",
+      "Date": 1738454400000,
+      "Supplier": "509872590 - Cravo Popular - Lda",
+      "Cost": -3.9,
+      "Doc_Type": "Nota de crŽdito"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/32651 / JJ4354HH-32651",
+      "Date": 1743379200000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 3.1,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/32311 / JJ4354HH-32311",
+      "Date": 1743292800000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 3.1,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 22/442765 / JFZBK82H-442765",
+      "Date": 1742515200000,
+      "Supplier": "500545510 - Francisco Espinheira e Cia Lda",
+      "Cost": 3.1,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/3904 / JJFS7N2S-3904",
+      "Date": 1742515200000,
+      "Supplier": "514406933 - Hbdrive Unipessoal Lda",
+      "Cost": 10.33,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 25A/26787 / JJ4354HH-26787",
+      "Date": 1742169600000,
+      "Supplier": "501955720 - Ginginha Cima Lda",
+      "Cost": 3.1,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/10991 / JFM4CPRF-10991",
+      "Date": 1741824000000,
+      "Supplier": "514711981 - Adorable Parallel Unipessoal Lda",
+      "Cost": 10.27,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/63708 / JFMS8HC4-63708",
+      "Date": 1737849600000,
+      "Supplier": "515896144 - Herois D Inverno Lda",
+      "Cost": 10.32,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/18559 / JFRXJ8PB-18559",
+      "Date": 1742169600000,
+      "Supplier": "516668900 - Particula Malabarista Unipessoal Lda",
+      "Cost": 10.01,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/8400 / JFSM6DG8-8400",
+      "Date": 1741305600000,
+      "Supplier": "514320370 - Expandsummer - Transportes Unipessoal Lda",
+      "Cost": 9.96,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 2301A1/39285 / JFRVGR7D-39285",
+      "Date": 1740182400000,
+      "Supplier": "514704349 - Solar da Rua da Madalena Unipessoal Lda",
+      "Cost": 3.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/71068 / JFMRDD8P-71068",
+      "Date": 1742083200000,
+      "Supplier": "516594540 - Al-Baki Unipessoal Lda",
+      "Cost": 9.73,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/7251 / JJWZNG2W-7251",
+      "Date": 1741910400000,
+      "Supplier": "517048752 - Jotoservice - Servios Empresariais Unipessoal Lda",
+      "Cost": 9.66,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/27421 / JJWHN7SW-27421",
+      "Date": 1741478400000,
+      "Supplier": "516170082 - Habil Sintonia Lda",
+      "Cost": 9.78,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/11216 / JFY6GDJG-11216",
+      "Date": 1741392000000,
+      "Supplier": "516651803 - Dormem Versos Unipessoal Lda",
+      "Cost": 9.74,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/1188381 / JFG9XNR5-1188381",
+      "Date": 1742860800000,
+      "Supplier": "517213443 - Lufada Prometida Lda",
+      "Cost": 9.61,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/6241 / JFMPCSD7-6241",
+      "Date": 1742428800000,
+      "Supplier": "516569988 - Paulo Godinho Nunes Unipessoal Lda",
+      "Cost": 9.29,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/4731 / JJ28NW5K-4731",
+      "Date": 1742601600000,
+      "Supplier": "517469502 - Alan Costa Unipessoal Lda",
+      "Cost": 9.11,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/3428 / JJKCG75M-3428",
+      "Date": 1740096000000,
+      "Supplier": "518169375 - Grameen Mart Unipessoal Lda",
+      "Cost": 8.95,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/9064 / JF4CWS58-9064",
+      "Date": 1737849600000,
+      "Supplier": "515570974 - Ready To Go Unipessoal Lda",
+      "Cost": 8.94,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/24304 / JF7X5DSR-24304",
+      "Date": 1739923200000,
+      "Supplier": "516951963 - Fluxo Recheado - Lda",
+      "Cost": 8.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/178716 / JFMR87VG-178716",
+      "Date": 1742774400000,
+      "Supplier": "506825736 - Yellow Cab Taxis Lda",
+      "Cost": 8.44,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 002/255663 / JJKWSCZX-255663",
+      "Date": 1741392000000,
+      "Supplier": "510601316 - Nata da Nata Lda",
+      "Cost": 4.2,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/10529 / JF3HHXFP-10529",
+      "Date": 1741824000000,
+      "Supplier": "517201577 - Obaydur Rahman Unipessoal Lda",
+      "Cost": 8.33,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/21231 / JFPRDYGB-21231",
+      "Date": 1740873600000,
+      "Supplier": "517408295 - Motivinvulgar Unipessoal Lda",
+      "Cost": 8.39,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0003/259119 / JFMSDWSM-259119",
+      "Date": 1740700800000,
+      "Supplier": "516915010 - Raciocinio Ordenado - Unipessoal Lda",
+      "Cost": 8.34,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 C25/2 / JJG3NXKT-2",
+      "Date": 1738886400000,
+      "Supplier": "509872590 - Cravo Popular - Lda",
+      "Cost": -2.9,
+      "Doc_Type": "Nota de crŽdito"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/51005 / JFS8JXMY-51005",
+      "Date": 1743292800000,
+      "Supplier": "513885315 - Kirti Parshad Unipessoal Lda",
+      "Cost": 8.05,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/19263 / JJFCZDS4-19263",
+      "Date": 1741478400000,
+      "Supplier": "517657988 - Onda Libertina - Lda",
+      "Cost": 8.21,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 00002/604808 / JF27P3X3-604808",
+      "Date": 1741392000000,
+      "Supplier": "510551092 - Elenco Unico Lda",
+      "Cost": 4.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 00002/600510 / JF27P3X3-600510",
+      "Date": 1740182400000,
+      "Supplier": "510551092 - Elenco Unico Lda",
+      "Cost": 4.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/48175 / JFGKBDM5-48175",
+      "Date": 1741046400000,
+      "Supplier": "517106728 - Mayara & Ribeiro Lda",
+      "Cost": 7.99,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 B/44264 / JFWNH5R3-44264",
+      "Date": 1738195200000,
+      "Supplier": "509872590 - Cravo Popular - Lda",
+      "Cost": 3.9,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/22855 / JFM28GWR-22855",
+      "Date": 1742342400000,
+      "Supplier": "515785911 - Multiplos Genu’nos Lda",
+      "Cost": 7.7,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 C25/4 / JJG3NXKT-4",
+      "Date": 1741910400000,
+      "Supplier": "509872590 - Cravo Popular - Lda",
+      "Cost": -3.8,
+      "Doc_Type": "Nota de crŽdito"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/3838 / JJVXDKKX-3838",
+      "Date": 1737849600000,
+      "Supplier": "517916347 - Vintage Conjugation - Lda",
+      "Cost": 7.74,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/4162 / JFRJ645V-4162",
+      "Date": 1736035200000,
+      "Supplier": "516012711 - Jasmine Symbol - Unipessoal Lda",
+      "Cost": 7.75,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0003/13169 / JFSX5FPV-13169",
+      "Date": 1739664000000,
+      "Supplier": "516665472 - Supreme Wishes - Unipessoal Lda",
+      "Cost": 7.67,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/17999 / JFRC77TC-17999",
+      "Date": 1743120000000,
+      "Supplier": "515898945 - Turtle Mission Lda",
+      "Cost": 7.49,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/2950 / JFS5YJVP-2950",
+      "Date": 1742774400000,
+      "Supplier": "516868535 - Obedientbutton - Unipessoal Lda",
+      "Cost": 7.49,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/1086442 / JFG9XNR5-1086442",
+      "Date": 1741392000000,
+      "Supplier": "517213443 - Lufada Prometida Lda",
+      "Cost": 7.32,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/25478 / JF4HZ2CP-25478",
+      "Date": 1740096000000,
+      "Supplier": "515541389 - Marathon Factor Unipessoal Lda",
+      "Cost": 7.16,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0003/12857 / JF7PJCW9-12857",
+      "Date": 1741996800000,
+      "Supplier": "516952005 - Competente Saturno Unipessoal Lda",
+      "Cost": 7.02,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR 3000141/34 / JJR5VFB3-34",
+      "Date": 1740873600000,
+      "Supplier": "500320462 - Autocoope Coop Taxis Lisboa Crl",
+      "Cost": 6.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/14916 / JFS2544G-14916",
+      "Date": 1740009600000,
+      "Supplier": "515044750 - Flagrante Desafio - Unipessoal Lda",
+      "Cost": 6.91,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/657 / JJBGV8D8-657",
+      "Date": 1737763200000,
+      "Supplier": "518428699 - Islam Sumon Unipessoal Lda",
+      "Cost": 6.95,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/8042 / JF744VX9-8042",
+      "Date": 1742169600000,
+      "Supplier": "517136929 - Bruno Daniel Lopes Unipessoal Lda",
+      "Cost": 6.78,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/17789 / JFWSXJM3-17789",
+      "Date": 1741737600000,
+      "Supplier": "516963368 - Circuito Refinado - Unipessoal Lda",
+      "Cost": 6.44,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT BOLTRH002/116 / JJ2SMMSF-116",
+      "Date": 1743292800000,
+      "Supplier": "516864769 - Viliv Internacional, Lda",
+      "Cost": 6.24,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "1 A/143542 / JFTWHFV7-143542",
+      "Date": 1738195200000,
+      "Supplier": "500306737 - Afonso e Torres Lda",
+      "Cost": 3.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/106044 / JFHTTX64-106044",
+      "Date": 1740182400000,
+      "Supplier": "516647970 - Audrina Autos, Unipessoal Lda",
+      "Cost": 5.97,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/55734 / JFDM6DPF-55734",
+      "Date": 1741996800000,
+      "Supplier": "517656060 - Rotas Acetinadas - Unipessoal Lda",
+      "Cost": 5.82,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/1023 / JJ9SRBPP-1023",
+      "Date": 1740873600000,
+      "Supplier": "518382893 - Horas Esperanosas Unipessoal Lda",
+      "Cost": 5.82,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/4951 / JFST5BKB-4951",
+      "Date": 1739232000000,
+      "Supplier": "514584610 - Grandiosa Miragem - Unipessoal Lda",
+      "Cost": 5.87,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/2998 / JFCBM3FY-2998",
+      "Date": 1738281600000,
+      "Supplier": "517620626 - Zodiaco Navegador Unipessoal Lda",
+      "Cost": 5.86,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS 002/541621 / JFTBYV4D-541621",
+      "Date": 1738195200000,
+      "Supplier": "510886396 - Happykey Lda",
+      "Cost": 2.9,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/16374 / JFHKTTCY-16374",
+      "Date": 1738108800000,
+      "Supplier": "515549460 - Pina Barbosa - Viagens Unipessoal Lda",
+      "Cost": 5.64,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/125081 / JFYK6GZS-125081",
+      "Date": 1741392000000,
+      "Supplier": "517027550 - Data Park Pt Lda",
+      "Cost": 5.46,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/11258 / JFSFYJ3N-11258",
+      "Date": 1742169600000,
+      "Supplier": "517117207 - Ideia Ardente Unipessoal Lda",
+      "Cost": 5.29,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/19396 / JFYT4BTF-19396",
+      "Date": 1742083200000,
+      "Supplier": "517254360 - Alma Poderosa - Unipessoal Lda",
+      "Cost": 5.34,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/18293 / JJKJF94T-18293",
+      "Date": 1740009600000,
+      "Supplier": "517825740 - L’rios Imaculados, Lda",
+      "Cost": 4.86,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0003/43909 / JFSBS35P-43909",
+      "Date": 1737244800000,
+      "Supplier": "517009943 - Abdullah & Amir Lda",
+      "Cost": 4.88,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/3826 / JFYFW59D-3826",
+      "Date": 1736467200000,
+      "Supplier": "514176237 - Bussola da Cidade - Unipessoal Lda",
+      "Cost": 4.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0002/27333 / JFS3C9JW-27333",
+      "Date": 1736467200000,
+      "Supplier": "516848267 - Thadeu Vingadas Unipessoal Lda",
+      "Cost": 4.93,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/6701 / JFSG5MWP-6701",
+      "Date": 1736294400000,
+      "Supplier": "516614371 - Destinos & Manobras Unipessoal Lda",
+      "Cost": 4.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/12802 / JF7K7328-12802",
+      "Date": 1736294400000,
+      "Supplier": "516766414 - Sabbir Ahmed Unipessoal Lda",
+      "Cost": 4.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0006/2854 / JJKCG75M-2854",
+      "Date": 1736035200000,
+      "Supplier": "518169375 - Grameen Mart Unipessoal Lda",
+      "Cost": 4.9,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/2158 / JFP586ZM-2158",
+      "Date": 1739923200000,
+      "Supplier": "517353750 - Pedido Sublime - Unipessoal Lda",
+      "Cost": 4.55,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0004/54266 / JFSPF64T-54266",
+      "Date": 1740096000000,
+      "Supplier": "516533207 - Passos e Trajetorias - Transportes Unipessoal Lda",
+      "Cost": 4.45,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0001/102964 / JFW3R5JC-102964",
+      "Date": 1738627200000,
+      "Supplier": "517156490 - Mello de Castro & Bastos Lda",
+      "Cost": 4.48,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR T0005/21751 / JFMFCKM8-21751",
+      "Date": 1741737600000,
+      "Supplier": "514977787 - World Idols, Lda",
+      "Cost": 3.92,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "4 C25/3 / JJG3NXKT-3",
+      "Date": 1740960000000,
+      "Supplier": "509872590 - Cravo Popular - Lda",
+      "Cost": -1.8,
+      "Doc_Type": "Nota de crŽdito"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/11 / JJX9849Y-11",
+      "Date": 1743379200000,
+      "Supplier": "240007190 - Margarida Nobre Nunes",
+      "Cost": 700.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/6 / JJM4F93R-6",
+      "Date": 1743292800000,
+      "Supplier": "222054670 - Ana Margarida da Silva Calada",
+      "Cost": 300.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/26 / JJXP455H-26",
+      "Date": 1743206400000,
+      "Supplier": "256937869 - Bernardo Franco Rufino",
+      "Cost": 50.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT 0000000420/0001039087 / JFHKSVHS-0001039087",
+      "Date": 1742515200000,
+      "Supplier": "503888729 - Funda‹o Cultursintra, Fp",
+      "Cost": 50.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "SL W1-7/108556 / JJ6FW99Z-108556",
+      "Date": 1742256000000,
+      "Supplier": "517804417 - Museus e Monumentos de Portugal e P E",
+      "Cost": 72.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT 25010/482",
+      "Date": 1741824000000,
+      "Supplier": "501450203 - Fabrica da Igreja Paroquial da Freguesia de S Pedro",
+      "Cost": 12.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FS FS.2025/5688 / JJ9C2CK5-5688",
+      "Date": 1741824000000,
+      "Supplier": "501815538 - Cabido da Basilica Metropolitana de Evora",
+      "Cost": 8.0,
+      "Doc_Type": "Fatura simplificada"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/4 / JJMPJR67-4",
+      "Date": 1741651200000,
+      "Supplier": "214767493 - Jose Pedro Moreira Melo",
+      "Cost": 930.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT 10FR25/011988 / JJ4S7F3K-011988",
+      "Date": 1741478400000,
+      "Supplier": "501066225 - Assoc Comercial Porto",
+      "Cost": 88.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/13 / JJXMPB7F-13",
+      "Date": 1741305600000,
+      "Supplier": "222280212 - Mariana Fonseca da Silva Delgado",
+      "Cost": 150.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "SL W1-7/104825 / JJ6FW99Z-104825",
+      "Date": 1741132800000,
+      "Supplier": "517804417 - Museus e Monumentos de Portugal e P E",
+      "Cost": 30.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/15 / JJXGCH5S-15",
+      "Date": 1740700800000,
+      "Supplier": "214849430 - Rita Cid-Torres Portugal Azevedo",
+      "Cost": 210.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/5 / JJM4F93R-5",
+      "Date": 1740700800000,
+      "Supplier": "222054670 - Ana Margarida da Silva Calada",
+      "Cost": 100.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/9 / JJX9849Y-9",
+      "Date": 1740614400000,
+      "Supplier": "240007190 - Margarida Nobre Nunes",
+      "Cost": 250.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/21 / JJXP455H-21",
+      "Date": 1740614400000,
+      "Supplier": "256937869 - Bernardo Franco Rufino",
+      "Cost": 50.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "SL W1-7/102143 / JJ6FW99Z-102143",
+      "Date": 1740182400000,
+      "Supplier": "517804417 - Museus e Monumentos de Portugal e P E",
+      "Cost": 45.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FT 0000000420/0001000961 / JFHKSVHS-0001000961",
+      "Date": 1739232000000,
+      "Supplier": "503888729 - Funda‹o Cultursintra, Fp",
+      "Cost": 145.0,
+      "Doc_Type": "Fatura"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/12 / JJXMPB7F-12",
+      "Date": 1738713600000,
+      "Supplier": "222280212 - Mariana Fonseca da Silva Delgado",
+      "Cost": 115.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/12 / JJXGCH5S-12",
+      "Date": 1738627200000,
+      "Supplier": "214849430 - Rita Cid-Torres Portugal Azevedo",
+      "Cost": 220.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/8 / JJX9849Y-8",
+      "Date": 1738368000000,
+      "Supplier": "240007190 - Margarida Nobre Nunes",
+      "Cost": 150.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/9 / JJXGCH5S-9",
+      "Date": 1735862400000,
+      "Supplier": "214849430 - Rita Cid-Torres Portugal Azevedo",
+      "Cost": 435.0,
+      "Doc_Type": "Fatura-recibo"
+    },
+    {
+      "SaleInvoice": null,
+      "SupplierInvoice": "FR ATSIRE01FR/11 / JJXMPB7F-11",
+      "Date": 1735862400000,
+      "Supplier": "222280212 - Mariana Fonseca da Silva Delgado",
+      "Cost": 45.0,
+      "Doc_Type": "Fatura-recibo"
+    }
+  ],
+  "Resumo": [
+    {
+      "Invoice_No": "NC E2025/2 / JJGSTD94-2",
+      "Total_PVP": -375.0,
+      "Total_Cost": 2820.0702089504584,
+      "Margem_Bruta": -3195.0702089504584,
+      "IVA_Due": -70.1219512195,
+      "Margem_Liquida": -3124.9482577309586
+    },
+    {
+      "Invoice_No": "FR E2025/7 / JJGWTD95-7",
+      "Total_PVP": 11484.6,
+      "Total_Cost": 7118.2988967668425,
+      "Margem_Bruta": 4366.301103233158,
+      "IVA_Due": 2147.5268292683,
+      "Margem_Liquida": 2218.774273964858
+    },
+    {
+      "Invoice_No": "FT E2025/17 / JJGBTD9W-17",
+      "Total_PVP": 400.0,
+      "Total_Cost": 144.97044378617775,
+      "Margem_Bruta": 255.02955621382225,
+      "IVA_Due": 74.7967479675,
+      "Margem_Liquida": 180.23280824632224
+    },
+    {
+      "Invoice_No": "FR E2025/6 / JJGWTD95-6",
+      "Total_PVP": 750.0,
+      "Total_Cost": 271.8195820990833,
+      "Margem_Bruta": 478.1804179009167,
+      "IVA_Due": 140.243902439,
+      "Margem_Liquida": 337.9365154619167
+    },
+    {
+      "Invoice_No": "NC E2025/1 / JJGSTD94-1",
+      "Total_PVP": 420.0,
+      "Total_Cost": 152.21896597548664,
+      "Margem_Bruta": 267.78103402451336,
+      "IVA_Due": 78.5365853659,
+      "Margem_Liquida": 189.24444865861335
+    },
+    {
+      "Invoice_No": "FT E2025/14 / JJGBTD9W-14",
+      "Total_PVP": 220.0,
+      "Total_Cost": 79.73374408239776,
+      "Margem_Bruta": 140.26625591760222,
+      "IVA_Due": 41.1382113821,
+      "Margem_Liquida": 99.12804453550223
+    },
+    {
+      "Invoice_No": "FT E2025/15 / JJGBTD9W-15",
+      "Total_PVP": 200.0,
+      "Total_Cost": 72.48522189308888,
+      "Margem_Bruta": 127.51477810691112,
+      "IVA_Due": 37.3983739837,
+      "Margem_Liquida": 90.11640412321113
+    },
+    {
+      "Invoice_No": "FT E2025/16 / JJGBTD9W-16",
+      "Total_PVP": 1759.0,
+      "Total_Cost": 637.5075265497167,
+      "Margem_Bruta": 1121.4924734502833,
+      "IVA_Due": 328.918699187,
+      "Margem_Liquida": 792.5737742632833
+    },
+    {
+      "Invoice_No": "FT E2025/12 / JJGBTD9W-12",
+      "Total_PVP": 280.0,
+      "Total_Cost": 101.47931065032444,
+      "Margem_Bruta": 178.52068934967556,
+      "IVA_Due": 52.3577235772,
+      "Margem_Liquida": 126.16296577247556
+    },
+    {
+      "Invoice_No": "FT E2025/13 / JJGBTD9W-13",
+      "Total_PVP": 420.0,
+      "Total_Cost": 152.21896597548664,
+      "Margem_Bruta": 267.78103402451336,
+      "IVA_Due": 78.5365853659,
+      "Margem_Liquida": 189.24444865861335
+    },
+    {
+      "Invoice_No": "FT E2025/11 / JJGBTD9W-11",
+      "Total_PVP": 360.0,
+      "Total_Cost": 130.47339940755998,
+      "Margem_Bruta": 229.52660059244002,
+      "IVA_Due": 67.3170731707,
+      "Margem_Liquida": 162.20952742174
+    },
+    {
+      "Invoice_No": "FT E2025/10 / JJGBTD9W-10",
+      "Total_PVP": 945.0,
+      "Total_Cost": 342.49267344484497,
+      "Margem_Bruta": 602.507326555155,
+      "IVA_Due": 176.7073170732,
+      "Margem_Liquida": 425.80000948195504
+    },
+    {
+      "Invoice_No": "FR E2025/5 / JJGWTD95-5",
+      "Total_PVP": 351.78,
+      "Total_Cost": 127.49425678775403,
+      "Margem_Bruta": 224.28574321224596,
+      "IVA_Due": 65.78,
+      "Margem_Liquida": 158.50574321224596
+    },
+    {
+      "Invoice_No": "FT E2025/7 / JJGBTD9W-7",
+      "Total_PVP": 560.0,
+      "Total_Cost": 202.95862130064887,
+      "Margem_Bruta": 357.0413786993511,
+      "IVA_Due": 104.7154471545,
+      "Margem_Liquida": 252.32593154485113
+    },
+    {
+      "Invoice_No": "FT E2025/9 / JJGBTD9W-9",
+      "Total_PVP": 161.0,
+      "Total_Cost": 58.35060362393655,
+      "Margem_Bruta": 102.64939637606345,
+      "IVA_Due": 30.1056910569,
+      "Margem_Liquida": 72.54370531916345
+    },
+    {
+      "Invoice_No": "FT E2025/8 / JJGBTD9W-8",
+      "Total_PVP": 125.0,
+      "Total_Cost": 45.30326368318055,
+      "Margem_Bruta": 79.69673631681945,
+      "IVA_Due": 23.3739837398,
+      "Margem_Liquida": 56.32275257701946
+    },
+    {
+      "Invoice_No": "FR E2025/3 / JJGWTD95-3",
+      "Total_PVP": 12763.95,
+      "Total_Cost": 4625.98873991146,
+      "Margem_Bruta": 8137.961260088541,
+      "IVA_Due": 2386.7548780488,
+      "Margem_Liquida": 5751.206382039742
+    },
+    {
+      "Invoice_No": "FR E2025/4 / JJGWTD95-4",
+      "Total_PVP": 109.94,
+      "Total_Cost": 39.84512647463096,
+      "Margem_Bruta": 70.09487352536904,
+      "IVA_Due": 20.5578861789,
+      "Margem_Liquida": 49.53698734646904
+    },
+    {
+      "Invoice_No": "FR E2025/2 / JJGWTD95-2",
+      "Total_PVP": 335.0,
+      "Total_Cost": 121.41274667092388,
+      "Margem_Bruta": 213.58725332907613,
+      "IVA_Due": 62.6422764228,
+      "Margem_Liquida": 150.94497690627614
+    },
+    {
+      "Invoice_No": "FT E2025/2 / JJGBTD9W-2",
+      "Total_PVP": 1215.0,
+      "Total_Cost": 440.347723000515,
+      "Margem_Bruta": 774.652276999485,
+      "IVA_Due": 227.1951219512,
+      "Margem_Liquida": 547.457155048285
+    },
+    {
+      "Invoice_No": "FR E2025/1 / JJGWTD95-1",
+      "Total_PVP": 492.66,
+      "Total_Cost": 178.55284708924586,
+      "Margem_Bruta": 314.10715291075417,
+      "IVA_Due": 92.1234146341,
+      "Margem_Liquida": 221.98373827665415
+    },
+    {
+      "Invoice_No": "FT E2025/1 / JJGBTD9W-1",
+      "Total_PVP": 300.0,
+      "Total_Cost": 108.72783283963332,
+      "Margem_Bruta": 191.27216716036668,
+      "IVA_Due": 56.0975609756,
+      "Margem_Liquida": 135.17460618476667
+    },
+    {
+      "Invoice_No": "FT E2025/4 / JJGBTD9W-4",
+      "Total_PVP": 161.0,
+      "Total_Cost": 58.35060362393655,
+      "Margem_Bruta": 102.64939637606345,
+      "IVA_Due": 30.1056910569,
+      "Margem_Liquida": 72.54370531916345
+    },
+    {
+      "Invoice_No": "FT E2025/5 / JJGBTD9W-5",
+      "Total_PVP": 161.0,
+      "Total_Cost": 58.35060362393655,
+      "Margem_Bruta": 102.64939637606345,
+      "IVA_Due": 30.1056910569,
+      "Margem_Liquida": 72.54370531916345
+    },
+    {
+      "Invoice_No": "FT E2025/3 / JJGBTD9W-3",
+      "Total_PVP": 406.0,
+      "Total_Cost": 147.14500044297043,
+      "Margem_Bruta": 258.8549995570296,
+      "IVA_Due": 75.918699187,
+      "Margem_Liquida": 182.93630037002958
+    },
+    {
+      "Invoice_No": "FT E2025/6 / JJGBTD9W-6",
+      "Total_PVP": 195.0,
+      "Total_Cost": 70.67309134576166,
+      "Margem_Bruta": 124.32690865423834,
+      "IVA_Due": 36.4634146341,
+      "Margem_Liquida": 87.86349402013835
+    }
+  ]
+}
