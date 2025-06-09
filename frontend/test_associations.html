@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Visual - Associações IVA Margem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100" x-data="testApp()">
+    <div class="max-w-6xl mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-8">🧪 Teste de Associações - IVA Margem</h1>
+        
+        <!-- Controls -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Controlos de Teste</h2>
+            <div class="flex gap-4">
+                <button @click="loadData" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <i class="fas fa-download mr-2"></i>Carregar Dados
+                </button>
+                <button @click="clearAssociations" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700" :disabled="!dataLoaded">
+                    <i class="fas fa-unlink mr-2"></i>Limpar Associações
+                </button>
+                <button @click="testScenario1" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" :disabled="!dataLoaded">
+                    <i class="fas fa-flask mr-2"></i>Teste 1: Uma Venda, Todos Custos
+                </button>
+                <button @click="testScenario2" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700" :disabled="!dataLoaded">
+                    <i class="fas fa-vial mr-2"></i>Teste 2: Custos Partilhados
+                </button>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div x-show="status" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-8">
+            <i class="fas fa-info-circle mr-2"></i>
+            <span x-text="status"></span>
+        </div>
+
+        <!-- Before/After Comparison -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" x-show="dataLoaded">
+            <!-- Before -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4 text-red-600">
+                    <i class="fas fa-times-circle mr-2"></i>ANTES (Sem Associações)
+                </h3>
+                
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">Vendas Selecionadas:</h4>
+                    <template x-for="sale in selectedSales" :key="sale.id">
+                        <div class="bg-gray-50 p-3 rounded mb-2">
+                            <div class="flex justify-between">
+                                <span x-text="sale.number"></span>
+                                <span class="font-semibold" x-text="'€' + sale.amount.toFixed(2)"></span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                Custos associados: <span class="font-semibold text-red-600">0</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h4 class="font-medium mb-2">Cálculo (sem associações):</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Total Vendas:</span>
+                            <span x-text="'€' + totalSalesAmount.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total Custos:</span>
+                            <span class="text-red-600">€0.00</span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Margem:</span>
+                            <span x-text="'€' + totalSalesAmount.toFixed(2) + ' (100%)'"></span>
+                        </div>
+                        <div class="flex justify-between text-blue-600">
+                            <span>IVA (23%):</span>
+                            <span x-text="'€' + (totalSalesAmount * 0.23).toFixed(2)"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- After -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4 text-green-600">
+                    <i class="fas fa-check-circle mr-2"></i>DEPOIS (Com Associações)
+                </h3>
+                
+                <div class="mb-4">
+                    <h4 class="font-medium mb-2">Vendas com Custos Associados:</h4>
+                    <template x-for="result in calculationResults" :key="result.sale_id">
+                        <div class="bg-gray-50 p-3 rounded mb-2">
+                            <div class="flex justify-between">
+                                <span x-text="result.sale_number"></span>
+                                <span class="font-semibold" x-text="'€' + result.sale_amount.toFixed(2)"></span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                Custos associados: <span class="font-semibold text-green-600" x-text="result.costs_count"></span>
+                                <span x-text="'(€' + result.costs_amount.toFixed(2) + ')'"></span>
+                            </div>
+                            <div class="text-sm mt-1">
+                                <span class="text-gray-600">Margem:</span>
+                                <span class="font-semibold" x-text="'€' + result.margin.toFixed(2) + ' (' + result.margin_percent.toFixed(1) + '%)'"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h4 class="font-medium mb-2">Cálculo (com associações):</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Total Vendas:</span>
+                            <span x-text="'€' + totalSalesAmount.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total Custos:</span>
+                            <span class="text-red-600" x-text="'€' + totalCostsAllocated.toFixed(2)"></span>
+                        </div>
+                        <div class="flex justify-between font-semibold">
+                            <span>Margem:</span>
+                            <span x-text="'€' + totalMargin.toFixed(2) + ' (' + marginPercent.toFixed(1) + '%)'"></span>
+                        </div>
+                        <div class="flex justify-between text-blue-600">
+                            <span>IVA (23% s/ margem):</span>
+                            <span x-text="'€' + totalVAT.toFixed(2)"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="bg-white rounded-lg shadow p-6 mt-8" x-show="detailedResults">
+            <h3 class="text-lg font-semibold mb-4">📊 Resultados Detalhados</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2">Venda</th>
+                            <th class="text-right py-2">Valor</th>
+                            <th class="text-right py-2">Custos</th>
+                            <th class="text-right py-2">Margem</th>
+                            <th class="text-right py-2">%</th>
+                            <th class="text-right py-2">IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="result in calculationResults" :key="result.sale_id">
+                            <tr class="border-b">
+                                <td class="py-2" x-text="result.sale_number"></td>
+                                <td class="text-right py-2" x-text="'€' + result.sale_amount.toFixed(2)"></td>
+                                <td class="text-right py-2 text-red-600" x-text="'€' + result.costs_amount.toFixed(2)"></td>
+                                <td class="text-right py-2 font-semibold" x-text="'€' + result.margin.toFixed(2)"></td>
+                                <td class="text-right py-2" x-text="result.margin_percent.toFixed(1) + '%'"></td>
+                                <td class="text-right py-2 text-blue-600" x-text="'€' + result.vat.toFixed(2)"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t-2 font-semibold">
+                            <td class="py-2">TOTAL</td>
+                            <td class="text-right py-2" x-text="'€' + totalSalesAmount.toFixed(2)"></td>
+                            <td class="text-right py-2 text-red-600" x-text="'€' + totalCostsAllocated.toFixed(2)"></td>
+                            <td class="text-right py-2" x-text="'€' + totalMargin.toFixed(2)"></td>
+                            <td class="text-right py-2" x-text="marginPercent.toFixed(1) + '%'"></td>
+                            <td class="text-right py-2 text-blue-600" x-text="'€' + totalVAT.toFixed(2)"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testApp() {
+            return {
+                apiUrl: 'http://localhost:8000',
+                sessionId: null,
+                dataLoaded: false,
+                status: '',
+                sales: [],
+                costs: [],
+                selectedSales: [],
+                calculationResults: [],
+                detailedResults: false,
+                
+                // Computed
+                get totalSalesAmount() {
+                    return this.selectedSales.reduce((sum, sale) => sum + sale.amount, 0);
+                },
+                
+                get totalCostsAllocated() {
+                    return this.calculationResults.reduce((sum, r) => sum + r.costs_amount, 0);
+                },
+                
+                get totalMargin() {
+                    return this.totalSalesAmount - this.totalCostsAllocated;
+                },
+                
+                get marginPercent() {
+                    return this.totalSalesAmount !== 0 ? (this.totalMargin / this.totalSalesAmount) * 100 : 0;
+                },
+                
+                get totalVAT() {
+                    return this.totalMargin > 0 ? this.totalMargin * 0.23 : 0;
+                },
+                
+                async loadData() {
+                    this.status = 'Carregando dados...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/mock-data`);
+                        const data = await response.json();
+                        
+                        this.sessionId = data.session_id;
+                        this.sales = data.sales;
+                        this.costs = data.costs;
+                        this.dataLoaded = true;
+                        
+                        this.status = `Dados carregados: ${data.sales.length} vendas, ${data.costs.length} custos`;
+                    } catch (error) {
+                        this.status = 'Erro ao carregar dados: ' + error.message;
+                    }
+                },
+                
+                async clearAssociations() {
+                    // Reload fresh data
+                    await this.loadData();
+                    this.selectedSales = [];
+                    this.calculationResults = [];
+                    this.detailedResults = false;
+                    this.status = 'Associações limpas';
+                },
+                
+                async testScenario1() {
+                    this.status = 'Executando Teste 1: Associando primeira venda com TODOS os custos...';
+                    
+                    // Select first sale
+                    this.selectedSales = [this.sales[0]];
+                    
+                    // Associate with ALL costs
+                    const association = {
+                        session_id: this.sessionId,
+                        sale_ids: [this.sales[0].id],
+                        cost_ids: this.costs.map(c => c.id)
+                    };
+                    
+                    await fetch(`${this.apiUrl}/api/associate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(association)
+                    });
+                    
+                    // Calculate
+                    await this.calculate();
+                    
+                    this.status = `Teste 1 completo: 1 venda associada com ${this.costs.length} custos`;
+                },
+                
+                async testScenario2() {
+                    this.status = 'Executando Teste 2: Custos partilhados entre múltiplas vendas...';
+                    
+                    // Select first 3 sales
+                    this.selectedSales = this.sales.slice(0, 3);
+                    
+                    // Associate sales with overlapping costs
+                    // Sale 1: costs 1-5
+                    await fetch(`${this.apiUrl}/api/associate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            sale_ids: [this.sales[0].id],
+                            cost_ids: this.costs.slice(0, 5).map(c => c.id)
+                        })
+                    });
+                    
+                    // Sale 2: costs 3-7 (overlaps with sale 1)
+                    await fetch(`${this.apiUrl}/api/associate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            sale_ids: [this.sales[1].id],
+                            cost_ids: this.costs.slice(2, 7).map(c => c.id)
+                        })
+                    });
+                    
+                    // Sale 3: costs 6-10
+                    await fetch(`${this.apiUrl}/api/associate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: this.sessionId,
+                            sale_ids: [this.sales[2].id],
+                            cost_ids: this.costs.slice(5, 10).map(c => c.id)
+                        })
+                    });
+                    
+                    // Calculate
+                    await this.calculate();
+                    
+                    this.status = 'Teste 2 completo: Custos partilhados entre múltiplas vendas';
+                },
+                
+                async calculate() {
+                    // Get updated session data
+                    const response = await fetch(`${this.apiUrl}/api/session/${this.sessionId}`);
+                    const sessionData = await response.json();
+                    
+                    // Calculate for each selected sale
+                    this.calculationResults = [];
+                    
+                    for (const sale of this.selectedSales) {
+                        // Find updated sale data
+                        const updatedSale = sessionData.sales.find(s => s.id === sale.id);
+                        const linkedCosts = updatedSale.linked_costs || [];
+                        
+                        // Calculate costs
+                        let totalCosts = 0;
+                        for (const costId of linkedCosts) {
+                            const cost = sessionData.costs.find(c => c.id === costId);
+                            if (cost) {
+                                // Divide by number of sales sharing this cost
+                                const sharedWith = cost.linked_sales ? cost.linked_sales.length : 1;
+                                totalCosts += cost.amount / sharedWith;
+                            }
+                        }
+                        
+                        const margin = sale.amount - totalCosts;
+                        const marginPercent = sale.amount !== 0 ? (margin / sale.amount) * 100 : 0;
+                        const vat = margin > 0 ? margin * 0.23 : 0;
+                        
+                        this.calculationResults.push({
+                            sale_id: sale.id,
+                            sale_number: sale.number,
+                            sale_amount: sale.amount,
+                            costs_count: linkedCosts.length,
+                            costs_amount: totalCosts,
+                            margin: margin,
+                            margin_percent: marginPercent,
+                            vat: vat
+                        });
+                    }
+                    
+                    this.detailedResults = true;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVA Margem Turismo - Cálculo Simplificado</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Poppins + Work Sans (Accounting Advantage Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Work Sans', sans-serif;
+        }
+        
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50" x-data="ivaApp()">
+    <!-- Clean Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-calculator text-blue-600 text-2xl mr-3"></i>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">IVA Margem Turismo</h1>
+                        <p class="text-xs text-gray-500">Cálculo automático para agências de viagens</p>
+                    </div>
+                    <div class="hidden lg:block ml-8 pl-8 border-l border-gray-300">
+                        <p class="text-xs text-gray-500">Powered by</p>
+                        <p class="text-sm font-semibold text-gray-900">Accounting Advantage</p>
+                    </div>
+                </div>
+                
+                <!-- Progress Indicator -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="flex items-center">
+                        <div class="flex items-center" :class="currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 1 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                1
+                            </span>
+                            <span class="ml-2 text-sm">Upload</span>
+                        </div>
+                        
+                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'"></div>
+                        
+                        <div class="flex items-center" :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 2 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                2
+                            </span>
+                            <span class="ml-2 text-sm">Associar</span>
+                        </div>
+                        
+                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-300'"></div>
+                        
+                        <div class="flex items-center" :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 3 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                3
+                            </span>
+                            <span class="ml-2 text-sm">Resultado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Step 1: Upload -->
+        <div x-show="currentStep === 1" class="animate-slide-up">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-2">Começar Análise</h2>
+                    <p class="text-gray-600 mb-8">Faça upload do ficheiro SAF-T ou use dados de demonstração</p>
+                    
+                    <!-- Upload Area -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors"
+                         :class="dragOver ? 'border-blue-400 bg-blue-50' : ''"
+                         @dragover.prevent="dragOver = true"
+                         @dragleave.prevent="dragOver = false"
+                         @drop.prevent="handleDrop($event)">
+                        
+                        <i class="fas fa-cloud-upload-alt text-4xl mb-4" 
+                           :class="dragOver ? 'text-blue-600' : 'text-gray-400'"></i>
+                        
+                        <p class="text-lg font-medium text-gray-700 mb-2">
+                            Arraste o ficheiro SAF-T aqui
+                        </p>
+                        <p class="text-sm text-gray-500 mb-4">ou</p>
+                        
+                        <input type="file" id="fileInput" class="hidden" accept=".xml" @change="handleFileSelect">
+                        
+                        <button onclick="document.getElementById('fileInput').click()"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Selecionar Ficheiro
+                        </button>
+                        
+                        <p class="text-xs text-gray-500 mt-4">Formato XML • Máximo 50MB</p>
+                    </div>
+                    
+                    <!-- Demo Data Option -->
+                    <div class="relative my-8">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-4 bg-white text-gray-500">ou teste com</span>
+                        </div>
+                    </div>
+                    
+                    <button @click="loadMockData" 
+                            class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
+                        <i class="fas fa-database mr-2"></i>
+                        Usar Dados de Demonstração
+                        <span class="ml-2 text-xs text-gray-500">(26 vendas • 157 custos)</span>
+                    </button>
+                    
+                    <!-- VAT Rate Selection -->
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Taxa de IVA
+                        </label>
+                        <select x-model="vatRate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="23">23% - Taxa Normal (Continente)</option>
+                            <option value="22">22% - Taxa Normal (Madeira)</option>
+                            <option value="16">16% - Taxa Normal (Açores)</option>
+                        </select>
+                        <p class="text-xs text-gray-600 mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            Regime de Margem - CIVA Art. 308º
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Associate -->
+        <div x-show="currentStep === 2" class="animate-slide-up">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Vendas</p>
+                            <p class="text-2xl font-semibold text-gray-900" x-text="'€' + totalSales.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-green-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="sales.length"></span> documentos
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Custos</p>
+                            <p class="text-2xl font-semibold text-gray-900" x-text="'€' + totalCosts.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-receipt text-red-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="costs.length"></span> documentos
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Margem</p>
+                            <p class="text-2xl font-semibold" 
+                               :class="estimatedMargin >= 0 ? 'text-gray-900' : 'text-red-600'"
+                               x-text="'€' + estimatedMargin.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-percentage text-blue-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="((estimatedMargin / totalSales) * 100).toFixed(1) + '%'"></span> margem
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">IVA Estimado</p>
+                            <p class="text-2xl font-semibold text-gray-900" x-text="'€' + estimatedVAT.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calculator text-purple-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="vatRate + '%'"></span> sobre margem
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button @click="autoMatch" 
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                            :disabled="loading">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Auto-Associação</h4>
+                                <p class="text-sm text-gray-600 mt-1">Associar automaticamente por datas e valores</p>
+                            </div>
+                            <i class="fas fa-magic text-blue-600"></i>
+                        </div>
+                    </button>
+                    
+                    <button @click="associateSelected" 
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                            :disabled="selectedSales.length === 0 || selectedCosts.length === 0">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Associar Selecionados</h4>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <span x-text="selectedSales.length"></span> vendas • 
+                                    <span x-text="selectedCosts.length"></span> custos
+                                </p>
+                            </div>
+                            <i class="fas fa-link text-green-600"></i>
+                        </div>
+                    </button>
+                    
+                    <button @click="calculateAndExport" 
+                            class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium">Calcular e Exportar</h4>
+                                <p class="text-sm opacity-90 mt-1">Gerar relatório Excel</p>
+                            </div>
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documents Lists -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sales List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Vendas</h3>
+                            <span class="text-sm text-gray-500">
+                                <span x-text="sales.length"></span> documentos
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center cursor-pointer text-sm text-gray-600">
+                                <input type="checkbox" @change="toggleAllSales" class="mr-2">
+                                Selecionar todas
+                            </label>
+                            <input type="text" x-model="salesSearch" 
+                                   placeholder="Pesquisar..." 
+                                   class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="max-h-96 overflow-y-auto">
+                        <template x-for="sale in filteredSales" :key="sale.id">
+                            <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                                 :class="selectedSales.includes(sale.id) ? 'bg-blue-50' : ''"
+                                 @click="toggleSale(sale.id)">
+                                <div class="flex items-start">
+                                    <input type="checkbox" 
+                                           :checked="selectedSales.includes(sale.id)"
+                                           @click.stop
+                                           @change="toggleSale(sale.id)"
+                                           class="mt-1 mr-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="font-medium text-gray-900" x-text="sale.number"></p>
+                                                <p class="text-sm text-gray-600" x-text="sale.client"></p>
+                                                <p class="text-xs text-gray-500 mt-1" x-text="formatDate(sale.date)"></p>
+                                            </div>
+                                            <p class="font-semibold" 
+                                               :class="sale.amount >= 0 ? 'text-green-600' : 'text-red-600'"
+                                               x-text="'€' + sale.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
+                                        </div>
+                                        
+                                        <!-- Linked Costs -->
+                                        <div x-show="sale.linked_costs.length > 0" class="mt-2">
+                                            <div class="flex flex-wrap gap-1">
+                                                <template x-for="costId in sale.linked_costs.slice(0, 3)" :key="costId">
+                                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                                        <i class="fas fa-link text-xs mr-0.5"></i>
+                                                        <span x-text="getCostName(costId)"></span>
+                                                    </span>
+                                                </template>
+                                                <span x-show="sale.linked_costs.length > 3" 
+                                                      class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                                    +<span x-text="sale.linked_costs.length - 3"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Costs List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Custos</h3>
+                            <span class="text-sm text-gray-500">
+                                <span x-text="costs.length"></span> documentos
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center cursor-pointer text-sm text-gray-600">
+                                <input type="checkbox" @change="toggleAllCosts" class="mr-2">
+                                Selecionar todos
+                            </label>
+                            <input type="text" x-model="costsSearch" 
+                                   placeholder="Pesquisar..." 
+                                   class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="max-h-96 overflow-y-auto">
+                        <template x-for="cost in filteredCosts" :key="cost.id">
+                            <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+                                 :class="selectedCosts.includes(cost.id) ? 'bg-blue-50' : ''"
+                                 @click="toggleCost(cost.id)">
+                                <div class="flex items-start">
+                                    <input type="checkbox" 
+                                           :checked="selectedCosts.includes(cost.id)"
+                                           @click.stop
+                                           @change="toggleCost(cost.id)"
+                                           class="mt-1 mr-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="font-medium text-gray-900" x-text="cost.supplier"></p>
+                                                <p class="text-sm text-gray-600" x-text="cost.description"></p>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    <span x-text="formatDate(cost.date)"></span> • 
+                                                    <span x-text="cost.document_number"></span>
+                                                </p>
+                                            </div>
+                                            <p class="font-semibold text-red-600"
+                                               x-text="'€' + cost.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
+                                        </div>
+                                        
+                                        <!-- Linked Sales -->
+                                        <div x-show="cost.linked_sales.length > 0" class="mt-2">
+                                            <div class="flex flex-wrap gap-1">
+                                                <template x-for="saleId in cost.linked_sales.slice(0, 3)" :key="saleId">
+                                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                                        <i class="fas fa-link text-xs mr-0.5"></i>
+                                                        <span x-text="getSaleName(saleId)"></span>
+                                                    </span>
+                                                </template>
+                                                <span x-show="cost.linked_sales.length > 3" 
+                                                      class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                                    +<span x-text="cost.linked_sales.length - 3"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Results -->
+        <div x-show="currentStep === 3" class="animate-slide-up">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Resultados do Cálculo</h2>
+                
+                <!-- Results Summary -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Vendas</p>
+                        <p class="text-xl font-semibold text-green-600" x-text="'€' + (finalResults.totalSales || 0).toLocaleString('pt-PT')"></p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Custos</p>
+                        <p class="text-xl font-semibold text-red-600" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT')"></p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Margem Bruta</p>
+                        <p class="text-xl font-semibold text-blue-600" x-text="'€' + (finalResults.grossMargin || 0).toLocaleString('pt-PT')"></p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">IVA (<span x-text="vatRate"></span>%)</p>
+                        <p class="text-xl font-semibold text-purple-600" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT')"></p>
+                    </div>
+                    
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-gray-600 font-medium">Margem Líquida</p>
+                        <p class="text-xl font-bold text-blue-600" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT')"></p>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                    <canvas id="marginChart" width="400" height="200"></canvas>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-center space-x-4">
+                    <button @click="currentStep = 2" 
+                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Voltar
+                    </button>
+                    
+                    <button @click="downloadExcel" 
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Descarregar Excel
+                    </button>
+                    
+                    <button @click="startNew" 
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nova Análise
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div x-show="loading" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-700" x-text="loadingMessage">A processar...</p>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="fixed bottom-4 right-4 z-50 space-y-4">
+        <template x-for="(notification, index) in notifications" :key="index">
+            <div x-show="notification.show"
+                 x-transition:enter="transform ease-out duration-300 transition"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
+                <div class="rounded-lg shadow-xs overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i class="text-xl"
+                                   :class="{
+                                       'fas fa-check-circle text-green-500': notification.type === 'success',
+                                       'fas fa-exclamation-circle text-red-500': notification.type === 'error',
+                                       'fas fa-exclamation-triangle text-yellow-500': notification.type === 'warning',
+                                       'fas fa-info-circle text-blue-500': notification.type === 'info'
+                                   }"></i>
+                            </div>
+                            <div class="ml-3 w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900" x-text="notification.title"></p>
+                                <p class="mt-1 text-sm text-gray-500" x-text="notification.message"></p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex">
+                                <button @click="removeNotification(index)" 
+                                        class="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    
+    <!-- Alpine.js App -->
+    <script>
+        function ivaApp() {
+            return {
+                // API Configuration  
+                apiUrl: window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8000' 
+                    : 'https://iva-margem-turismo-backend.up.railway.app',
+                
+                // App State
+                currentStep: 1,
+                sessionId: null,
+                loading: false,
+                loadingMessage: 'A processar...',
+                dragOver: false,
+                
+                // Data
+                sales: [],
+                costs: [],
+                selectedSales: [],
+                selectedCosts: [],
+                vatRate: 23,
+                
+                // Search
+                salesSearch: '',
+                costsSearch: '',
+                
+                // Results
+                finalResults: {},
+                
+                // Notifications
+                notifications: [],
+                
+                // Computed Properties
+                get totalSales() {
+                    return this.sales.reduce((sum, sale) => sum + sale.amount, 0);
+                },
+                
+                get totalCosts() {
+                    return this.costs.reduce((sum, cost) => sum + cost.amount, 0);
+                },
+                
+                get estimatedMargin() {
+                    return this.totalSales - this.totalCosts;
+                },
+                
+                get estimatedVAT() {
+                    const margin = this.estimatedMargin;
+                    return margin > 0 ? margin * this.vatRate / 100 : 0;
+                },
+                
+                get filteredSales() {
+                    if (!this.salesSearch) return this.sales;
+                    const search = this.salesSearch.toLowerCase();
+                    return this.sales.filter(sale => 
+                        sale.number.toLowerCase().includes(search) ||
+                        sale.client.toLowerCase().includes(search)
+                    );
+                },
+                
+                get filteredCosts() {
+                    if (!this.costsSearch) return this.costs;
+                    const search = this.costsSearch.toLowerCase();
+                    return this.costs.filter(cost => 
+                        cost.supplier.toLowerCase().includes(search) ||
+                        cost.description.toLowerCase().includes(search)
+                    );
+                },
+                
+                // Initialize
+                init() {
+                    // Check for saved session
+                    const savedSession = localStorage.getItem('ivaSession');
+                    if (savedSession) {
+                        const data = JSON.parse(savedSession);
+                        this.sessionId = data.sessionId;
+                        this.sales = data.sales || [];
+                        this.costs = data.costs || [];
+                        if (this.sales.length > 0 || this.costs.length > 0) {
+                            this.currentStep = 2;
+                        }
+                    }
+                },
+                
+                // File Handling
+                handleDrop(event) {
+                    this.dragOver = false;
+                    const file = event.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.xml')) {
+                        this.uploadFile(file);
+                    } else {
+                        this.showNotification('Erro', 'Por favor selecione um ficheiro XML', 'error');
+                    }
+                },
+                
+                handleFileSelect(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.uploadFile(file);
+                    }
+                },
+                
+                async uploadFile(file) {
+                    this.loading = true;
+                    this.loadingMessage = 'A carregar ficheiro SAF-T...';
+                    
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Erro no upload');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        this.sessionId = data.session_id;
+                        this.sales = data.sales;
+                        this.costs = data.costs;
+                        
+                        this.saveSession();
+                        
+                        this.showNotification(
+                            'Sucesso!', 
+                            `Importados ${data.summary.total_sales} vendas e ${data.summary.total_costs} custos`,
+                            'success'
+                        );
+                        
+                        this.currentStep = 2;
+                        
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        this.showNotification('Erro', 'Erro ao carregar ficheiro', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                // Mock Data
+                async loadMockData() {
+                    this.loading = true;
+                    this.loadingMessage = 'A carregar dados de demonstração...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/mock-data`);
+                        const data = await response.json();
+                        
+                        this.sessionId = data.session_id;
+                        this.sales = data.sales;
+                        this.costs = data.costs;
+                        
+                        this.saveSession();
+                        
+                        this.showNotification(
+                            'Dados Carregados',
+                            'Dados de demonstração carregados com sucesso',
+                            'success'
+                        );
+                        
+                        this.currentStep = 2;
+                        
+                    } catch (error) {
+                        console.error('Error loading mock data:', error);
+                        this.showNotification('Erro', 'Erro ao carregar dados', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                // Selection Methods
+                toggleSale(id) {
+                    const index = this.selectedSales.indexOf(id);
+                    if (index > -1) {
+                        this.selectedSales.splice(index, 1);
+                    } else {
+                        this.selectedSales.push(id);
+                    }
+                },
+                
+                toggleCost(id) {
+                    const index = this.selectedCosts.indexOf(id);
+                    if (index > -1) {
+                        this.selectedCosts.splice(index, 1);
+                    } else {
+                        this.selectedCosts.push(id);
+                    }
+                },
+                
+                toggleAllSales(event) {
+                    if (event.target.checked) {
+                        this.selectedSales = this.sales.map(s => s.id);
+                    } else {
+                        this.selectedSales = [];
+                    }
+                },
+                
+                toggleAllCosts(event) {
+                    if (event.target.checked) {
+                        this.selectedCosts = this.costs.map(c => c.id);
+                    } else {
+                        this.selectedCosts = [];
+                    }
+                },
+                
+                // Association Methods
+                async associateSelected() {
+                    if (this.selectedSales.length === 0 || this.selectedCosts.length === 0) {
+                        this.showNotification('Aviso', 'Selecione vendas e custos para associar', 'warning');
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.loadingMessage = 'A criar associações...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/associate`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                sale_ids: this.selectedSales,
+                                cost_ids: this.selectedCosts
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        // Update local data
+                        this.selectedSales.forEach(saleId => {
+                            const sale = this.sales.find(s => s.id === saleId);
+                            if (sale) {
+                                sale.linked_costs = [...new Set([...sale.linked_costs, ...this.selectedCosts])];
+                            }
+                        });
+                        
+                        this.selectedCosts.forEach(costId => {
+                            const cost = this.costs.find(c => c.id === costId);
+                            if (cost) {
+                                cost.linked_sales = [...new Set([...cost.linked_sales, ...this.selectedSales])];
+                            }
+                        });
+                        
+                        this.selectedSales = [];
+                        this.selectedCosts = [];
+                        
+                        this.saveSession();
+                        
+                        this.showNotification(
+                            'Sucesso!',
+                            `${result.associations_made} associações criadas`,
+                            'success'
+                        );
+                        
+                    } catch (error) {
+                        console.error('Association error:', error);
+                        this.showNotification('Erro', 'Erro ao criar associações', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                async autoMatch() {
+                    this.loading = true;
+                    this.loadingMessage = 'A analisar e associar documentos...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/auto-match`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                threshold: 60
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        // Reload session data to get updated associations
+                        await this.reloadSession();
+                        
+                        this.showNotification(
+                            'Auto-Associação Completa',
+                            `${result.matches_found} associações criadas automaticamente`,
+                            'success'
+                        );
+                        
+                    } catch (error) {
+                        console.error('Auto-match error:', error);
+                        this.showNotification('Erro', 'Erro na auto-associação', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                // Calculation Methods
+                async calculateAndExport() {
+                    this.loading = true;
+                    this.loadingMessage = 'A calcular IVA e gerar relatório...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/calculate`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                vat_rate: this.vatRate
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Erro no cálculo');
+                        }
+                        
+                        // Get file blob
+                        const blob = await response.blob();
+                        
+                        // Create download link
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `iva_margem_${new Date().toISOString().split('T')[0]}.xlsx`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        
+                        // Calculate summary for display
+                        this.calculateSummary();
+                        
+                        this.showNotification(
+                            'Excel Gerado!',
+                            'Relatório descarregado com sucesso',
+                            'success'
+                        );
+                        
+                        this.currentStep = 3;
+                        
+                        // Draw chart after DOM update
+                        this.$nextTick(() => {
+                            this.drawChart();
+                        });
+                        
+                    } catch (error) {
+                        console.error('Calculation error:', error);
+                        this.showNotification('Erro', 'Erro ao calcular IVA', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                calculateSummary() {
+                    // Calculate totals for display
+                    let totalSales = 0;
+                    let totalCosts = 0;
+                    
+                    this.sales.forEach(sale => {
+                        totalSales += sale.amount;
+                    });
+                    
+                    this.costs.forEach(cost => {
+                        // Only count costs that are linked to sales
+                        if (cost.linked_sales && cost.linked_sales.length > 0) {
+                            // Distribute cost proportionally
+                            totalCosts += cost.amount;
+                        }
+                    });
+                    
+                    const grossMargin = totalSales - totalCosts;
+                    const totalVAT = grossMargin > 0 ? grossMargin * this.vatRate / 100 : 0;
+                    const netMargin = grossMargin - totalVAT;
+                    
+                    this.finalResults = {
+                        totalSales: totalSales,
+                        totalCosts: totalCosts,
+                        grossMargin: grossMargin,
+                        totalVAT: totalVAT,
+                        netMargin: netMargin
+                    };
+                },
+                
+                drawChart() {
+                    const ctx = document.getElementById('marginChart');
+                    if (!ctx) return;
+                    
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Vendas', 'Custos', 'Margem Bruta', 'IVA', 'Margem Líquida'],
+                            datasets: [{
+                                label: 'Valores (€)',
+                                data: [
+                                    this.finalResults.totalSales,
+                                    -this.finalResults.totalCosts,
+                                    this.finalResults.grossMargin,
+                                    -this.finalResults.totalVAT,
+                                    this.finalResults.netMargin
+                                ],
+                                backgroundColor: [
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(147, 51, 234, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)'
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '€' + value.toLocaleString('pt-PT');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                
+                async downloadExcel() {
+                    // Re-download the Excel file
+                    await this.calculateAndExport();
+                },
+                
+                // Utility Methods
+                formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('pt-PT');
+                },
+                
+                getCostName(costId) {
+                    const cost = this.costs.find(c => c.id === costId);
+                    return cost ? cost.supplier.split(' ')[0] : costId;
+                },
+                
+                getSaleName(saleId) {
+                    const sale = this.sales.find(s => s.id === saleId);
+                    return sale ? sale.number.split('/')[0] : saleId;
+                },
+                
+                saveSession() {
+                    localStorage.setItem('ivaSession', JSON.stringify({
+                        sessionId: this.sessionId,
+                        sales: this.sales,
+                        costs: this.costs
+                    }));
+                },
+                
+                async reloadSession() {
+                    if (!this.sessionId) return;
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/session/${this.sessionId}`);
+                        const data = await response.json();
+                        
+                        this.sales = data.sales;
+                        this.costs = data.costs;
+                        
+                        this.saveSession();
+                    } catch (error) {
+                        console.error('Error reloading session:', error);
+                    }
+                },
+                
+                startNew() {
+                    // Clear everything and start over
+                    this.sessionId = null;
+                    this.sales = [];
+                    this.costs = [];
+                    this.selectedSales = [];
+                    this.selectedCosts = [];
+                    this.finalResults = {};
+                    this.currentStep = 1;
+                    
+                    localStorage.removeItem('ivaSession');
+                    
+                    this.showNotification('Nova Sessão', 'Pronto para nova análise', 'info');
+                },
+                
+                // Notifications
+                showNotification(title, message, type = 'info') {
+                    const notification = {
+                        title,
+                        message,
+                        type,
+                        show: true
+                    };
+                    
+                    this.notifications.push(notification);
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        const index = this.notifications.indexOf(notification);
+                        if (index > -1) {
+                            this.notifications[index].show = false;
+                            setTimeout(() => {
+                                this.notifications.splice(index, 1);
+                            }, 300);
+                        }
+                    }, 5000);
+                },
+                
+                removeNotification(index) {
+                    this.notifications[index].show = false;
+                    setTimeout(() => {
+                        this.notifications.splice(index, 1);
+                    }, 300);
+                }
+            }
+        }
+    </script>
+    <!-- Footer Accounting Advantage -->
+    <footer class="bg-gray-900 text-gray-300 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-white text-lg font-semibold mb-4">Accounting Advantage</h3>
+                    <p class="text-sm mb-4 italic">"Fazer um bom trabalho é Amar o que se faz"</p>
+                    <p class="text-sm">Sistema profissional de cálculo de IVA sobre margem para agências de viagens, desenvolvido com dedicação e expertise fiscal.</p>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-white text-lg font-semibold mb-4">Contactos</h4>
+                    <div class="space-y-2 text-sm">
+                        <p class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:geral@accountingadvantage.pt" class="hover:text-white transition-colors">
+                                geral@accountingadvantage.pt
+                            </a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <span>+351 219 586 265 / +351 910 542 488</span>
+                        </p>
+                        <p class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-400 mt-1"></i>
+                            <span>Rua Almada Negreiros Lote 5-lj 14<br>2615-275 Alverca Ribatejo</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Social & Credits -->
+                <div>
+                    <h4 class="text-white text-lg font-semibold mb-4">Siga-nos</h4>
+                    <div class="flex space-x-4 mb-6">
+                        <a href="https://www.facebook.com/AccountingAdvantage.pt" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/cláudia-patricia-azevedo/" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.advantage.pt" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </div>
+                    <p class="text-sm">
+                        Desenvolvido com <i class="fas fa-heart text-red-500"></i> por<br>
+                        <strong class="text-white">Accounting Advantage</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                <p>© 2025 Accounting Advantage. Todos os direitos reservados.</p>
+                <p class="mt-2 text-xs text-gray-500">
+                    IVA Margem Turismo v2.0 | Regime especial CIVA Art. 308º
+                </p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

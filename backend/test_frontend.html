@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Frontend - IVA Margem Turismo</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body>
+    <div x-data="testApp()">
+        <h1>Teste API - IVA Margem Turismo</h1>
+        
+        <button @click="loadData()" class="btn">Carregar Dados Demo</button>
+        
+        <div x-show="loading">Carregando...</div>
+        
+        <div x-show="data">
+            <h2>Resultados:</h2>
+            <p><strong>Vendas:</strong> <span x-text="sales.length"></span> documentos</p>
+            <p><strong>Custos:</strong> <span x-text="costs.length"></span> documentos</p>
+            <p><strong>Total:</strong> <span x-text="sales.length + costs.length"></span> documentos</p>
+            
+            <h3>Primeiras 5 vendas:</h3>
+            <ul>
+                <template x-for="sale in sales.slice(0, 5)" :key="sale.id">
+                    <li x-text="sale.number + ' - €' + sale.amount"></li>
+                </template>
+            </ul>
+            
+            <h3>Primeiros 10 custos:</h3>
+            <ul>
+                <template x-for="cost in costs.slice(0, 10)" :key="cost.id">
+                    <li x-text="cost.supplier + ' - €' + cost.amount"></li>
+                </template>
+            </ul>
+            
+            <h3>Últimos 5 custos:</h3>
+            <ul>
+                <template x-for="cost in costs.slice(-5)" :key="cost.id">
+                    <li x-text="cost.supplier + ' - €' + cost.amount"></li>
+                </template>
+            </ul>
+        </div>
+        
+        <div x-show="error" style="color: red;">
+            <p><strong>Erro:</strong> <span x-text="error"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function testApp() {
+            return {
+                apiUrl: 'http://localhost:8000',
+                loading: false,
+                data: null,
+                sales: [],
+                costs: [],
+                error: null,
+                
+                async loadData() {
+                    this.loading = true;
+                    this.error = null;
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/mock-data`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        this.data = data;
+                        this.sales = data.sales || [];
+                        this.costs = data.costs || [];
+                        
+                        console.log('Data loaded:', data);
+                        console.log('Sales count:', this.sales.length);
+                        console.log('Costs count:', this.costs.length);
+                        
+                    } catch (error) {
+                        console.error('Error loading data:', error);
+                        this.error = error.message;
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        ul { max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+        li { margin: 5px 0; }
+    </style>
+</body>
+</html>

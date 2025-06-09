@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cache - IVA Margem Turismo</title>
+</head>
+<body>
+    <h1>Limpar Cache e Recarregar</h1>
+    <p>Esta página irá limpar todos os dados locais e recarregar a aplicação.</p>
+    
+    <button onclick="clearAndReload()">Limpar Cache e Recarregar</button>
+    
+    <script>
+        function clearAndReload() {
+            // Limpar localStorage
+            localStorage.clear();
+            
+            // Limpar sessionStorage
+            sessionStorage.clear();
+            
+            // Forçar reload sem cache
+            window.location.replace('../frontend/index.html?nocache=' + Date.now());
+        }
+        
+        // Auto-executar após 2 segundos
+        setTimeout(clearAndReload, 2000);
+    </script>
+</body>
+</html>
