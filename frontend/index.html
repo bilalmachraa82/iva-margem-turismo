@@ -3,218 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVA Margem Turismo - Gestão Inteligente para Agências de Viagens</title>
+    <title>IVA Margem Turismo - Cálculo Simplificado</title>
     
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Sistema profissional de cálculo de IVA sobre margem para agências de viagens. Importação SAF-T, associações inteligentes e relatórios automáticos.">
-    <meta name="keywords" content="IVA margem, turismo, agências viagens, SAF-T, Portugal">
-    
-    <!-- Tailwind CSS + DaisyUI (Premium UI Framework 2024) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css" />
     
-    <!-- Alpine.js para reatividade -->
+    <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    <!-- Font Awesome 6.5 (Latest) para ícones -->
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     
-    <!-- Chart.js 4.4 + Advanced addons para gráficos premium -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <!-- Google Fonts - Poppins + Work Sans (Accounting Advantage Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Framer Motion Web (Premium animations) -->
-    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.18.0/dist/framer-motion.js"></script>
-    
-    <!-- AOS (Animate On Scroll) para scroll animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Modern Tourism Theme Configuration -->
-    <script>
-        tailwind.config = {
-            daisyui: {
-                themes: [
-                    {
-                        turismo_moderno: {
-                            "primary": "#3B82F6",      // Azul céu vibrante
-                            "primary-content": "#ffffff",
-                            "secondary": "#10B981",    // Verde tropical
-                            "secondary-content": "#ffffff",
-                            "accent": "#F59E0B",       // Dourado sol
-                            "accent-content": "#ffffff",
-                            "neutral": "#6B7280",      // Cinza neutro suave
-                            "neutral-content": "#ffffff",
-                            "base-100": "#FFFFFF",     // Branco puro
-                            "base-200": "#F8FAFF",     // Azul muito claro
-                            "base-300": "#E1E7FF",     // Azul pastel
-                            "base-content": "#1E293B", // Texto escuro suave
-                            "info": "#06B6D4",        // Ciano água
-                            "info-content": "#ffffff",
-                            "success": "#10B981",     // Verde sucesso
-                            "success-content": "#ffffff", 
-                            "warning": "#F59E0B",     // Âmbar quente
-                            "warning-content": "#ffffff",
-                            "error": "#EF4444",       // Vermelho suave
-                            "error-content": "#ffffff",
-                        }
-                    }
-                ]
-            }
-        }
-    </script>
-    
-    <!-- Custom Styles (Premium Enhanced) -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
         }
         
-        /* Modern Tourism Gradients */
-        .gradient-sky {
-            background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #10B981 100%);
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Work Sans', sans-serif;
         }
         
-        .gradient-sunset {
-            background: linear-gradient(135deg, #F59E0B 0%, #F97316 50%, #EF4444 100%);
+        /* Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .gradient-ocean {
-            background: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #8B5CF6 100%);
-        }
-        
-        .gradient-tropical {
-            background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
-        }
-        
-        .gradient-modern-mesh {
-            background: linear-gradient(135deg, 
-                #3B82F6 0%, 
-                #06B6D4 25%, 
-                #10B981 50%, 
-                #F59E0B 75%, 
-                #EF4444 100%);
-            background-size: 300% 300%;
-            animation: gradient-shift 20s ease infinite;
-        }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        
-        .floating-card {
-            transform: translateY(0);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .floating-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 64px rgba(59, 130, 246, 0.2);
-        }
-        
-        .btn-modern {
-            background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
-            border: none;
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-            transform: translateY(0);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
-        }
-        
-        .text-gradient {
-            background: linear-gradient(135deg, #3B82F6, #10B981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Gradientes */
-        .gradient-sunset {
-            background: linear-gradient(135deg, #667eea 0%, #f6ad55 100%);
-        }
-        
-        .gradient-ocean {
-            background: linear-gradient(135deg, #4299e1 0%, #48bb78 100%);
-        }
-        
-        .gradient-premium {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        /* Animações customizadas */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
-        }
-        
-        .pulse-glow {
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-        
-        /* Drag & Drop Styles */
-        .drag-over {
-            border-color: var(--primary) !important;
-            background-color: rgba(102, 126, 234, 0.1) !important;
-        }
-        
-        .dragging {
-            opacity: 0.5;
-            cursor: grabbing !important;
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
         }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+            background: #f3f4f6;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
+            background: #d1d5db;
+            border-radius: 3px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
+            background: #9ca3af;
         }
         
-        /* Loading Animation */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
+        /* Hover Effects */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
         }
         
@@ -223,542 +80,334 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Card hover effects */
-        .card-hover {
-            transition: all 0.3s ease;
+        /* Association indicator */
+        .has-associations {
+            position: relative;
         }
         
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        /* Responsive utilities */
-        @media (max-width: 768px) {
-            .mobile-stack {
-                flex-direction: column !important;
-            }
-            
-            .mobile-full {
-                width: 100% !important;
-            }
+        .has-associations::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #10B981;
         }
     </style>
 </head>
-<body data-theme="turismo_moderno" class="bg-gradient-to-br from-base-100 via-base-200 to-blue-50" x-data="ivaApp()">
-    <!-- Modern Tourism Navbar -->
-    <div class="navbar gradient-modern-mesh text-white shadow-2xl relative overflow-hidden" data-aos="fade-down">
-        <!-- Background Pattern -->
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 left-0 w-full h-full bg-repeat" style="background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"2\" fill=\"white\" opacity=\"0.3\"/></svg>'); background-size: 50px 50px;"></div>
-        </div>
-        <div class="navbar-start">
-            <div class="dropdown lg:hidden">
-                <label tabindex="0" class="btn btn-ghost">
-                    <i class="fas fa-bars text-xl"></i>
-                </label>
-                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
-                    <li><a href="#upload"><i class="fas fa-upload"></i> Upload</a></li>
-                    <li><a href="#associate"><i class="fas fa-link"></i> Associar</a></li>
-                    <li><a href="#calculate"><i class="fas fa-calculator"></i> Calcular</a></li>
-                </ul>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="avatar">
-                    <div class="w-12 mask mask-hexagon">
-                        <i class="fas fa-plane-departure text-2xl flex items-center justify-center h-full float-animation"></i>
+<body class="bg-gray-50" x-data="ivaApp()">
+    <!-- Clean Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-calculator text-blue-600 text-2xl mr-3"></i>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">IVA Margem Turismo</h1>
+                        <p class="text-xs text-gray-500">Cálculo automático para agências de viagens</p>
+                    </div>
+                    <div class="hidden lg:block ml-8 pl-8 border-l border-gray-300">
+                        <p class="text-xs text-gray-500">Powered by</p>
+                        <p class="text-sm font-semibold text-gray-900">Accounting Advantage</p>
                     </div>
                 </div>
-                <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold bg-clip-text">IVA Margem Turismo</h1>
-                    <p class="text-sm opacity-90 hidden lg:block">Gestão inteligente para agências de viagens</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1 text-white">
-                <li><a class="hover:bg-white/20 rounded-lg"><i class="fas fa-chart-line mr-2"></i>Dashboard</a></li>
-                <li><a class="hover:bg-white/20 rounded-lg"><i class="fas fa-file-invoice mr-2"></i>Relatórios</a></li>
-                <li><a class="hover:bg-white/20 rounded-lg"><i class="fas fa-cog mr-2"></i>Configurações</a></li>
-            </ul>
-        </div>
-        
-        <div class="navbar-end">
-            <div class="flex items-center space-x-4">
-                <div class="badge badge-accent badge-lg">
-                    <i class="fas fa-crown mr-1"></i>
-                    Premium
-                </div>
-                <div class="text-right hidden md:block">
-                    <p class="text-xs opacity-75">Powered by</p>
-                    <p class="font-semibold">Accounting Advantage</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Progress Steps -->
-    <div class="bg-base-100 shadow-lg border-b border-base-300" data-aos="fade-down" data-aos-delay="100">
-        <div class="container mx-auto px-4 py-6">
-            <div class="flex items-center justify-between flex-wrap">
-                <!-- Progress Steps -->
-                <ul class="steps steps-horizontal w-full lg:w-auto" data-aos="fade-up" data-aos-delay="200">
-                    <li class="step" :class="{'step-primary': currentStep >= 1}">
-                        <div class="flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300"
-                                 :class="currentStep >= 1 ? 'bg-primary text-primary-content shadow-lg scale-110' : 'bg-base-300 text-base-content'">
-                                <i class="fas fa-upload text-lg"></i>
-                            </div>
-                            <span class="text-xs font-medium hidden lg:block">Upload SAF-T</span>
-                        </div>
-                    </li>
-                    <li class="step" :class="{'step-primary': currentStep >= 2}">
-                        <div class="flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300"
-                                 :class="currentStep >= 2 ? 'bg-primary text-primary-content shadow-lg scale-110' : 'bg-base-300 text-base-content'">
-                                <i class="fas fa-link text-lg"></i>
-                            </div>
-                            <span class="text-xs font-medium hidden lg:block">Associar</span>
-                        </div>
-                    </li>
-                    <li class="step" :class="{'step-primary': currentStep >= 3}">
-                        <div class="flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300"
-                                 :class="currentStep >= 3 ? 'bg-primary text-primary-content shadow-lg scale-110' : 'bg-base-300 text-base-content'">
-                                <i class="fas fa-calculator text-lg"></i>
-                            </div>
-                            <span class="text-xs font-medium hidden lg:block">Calcular</span>
-                        </div>
-                    </li>
-                    <li class="step" :class="{'step-primary': currentStep >= 4}">
-                        <div class="flex flex-col items-center">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300"
-                                 :class="currentStep >= 4 ? 'bg-primary text-primary-content shadow-lg scale-110' : 'bg-base-300 text-base-content'">
-                                <i class="fas fa-file-excel text-lg"></i>
-                            </div>
-                            <span class="text-xs font-medium hidden lg:block">Exportar</span>
-                        </div>
-                    </li>
-                </ul>
                 
-                <!-- Session Info -->
-                <div class="mt-4 lg:mt-0" x-show="sessionId" data-aos="fade-left" data-aos-delay="300">
-                    <div class="card bg-base-200 shadow-md">
-                        <div class="card-body p-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="badge badge-info">
-                                    <i class="fas fa-server mr-1"></i>
-                                    Sessão Ativa
-                                </div>
-                                <code class="text-xs bg-base-300 px-2 py-1 rounded font-mono" x-text="sessionId?.substring(0, 8) + '...'"></code>
-                            </div>
+                <!-- Progress Indicator -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="flex items-center">
+                        <div class="flex items-center" :class="currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 1 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                1
+                            </span>
+                            <span class="ml-2 text-sm">Upload</span>
+                        </div>
+                        
+                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'"></div>
+                        
+                        <div class="flex items-center" :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 2 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                2
+                            </span>
+                            <span class="ml-2 text-sm">Associar</span>
+                        </div>
+                        
+                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-300'"></div>
+                        
+                        <div class="flex items-center" :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-400'">
+                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
+                                  :class="currentStep >= 3 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                                3
+                            </span>
+                            <span class="ml-2 text-sm">Resultado</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Breadcrumbs Premium -->
-    <div class="bg-base-100 border-b border-base-200" data-aos="fade-up" data-aos-delay="150">
-        <div class="container mx-auto px-4 py-2">
-            <div class="breadcrumbs text-sm">
-                <ul>
-                    <li><a href="#" class="text-primary"><i class="fas fa-home mr-1"></i>Início</a></li>
-                    <li x-show="currentStep >= 1"><span x-text="currentStep >= 1 ? 'SAF-T Upload' : ''"></span></li>
-                    <li x-show="currentStep >= 2"><span x-text="currentStep >= 2 ? 'Associações' : ''"></span></li>
-                    <li x-show="currentStep >= 3"><span x-text="currentStep >= 3 ? 'Cálculos' : ''"></span></li>
-                    <li x-show="currentStep >= 4"><span x-text="currentStep >= 4 ? 'Relatório' : ''"></span></li>
-                </ul>
-            </div>
-        </div>
+    </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Premium Upload Section -->
-        <div x-show="currentStep === 1" x-transition class="space-y-6" data-aos="fade-up">
-            <div class="max-w-6xl mx-auto">
-                <!-- Modern Hero Card -->
-                <div class="hero glass-effect rounded-3xl shadow-2xl overflow-hidden border border-white/20" data-aos="zoom-in" style="background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(16,185,129,0.1) 50%, rgba(245,158,11,0.1) 100%)">
-                    <div class="hero-content text-center">
-                        <div class="max-w-md">
-                            <div class="avatar mb-6">
-                                <div class="w-24 mask mask-hexagon bg-primary/20">
-                                    <i class="fas fa-cloud-upload-alt text-4xl text-primary flex items-center justify-center h-full"></i>
-                                </div>
-                            </div>
-                            <h1 class="text-3xl font-bold text-gradient">
-                                Importar SAF-T
-                            </h1>
-                            <p class="py-4 text-base-content/70">
-                                Faça upload do seu ficheiro SAF-T e comece a calcular o IVA sobre margem automaticamente
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid lg:grid-cols-3 gap-6 mt-8">
-                    <!-- Main Upload Card -->
-                    <div class="lg:col-span-2">
-                        <div class="card bg-base-100 shadow-2xl border border-base-300" data-aos="fade-right">
-                            <div class="card-body">
-                                <h2 class="card-title text-2xl mb-6">
-                                    <i class="fas fa-file-upload text-primary"></i>
-                                    Upload de Ficheiro
-                                </h2>
-                                
-                                <!-- Premium Drop Zone -->
-                                <div class="relative">
-                                    <div class="border-4 border-dashed rounded-2xl p-12 text-center transition-all duration-300 hover:border-primary/50 hover:bg-primary/5"
-                                         :class="dragOver ? 'border-primary bg-primary/10 scale-105' : 'border-base-300'"
-                                         @dragover.prevent="dragOver = true"
-                                         @dragleave.prevent="dragOver = false"
-                                         @drop.prevent="handleDrop($event)">
-                                        
-                                        <div class="avatar mb-6">
-                                            <div class="w-20 mask mask-circle bg-primary/10">
-                                                <i class="fas fa-file-code text-3xl text-primary flex items-center justify-center h-full" 
-                                                   :class="dragOver ? 'animate-bounce' : ''"></i>
-                                            </div>
-                                        </div>
-                                        
-                                        <h3 class="text-xl font-bold mb-2" :class="dragOver ? 'text-primary' : 'text-base-content'">
-                                            <span x-show="!dragOver">Arraste o ficheiro SAF-T aqui</span>
-                                            <span x-show="dragOver" class="text-primary">Solte para fazer upload!</span>
-                                        </h3>
-                                        
-                                        <p class="text-base-content/60 mb-6">ou clique para selecionar do computador</p>
-                                        
-                                        <input type="file" id="fileInput" class="file-input file-input-ghost w-full max-w-xs hidden" accept=".xml" @change="handleFileSelect">
-                                        
-                                        <button onclick="document.getElementById('fileInput').click()"
-                                                class="btn btn-lg gap-2 btn-modern floating-card">
-                                            <i class="fas fa-folder-open"></i>
-                                            Selecionar Ficheiro SAF-T
-                                        </button>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Step 1: Upload -->
+        <div x-show="currentStep === 1" class="animate-slide-up">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-2">Começar Análise</h2>
+                    <p class="text-gray-600 mb-8">Faça upload do ficheiro SAF-T ou use dados de demonstração</p>
+                    
+                    <!-- Upload Area -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors"
+                         :class="dragOver ? 'border-blue-400 bg-blue-50' : ''"
+                         @dragover.prevent="dragOver = true"
+                         @dragleave.prevent="dragOver = false"
+                         @drop.prevent="handleDrop($event)">
                         
-                                        <div class="mt-8 p-4 bg-info/10 rounded-xl border border-info/20">
-                                            <div class="flex items-center gap-2 text-info mb-2">
-                                                <i class="fas fa-info-circle"></i>
-                                                <span class="font-semibold">Requisitos do Ficheiro</span>
-                                            </div>
-                                            <ul class="text-sm space-y-1 text-base-content/70">
-                                                <li>• Formato: XML (SAF-T Portugal)</li>
-                                                <li>• Tamanho máximo: 50MB</li>
-                                                <li>• Versão: 1.04_01 ou superior</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <i class="fas fa-cloud-upload-alt text-4xl mb-4" 
+                           :class="dragOver ? 'text-blue-600' : 'text-gray-400'"></i>
+                        
+                        <p class="text-lg font-medium text-gray-700 mb-2">
+                            Arraste o ficheiro SAF-T aqui
+                        </p>
+                        <p class="text-sm text-gray-500 mb-4">ou</p>
+                        
+                        <input type="file" id="fileInput" class="hidden" accept=".xml" @change="handleFileSelect">
+                        
+                        <button onclick="document.getElementById('fileInput').click()"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Selecionar Ficheiro
+                        </button>
+                        
+                        <p class="text-xs text-gray-500 mt-4">Formato XML • Máximo 50MB</p>
+                    </div>
+                    
+                    <!-- Demo Data Option -->
+                    <div class="relative my-8">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-4 bg-white text-gray-500">ou teste com</span>
                         </div>
                     </div>
                     
-                    <!-- Configuration Sidebar -->
-                    <div class="lg:col-span-1" data-aos="fade-left" data-aos-delay="200">
-                        <div class="space-y-6">
-                            <!-- VAT Configuration Card -->
-                            <div class="card bg-base-100 shadow-xl border border-base-300">
-                                <div class="card-body">
-                                    <h3 class="card-title text-lg">
-                                        <i class="fas fa-percentage text-accent"></i>
-                                        Configuração IVA
-                                    </h3>
-                                    
-                                    <div class="form-control">
-                                        <label class="label">
-                                            <span class="label-text font-medium">Taxa de IVA</span>
-                                        </label>
-                                        <select x-model="vatRate" class="select select-bordered select-primary w-full">
-                                            <optgroup label="Portugal Continental">
-                                                <option value="6">6% - Taxa Reduzida</option>
-                                                <option value="13">13% - Taxa Intermédia</option>
-                                                <option value="23" selected>23% - Taxa Normal</option>
-                                            </optgroup>
-                                            <optgroup label="Região Autónoma dos Açores">
-                                                <option value="5">5% - Taxa Reduzida</option>
-                                                <option value="9">9% - Taxa Intermédia</option>
-                                                <option value="16">16% - Taxa Normal</option>
-                                            </optgroup>
-                                            <optgroup label="Região Autónoma da Madeira">
-                                                <option value="5">5% - Taxa Reduzida</option>
-                                                <option value="12">12% - Taxa Intermédia</option>
-                                                <option value="22">22% - Taxa Normal</option>
-                                            </optgroup>
-                                        </select>
-                                        <label class="label">
-                                            <span class="label-text-alt">
-                                                <i class="fas fa-info-circle text-info mr-1"></i>
-                                                CIVA Art. 308º - Regime de Margem
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Demo Data Card -->
-                            <div class="card bg-gradient-to-br from-secondary/10 to-accent/10 shadow-xl border border-secondary/20">
-                                <div class="card-body text-center">
-                                    <div class="avatar mb-4">
-                                        <div class="w-16 mask mask-star-2 bg-secondary/20">
-                                            <i class="fas fa-magic text-2xl text-secondary flex items-center justify-center h-full"></i>
-                                        </div>
-                                    </div>
-                                    <h3 class="card-title justify-center text-lg">Teste Rápido</h3>
-                                    <p class="text-sm text-base-content/70 mb-4">
-                                        Não tem ficheiro SAF-T? Use dados de demonstração reais.
-                                    </p>
-                                    <button @click="loadMockData" 
-                                            class="btn btn-secondary btn-sm gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all">
-                                        <i class="fas fa-database"></i>
-                                        Dados Demo
-                                    </button>
-                                    <div class="text-xs mt-2 text-base-content/50">
-                                        26 vendas • 157 custos • Margem realista
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Features Card -->
-                            <div class="card bg-base-100 shadow-xl border border-base-300">
-                                <div class="card-body">
-                                    <h3 class="card-title text-lg">
-                                        <i class="fas fa-star text-warning"></i>
-                                        Funcionalidades
-                                    </h3>
-                                    <ul class="space-y-3 text-sm">
-                                        <li class="flex items-center gap-2">
-                                            <i class="fas fa-check text-success"></i>
-                                            <span>Parse automático SAF-T</span>
-                                        </li>
-                                        <li class="flex items-center gap-2">
-                                            <i class="fas fa-check text-success"></i>
-                                            <span>Associações inteligentes</span>
-                                        </li>
-                                        <li class="flex items-center gap-2">
-                                            <i class="fas fa-check text-success"></i>
-                                            <span>Cálculo IVA margem</span>
-                                        </li>
-                                        <li class="flex items-center gap-2">
-                                            <i class="fas fa-check text-success"></i>
-                                            <span>Export Excel profissional</span>
-                                        </li>
-                                        <li class="flex items-center gap-2">
-                                            <i class="fas fa-crown text-warning"></i>
-                                            <span>Interface premium</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                    <button @click="loadMockData" 
+                            class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
+                        <i class="fas fa-database mr-2"></i>
+                        Usar Dados de Demonstração
+                        <span class="ml-2 text-xs text-gray-500">(26 vendas • 157 custos)</span>
+                    </button>
+                    
+                    <!-- VAT Rate Selection -->
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Taxa de IVA
+                        </label>
+                        <select x-model="vatRate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="23">23% - Taxa Normal (Continente)</option>
+                            <option value="22">22% - Taxa Normal (Madeira)</option>
+                            <option value="16">16% - Taxa Normal (Açores)</option>
+                        </select>
+                        <p class="text-xs text-gray-600 mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            Regime de Margem - CIVA Art. 308º
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Premium Association Section -->
-        <div x-show="currentStep === 2" x-transition class="space-y-8" data-aos="fade-up">
-            <!-- Modern Hero Stats -->
-            <div class="hero glass-effect rounded-3xl shadow-2xl border border-white/30" data-aos="zoom-in" style="background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(248,250,255,0.6) 100%)">
-                <div class="hero-content w-full">
-                    <div class="stats stats-vertical lg:stats-horizontal shadow-2xl glass-effect rounded-2xl border border-white/30">
-                        <div class="stat" data-aos="flip-left" data-aos-delay="100">
-                            <div class="stat-figure text-success">
-                                <i class="fas fa-chart-line text-3xl"></i>
+        <!-- Step 2: Associate -->
+        <div x-show="currentStep === 2" class="animate-slide-up">
+            <!-- Summary Cards - NOW WITH REAL-TIME UPDATES! -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Vendas</p>
+                            <p class="text-2xl font-semibold text-gray-900" x-text="'€' + totalSales.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-green-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="sales.length"></span> documentos
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Custos Associados</p>
+                            <p class="text-2xl font-semibold" 
+                               :class="associatedCostsTotal > 0 ? 'text-red-600' : 'text-gray-400'"
+                               x-text="'€' + associatedCostsTotal.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-receipt text-red-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="totalAssociatedCosts"></span> de <span x-text="costs.length"></span> custos
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Margem Real</p>
+                            <p class="text-2xl font-semibold" 
+                               :class="realMargin >= 0 ? 'text-gray-900' : 'text-red-600'"
+                               x-text="'€' + realMargin.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-percentage text-blue-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="realMarginPercent.toFixed(1) + '%'"></span> margem
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">IVA Real</p>
+                            <p class="text-2xl font-semibold text-gray-900" x-text="'€' + realVAT.toLocaleString('pt-PT')"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calculator text-purple-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <span x-text="vatRate + '%'"></span> sobre margem
+                    </p>
+                </div>
+            </div>
+
+            <!-- Real-time Preview Card -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6" x-show="hasAssociations">
+                <h4 class="font-semibold text-yellow-800 mb-2">
+                    <i class="fas fa-info-circle mr-2"></i>Preview do Cálculo
+                </h4>
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="text-yellow-700">Vendas com custos:</span>
+                        <span class="font-bold text-yellow-900" x-text="salesWithCosts + ' de ' + sales.length"></span>
+                    </div>
+                    <div>
+                        <span class="text-yellow-700">Poupança IVA:</span>
+                        <span class="font-bold text-green-700" x-text="'€' + vatSavings.toFixed(2)"></span>
+                    </div>
+                    <div>
+                        <span class="text-yellow-700">IVA s/ total seria:</span>
+                        <span class="font-bold text-red-700" x-text="'€' + (totalSales * vatRate / 100).toFixed(2)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button @click="autoMatch" 
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                            :disabled="loading">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Auto-Associação</h4>
+                                <p class="text-sm text-gray-600 mt-1">Associar automaticamente por datas e valores</p>
                             </div>
-                            <div class="stat-title">Total Vendas</div>
-                            <div class="stat-value text-success" x-text="'€' + totalSales.toLocaleString('pt-PT')"></div>
-                            <div class="stat-desc text-success">
+                            <i class="fas fa-magic text-blue-600"></i>
+                        </div>
+                    </button>
+                    
+                    <button @click="associateSelected" 
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                            :disabled="selectedSales.length === 0 || selectedCosts.length === 0">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Associar Selecionados</h4>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <span x-text="selectedSales.length"></span> vendas • 
+                                    <span x-text="selectedCosts.length"></span> custos
+                                </p>
+                            </div>
+                            <i class="fas fa-link text-green-600"></i>
+                        </div>
+                    </button>
+                    
+                    <button @click="calculateAndExport" 
+                            class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left hover-lift">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium">Calcular e Exportar</h4>
+                                <p class="text-sm opacity-90 mt-1">Gerar relatório Excel</p>
+                            </div>
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documents Lists -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sales List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Vendas</h3>
+                            <span class="text-sm text-gray-500">
                                 <span x-text="sales.length"></span> documentos
-                            </div>
+                            </span>
                         </div>
                         
-                        <div class="stat" data-aos="flip-left" data-aos-delay="200">
-                            <div class="stat-figure text-error">
-                                <i class="fas fa-shopping-cart text-3xl"></i>
-                            </div>
-                            <div class="stat-title">Total Custos</div>
-                            <div class="stat-value text-error" x-text="'€' + totalCosts.toLocaleString('pt-PT')"></div>
-                            <div class="stat-desc text-error">
-                                <span x-text="costs.length"></span> documentos
-                            </div>
-                        </div>
-                        
-                        <div class="stat" data-aos="flip-left" data-aos-delay="300">
-                            <div class="stat-figure text-info">
-                                <i class="fas fa-percentage text-3xl"></i>
-                            </div>
-                            <div class="stat-title">Margem Estimada</div>
-                            <div class="stat-value text-info" x-text="'€' + estimatedMargin.toLocaleString('pt-PT')"></div>
-                            <div class="stat-desc" :class="estimatedMargin > 0 ? 'text-success' : 'text-error'">
-                                <span x-text="((estimatedMargin / totalSales) * 100).toFixed(1)"></span>% margem
-                            </div>
-                        </div>
-                        
-                        <div class="stat" data-aos="flip-left" data-aos-delay="400">
-                            <div class="stat-figure text-primary">
-                                <i class="fas fa-receipt text-3xl"></i>
-                            </div>
-                            <div class="stat-title">IVA Estimado (<span x-text="vatRate"></span>%)</div>
-                            <div class="stat-value text-primary" x-text="'€' + estimatedVAT.toLocaleString('pt-PT')"></div>
-                            <div class="stat-desc text-primary">Regime de margem</div>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center cursor-pointer text-sm text-gray-600">
+                                <input type="checkbox" @change="toggleAllSales" class="mr-2">
+                                Selecionar todas
+                            </label>
+                            <input type="text" x-model="salesSearch" 
+                                   placeholder="Pesquisar..." 
+                                   class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Modern Action Center -->
-            <div class="card glass-effect shadow-2xl border border-white/30" data-aos="fade-up" data-aos-delay="200">
-                <div class="card-body">
-                    <h2 class="card-title text-2xl mb-6">
-                        <i class="fas fa-magic text-primary"></i>
-                        Centro de Associações
-                    </h2>
                     
-                    <div class="grid lg:grid-cols-3 gap-6">
-                        <!-- Modern Auto Match Card -->
-                        <div class="card glass-effect border border-white/40 hover:shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-right" style="background: linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(59,130,246,0.1) 100%)">
-                            <div class="card-body text-center">
-                                <div class="avatar mb-4">
-                                    <div class="w-16 mask mask-hexagon bg-info/20">
-                                        <i class="fas fa-robot text-2xl text-info flex items-center justify-center h-full"></i>
-                                    </div>
-                                </div>
-                                <h3 class="card-title justify-center">Auto-Associação IA</h3>
-                                <p class="text-sm text-base-content/70 mb-4">
-                                    Algoritmo inteligente analisa datas, clientes e valores para criar associações automáticas.
-                                </p>
-                                <button @click="autoMatch" 
-                                        class="btn btn-info gap-2 w-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                                        :disabled="loading"
-                                        :class="{'loading': loading}">
-                                    <i class="fas fa-magic" :class="{'animate-spin': loading}"></i>
-                                    <span x-show="!loading">Executar IA</span>
-                                    <span x-show="loading">Processando...</span>
-                                </button>
-                                <div class="badge badge-info badge-outline mt-2">Confiança: 60%+</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Modern Manual Match Card -->
-                        <div class="card glass-effect border border-white/40 hover:shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-up" style="background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(245,158,11,0.1) 100%)">
-                            <div class="card-body text-center">
-                                <div class="avatar mb-4">
-                                    <div class="w-16 mask mask-star-2 bg-secondary/20">
-                                        <i class="fas fa-hand-pointer text-2xl text-secondary flex items-center justify-center h-full"></i>
-                                    </div>
-                                </div>
-                                <h3 class="card-title justify-center">Associação Manual</h3>
-                                <p class="text-sm text-base-content/70 mb-4">
-                                    Selecione vendas e custos manualmente para controlo total das associações.
-                                </p>
-                                <button @click="associateSelected" 
-                                        class="btn btn-secondary gap-2 w-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
-                                        :disabled="selectedSales.length === 0 || selectedCosts.length === 0">
-                                    <i class="fas fa-link"></i>
-                                    Associar Selecionados
-                                </button>
-                                <div class="badge badge-secondary badge-outline mt-2" x-show="selectedSales.length > 0 || selectedCosts.length > 0">
-                                    <span x-text="selectedSales.length"></span> vendas ↔ <span x-text="selectedCosts.length"></span> custos
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Modern Calculate Card -->
-                        <div class="card glass-effect border border-white/40 hover:shadow-2xl transform hover:scale-105 transition-all duration-300" data-aos="fade-left" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(34,197,94,0.15) 100%)">
-                            <div class="card-body text-center">
-                                <div class="avatar mb-4">
-                                    <div class="w-16 mask mask-diamond bg-success/20">
-                                        <i class="fas fa-calculator text-2xl text-success flex items-center justify-center h-full"></i>
-                                    </div>
-                                </div>
-                                <h3 class="card-title justify-center">Calcular & Exportar</h3>
-                                <p class="text-sm text-base-content/70 mb-4">
-                                    Calcule o IVA sobre margem e gere relatório Excel profissional.
-                                </p>
-                                <button @click="calculateAndExport" 
-                                        class="btn btn-success gap-2 w-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
-                                    <i class="fas fa-file-excel"></i>
-                                    Gerar Excel
-                                </button>
-                                <div class="badge badge-success badge-outline mt-2">5 folhas detalhadas</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Sales and Costs Panels -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Sales Panel -->
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        <span>
-                            <i class="fas fa-plane text-green-600 mr-2"></i>
-                            Vendas / Faturas
-                        </span>
-                        <span class="text-sm font-normal text-gray-500">
-                            <span x-text="sales.length"></span> documentos
-                        </span>
-                    </h3>
-                    
-                    <!-- Select All -->
-                    <div class="mb-4 flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" @change="toggleAllSales" class="mr-2">
-                            <span class="text-sm text-gray-700">Selecionar todas</span>
-                        </label>
-                        <input type="text" x-model="salesSearch" 
-                               placeholder="Pesquisar..." 
-                               class="text-sm px-3 py-1 border rounded-lg focus:outline-none focus:border-purple-500">
-                    </div>
-                    
-                    <!-- Sales List -->
-                    <div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                    <div class="max-h-96 overflow-y-auto">
                         <template x-for="sale in filteredSales" :key="sale.id">
-                            <div class="border-2 rounded-xl p-4 transition-all cursor-pointer"
+                            <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                                  :class="{
-                                     'border-green-500 bg-green-50': selectedSales.includes(sale.id),
-                                     'border-gray-200 hover:border-gray-300': !selectedSales.includes(sale.id)
+                                     'bg-blue-50': selectedSales.includes(sale.id),
+                                     'has-associations': sale.linked_costs.length > 0
                                  }"
                                  @click="toggleSale(sale.id)">
-                                
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-start">
-                                        <input type="checkbox" 
-                                               :checked="selectedSales.includes(sale.id)"
-                                               @click.stop
-                                               @change="toggleSale(sale.id)"
-                                               class="mt-1 mr-3">
-                                        <div>
-                                            <p class="font-semibold text-gray-800" x-text="sale.number"></p>
-                                            <p class="text-sm text-gray-600" x-text="sale.client"></p>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <i class="far fa-calendar-alt mr-1"></i>
-                                                <span x-text="formatDate(sale.date)"></span>
-                                            </p>
+                                <div class="flex items-start">
+                                    <input type="checkbox" 
+                                           :checked="selectedSales.includes(sale.id)"
+                                           @click.stop
+                                           @change="toggleSale(sale.id)"
+                                           class="mt-1 mr-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="font-medium text-gray-900" x-text="sale.number"></p>
+                                                <p class="text-sm text-gray-600" x-text="sale.client"></p>
+                                                <p class="text-xs text-gray-500 mt-1" x-text="formatDate(sale.date)"></p>
+                                            </div>
+                                            <p class="font-semibold" 
+                                               :class="sale.amount >= 0 ? 'text-green-600' : 'text-red-600'"
+                                               x-text="'€' + sale.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="text-right">
-                                        <p class="text-xl font-bold" 
-                                           :class="sale.amount >= 0 ? 'text-green-600' : 'text-red-600'"
-                                           x-text="'€' + sale.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
                                         
-                                        <!-- Linked Costs Badges -->
-                                        <div class="flex flex-wrap gap-1 mt-2 justify-end" x-show="sale.linked_costs.length > 0">
-                                            <template x-for="costId in sale.linked_costs.slice(0, 3)" :key="costId">
-                                                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
-                                                    <i class="fas fa-link text-xs"></i>
-                                                    <span x-text="getCostName(costId)"></span>
-                                                </span>
-                                            </template>
-                                            <span x-show="sale.linked_costs.length > 3" 
-                                                  class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                                                +<span x-text="sale.linked_costs.length - 3"></span>
-                                            </span>
+                                        <!-- Linked Costs -->
+                                        <div x-show="sale.linked_costs.length > 0" class="mt-2">
+                                            <div class="flex items-center text-xs text-green-700">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                <span x-text="sale.linked_costs.length + ' custos associados'"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -767,77 +416,61 @@
                     </div>
                 </div>
 
-                <!-- Costs Panel -->
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        <span>
-                            <i class="fas fa-hotel text-red-600 mr-2"></i>
-                            Custos / Despesas
-                        </span>
-                        <span class="text-sm font-normal text-gray-500">
-                            <span x-text="costs.length"></span> documentos
-                        </span>
-                    </h3>
-                    
-                    <!-- Select All -->
-                    <div class="mb-4 flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" @change="toggleAllCosts" class="mr-2">
-                            <span class="text-sm text-gray-700">Selecionar todos</span>
-                        </label>
-                        <input type="text" x-model="costsSearch" 
-                               placeholder="Pesquisar..." 
-                               class="text-sm px-3 py-1 border rounded-lg focus:outline-none focus:border-purple-500">
+                <!-- Costs List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Custos</h3>
+                            <span class="text-sm text-gray-500">
+                                <span x-text="costs.length"></span> documentos
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center cursor-pointer text-sm text-gray-600">
+                                <input type="checkbox" @change="toggleAllCosts" class="mr-2">
+                                Selecionar todos
+                            </label>
+                            <input type="text" x-model="costsSearch" 
+                                   placeholder="Pesquisar..." 
+                                   class="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
                     </div>
                     
-                    <!-- Costs List -->
-                    <div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                    <div class="max-h-96 overflow-y-auto">
                         <template x-for="cost in filteredCosts" :key="cost.id">
-                            <div class="border-2 rounded-xl p-4 transition-all cursor-pointer"
+                            <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                                  :class="{
-                                     'border-red-500 bg-red-50': selectedCosts.includes(cost.id),
-                                     'border-gray-200 hover:border-gray-300': !selectedCosts.includes(cost.id)
+                                     'bg-blue-50': selectedCosts.includes(cost.id),
+                                     'has-associations': cost.linked_sales.length > 0
                                  }"
-                                 @click="toggleCost(cost.id)"
-                                 draggable="true"
-                                 @dragstart="dragStart($event, cost.id)"
-                                 @dragend="dragEnd()">
-                                
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-start">
-                                        <input type="checkbox" 
-                                               :checked="selectedCosts.includes(cost.id)"
-                                               @click.stop
-                                               @change="toggleCost(cost.id)"
-                                               class="mt-1 mr-3">
-                                        <div>
-                                            <p class="font-semibold text-gray-800" x-text="cost.supplier"></p>
-                                            <p class="text-sm text-gray-600" x-text="cost.description"></p>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <i class="far fa-calendar-alt mr-1"></i>
-                                                <span x-text="formatDate(cost.date)"></span>
-                                                <span class="mx-1">•</span>
-                                                <span x-text="cost.document_number"></span>
-                                            </p>
+                                 @click="toggleCost(cost.id)">
+                                <div class="flex items-start">
+                                    <input type="checkbox" 
+                                           :checked="selectedCosts.includes(cost.id)"
+                                           @click.stop
+                                           @change="toggleCost(cost.id)"
+                                           class="mt-1 mr-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <p class="font-medium text-gray-900" x-text="cost.supplier"></p>
+                                                <p class="text-sm text-gray-600" x-text="cost.description"></p>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    <span x-text="formatDate(cost.date)"></span> • 
+                                                    <span x-text="cost.document_number"></span>
+                                                </p>
+                                            </div>
+                                            <p class="font-semibold text-red-600"
+                                               x-text="'€' + cost.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="text-right">
-                                        <p class="text-xl font-bold text-red-600"
-                                           x-text="'€' + cost.amount.toLocaleString('pt-PT', {minimumFractionDigits: 2})"></p>
                                         
-                                        <!-- Linked Sales Badges -->
-                                        <div class="flex flex-wrap gap-1 mt-2 justify-end" x-show="cost.linked_sales.length > 0">
-                                            <template x-for="saleId in cost.linked_sales.slice(0, 3)" :key="saleId">
-                                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                                                    <i class="fas fa-link text-xs"></i>
-                                                    <span x-text="getSaleName(saleId)"></span>
-                                                </span>
-                                            </template>
-                                            <span x-show="cost.linked_sales.length > 3" 
-                                                  class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-                                                +<span x-text="cost.linked_sales.length - 3"></span>
-                                            </span>
+                                        <!-- Linked Sales -->
+                                        <div x-show="cost.linked_sales.length > 0" class="mt-2">
+                                            <div class="flex items-center text-xs text-green-700">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                <span x-text="'Associado a ' + cost.linked_sales.length + ' venda(s)'"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -848,63 +481,60 @@
             </div>
         </div>
 
-        <!-- Results Section -->
-        <div x-show="currentStep === 3" x-transition class="animate__animated animate__fadeIn">
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-chart-bar text-purple-600 mr-3"></i>
-                    Resultados do Cálculo
-                </h2>
+        <!-- Step 3: Results -->
+        <div x-show="currentStep === 3" class="animate-slide-up">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Resultados do Cálculo</h2>
                 
-                <!-- Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6">
-                        <p class="text-sm text-gray-600 mb-1">Total Vendas</p>
-                        <p class="text-2xl font-bold text-green-600" x-text="'€' + finalResults.totalSales?.toLocaleString('pt-PT') || '0'"></p>
+                <!-- Results Summary -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Vendas</p>
+                        <p class="text-xl font-semibold text-green-600" x-text="'€' + (finalResults.totalSales || 0).toLocaleString('pt-PT')"></p>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-6">
-                        <p class="text-sm text-gray-600 mb-1">Total Custos</p>
-                        <p class="text-2xl font-bold text-red-600" x-text="'€' + finalResults.totalCosts?.toLocaleString('pt-PT') || '0'"></p>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Custos</p>
+                        <p class="text-xl font-semibold text-red-600" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT')"></p>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
-                        <p class="text-sm text-gray-600 mb-1">Margem Bruta</p>
-                        <p class="text-2xl font-bold text-blue-600" x-text="'€' + finalResults.grossMargin?.toLocaleString('pt-PT') || '0'"></p>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">Margem Bruta</p>
+                        <p class="text-xl font-semibold text-blue-600" x-text="'€' + (finalResults.grossMargin || 0).toLocaleString('pt-PT')"></p>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
-                        <p class="text-sm text-gray-600 mb-1">IVA (<span x-text="vatRate"></span>%)</p>
-                        <p class="text-2xl font-bold text-purple-600" x-text="'€' + finalResults.totalVAT?.toLocaleString('pt-PT') || '0'"></p>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600">IVA (<span x-text="vatRate"></span>%)</p>
+                        <p class="text-xl font-semibold text-purple-600" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT')"></p>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6">
-                        <p class="text-sm text-gray-600 mb-1">Margem Líquida</p>
-                        <p class="text-2xl font-bold text-indigo-600" x-text="'€' + finalResults.netMargin?.toLocaleString('pt-PT') || '0'"></p>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-gray-600 font-medium">Margem Líquida</p>
+                        <p class="text-xl font-bold text-blue-600" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT')"></p>
                     </div>
                 </div>
 
-                <!-- Chart -->
-                <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                <!-- Chart Container -->
+                <div class="bg-gray-50 rounded-lg p-6 mb-8">
                     <canvas id="marginChart" width="400" height="200"></canvas>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex justify-center space-x-4">
                     <button @click="currentStep = 2" 
-                            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-8 rounded-full transition-all">
+                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Voltar
                     </button>
                     
                     <button @click="downloadExcel" 
-                            class="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg">
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                         <i class="fas fa-download mr-2"></i>
                         Descarregar Excel
                     </button>
                     
                     <button @click="startNew" 
-                            class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-8 rounded-full transition-all">
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                         <i class="fas fa-plus mr-2"></i>
                         Nova Análise
                     </button>
@@ -913,30 +543,17 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <p class="text-lg font-semibold">IVA Margem Turismo</p>
-                    <p class="text-sm text-gray-400">Sistema profissional para agências de viagens</p>
-                </div>
-                
-                <div class="text-center md:text-right">
-                    <p class="text-sm text-gray-400 mb-1">Desenvolvido com ❤️ por</p>
-                    <p class="text-lg font-semibold">Accounting Advantage</p>
-                    <p class="text-xs text-gray-500 mt-2">© 2025 Todos os direitos reservados</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <!-- Loading Overlay -->
     <div x-show="loading" 
-         x-transition
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl p-8 text-center">
-            <div class="loader mx-auto mb-4"></div>
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="spinner mx-auto mb-4"></div>
             <p class="text-gray-700" x-text="loadingMessage">A processar...</p>
         </div>
     </div>
@@ -945,43 +562,53 @@
     <div class="fixed bottom-4 right-4 z-50 space-y-4">
         <template x-for="(notification, index) in notifications" :key="index">
             <div x-show="notification.show"
-                 x-transition
-                 class="bg-white rounded-lg shadow-2xl p-4 min-w-[300px] max-w-md animate__animated animate__slideInRight"
-                 :class="{
-                     'border-l-4 border-green-500': notification.type === 'success',
-                     'border-l-4 border-red-500': notification.type === 'error',
-                     'border-l-4 border-yellow-500': notification.type === 'warning',
-                     'border-l-4 border-blue-500': notification.type === 'info'
-                 }">
-                <div class="flex items-start">
-                    <i class="fas mr-3 text-xl"
-                       :class="{
-                           'fa-check-circle text-green-500': notification.type === 'success',
-                           'fa-exclamation-circle text-red-500': notification.type === 'error',
-                           'fa-exclamation-triangle text-yellow-500': notification.type === 'warning',
-                           'fa-info-circle text-blue-500': notification.type === 'info'
-                       }"></i>
-                    <div class="flex-1">
-                        <p class="font-semibold" x-text="notification.title"></p>
-                        <p class="text-sm text-gray-600" x-text="notification.message"></p>
+                 x-transition:enter="transform ease-out duration-300 transition"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto">
+                <div class="rounded-lg shadow-xs overflow-hidden">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <i class="text-xl"
+                                   :class="{
+                                       'fas fa-check-circle text-green-500': notification.type === 'success',
+                                       'fas fa-exclamation-circle text-red-500': notification.type === 'error',
+                                       'fas fa-exclamation-triangle text-yellow-500': notification.type === 'warning',
+                                       'fas fa-info-circle text-blue-500': notification.type === 'info'
+                                   }"></i>
+                            </div>
+                            <div class="ml-3 w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900" x-text="notification.title"></p>
+                                <p class="mt-1 text-sm text-gray-500" x-text="notification.message"></p>
+                            </div>
+                            <div class="ml-4 flex-shrink-0 flex">
+                                <button @click="removeNotification(index)" 
+                                        class="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <button @click="removeNotification(index)" class="ml-4 text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
             </div>
         </template>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    
+    <!-- Alpine.js App -->
     <script>
-        // Alpine.js App
         function ivaApp() {
             return {
                 // API Configuration  
                 apiUrl: window.location.hostname === 'localhost' 
                     ? 'http://localhost:8000' 
-                    : 'https://iva-margem-turismo-backend.up.railway.app', // Alterar após deploy
+                    : 'https://iva-margem-turismo-backend.up.railway.app',
                 
                 // App State
                 currentStep: 1,
@@ -989,7 +616,6 @@
                 loading: false,
                 loadingMessage: 'A processar...',
                 dragOver: false,
-                draggingCost: null,
                 
                 // Data
                 sales: [],
@@ -1008,7 +634,34 @@
                 // Notifications
                 notifications: [],
                 
-                // Computed Properties
+                // NEW: Real-time computed properties for associated costs
+                get associatedCostsTotal() {
+                    let total = 0;
+                    
+                    // Calculate total of costs that are associated with at least one sale
+                    this.costs.forEach(cost => {
+                        if (cost.linked_sales && cost.linked_sales.length > 0) {
+                            // If cost is linked to multiple sales, we still count it once
+                            total += cost.amount;
+                        }
+                    });
+                    
+                    return total;
+                },
+                
+                get totalAssociatedCosts() {
+                    return this.costs.filter(c => c.linked_sales && c.linked_sales.length > 0).length;
+                },
+                
+                get salesWithCosts() {
+                    return this.sales.filter(s => s.linked_costs && s.linked_costs.length > 0).length;
+                },
+                
+                get hasAssociations() {
+                    return this.salesWithCosts > 0;
+                },
+                
+                // Original computed properties
                 get totalSales() {
                     return this.sales.reduce((sum, sale) => sum + sale.amount, 0);
                 },
@@ -1017,6 +670,25 @@
                     return this.costs.reduce((sum, cost) => sum + cost.amount, 0);
                 },
                 
+                // NEW: Real margin based on associations
+                get realMargin() {
+                    return this.totalSales - this.associatedCostsTotal;
+                },
+                
+                get realMarginPercent() {
+                    return this.totalSales !== 0 ? (this.realMargin / this.totalSales) * 100 : 0;
+                },
+                
+                get realVAT() {
+                    return this.realMargin > 0 ? this.realMargin * this.vatRate / 100 : 0;
+                },
+                
+                get vatSavings() {
+                    const vatOnTotal = this.totalSales * this.vatRate / 100;
+                    return vatOnTotal - this.realVAT;
+                },
+                
+                // Old computed properties (for comparison)
                 get estimatedMargin() {
                     return this.totalSales - this.totalCosts;
                 },
@@ -1100,7 +772,6 @@
                         this.sales = data.sales;
                         this.costs = data.costs;
                         
-                        // Save to localStorage
                         this.saveSession();
                         
                         this.showNotification(
@@ -1244,7 +915,7 @@
                 
                 async autoMatch() {
                     this.loading = true;
-                    this.loadingMessage = 'IA a analisar e associar documentos...';
+                    this.loadingMessage = 'A analisar e associar documentos...';
                     
                     try {
                         const response = await fetch(`${this.apiUrl}/api/auto-match`, {
@@ -1270,53 +941,6 @@
                     } catch (error) {
                         console.error('Auto-match error:', error);
                         this.showNotification('Erro', 'Erro na auto-associação', 'error');
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-                
-                // Data Validation
-                async validateData() {
-                    this.loading = true;
-                    this.loadingMessage = 'A validar dados para regime de margem...';
-                    
-                    try {
-                        const response = await fetch(`${this.apiUrl}/api/validate`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                session_id: this.sessionId
-                            })
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.validation.errors.length > 0) {
-                            this.showNotification(
-                                'Erros Encontrados',
-                                `${result.validation.errors.length} erros: ${result.validation.errors[0]}`,
-                                'error'
-                            );
-                        } else if (result.validation.warnings.length > 0) {
-                            this.showNotification(
-                                'Avisos de Validação',
-                                `${result.validation.warnings.length} avisos encontrados`,
-                                'warning'
-                            );
-                        } else {
-                            this.showNotification(
-                                'Dados Válidos',
-                                'Todos os dados estão conformes com o regime de margem',
-                                'success'
-                            );
-                        }
-                        
-                        // Show detailed validation in console for debugging
-                        console.log('Validation result:', result);
-                        
-                    } catch (error) {
-                        console.error('Validation error:', error);
-                        this.showNotification('Erro', 'Erro ao validar dados', 'error');
                     } finally {
                         this.loading = false;
                     }
@@ -1426,20 +1050,13 @@
                                     this.finalResults.netMargin
                                 ],
                                 backgroundColor: [
-                                    'rgba(72, 187, 120, 0.8)',
-                                    'rgba(245, 101, 101, 0.8)',
-                                    'rgba(66, 153, 225, 0.8)',
-                                    'rgba(159, 122, 234, 0.8)',
-                                    'rgba(102, 126, 234, 0.8)'
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(147, 51, 234, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)'
                                 ],
-                                borderColor: [
-                                    'rgba(72, 187, 120, 1)',
-                                    'rgba(245, 101, 101, 1)',
-                                    'rgba(66, 153, 225, 1)',
-                                    'rgba(159, 122, 234, 1)',
-                                    'rgba(102, 126, 234, 1)'
-                                ],
-                                borderWidth: 2
+                                borderWidth: 0
                             }]
                         },
                         options: {
@@ -1448,18 +1065,6 @@
                             plugins: {
                                 legend: {
                                     display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            let label = context.dataset.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            label += '€' + Math.abs(context.parsed.y).toLocaleString('pt-PT');
-                                            return label;
-                                        }
-                                    }
                                 }
                             },
                             scales: {
@@ -1479,17 +1084,6 @@
                 async downloadExcel() {
                     // Re-download the Excel file
                     await this.calculateAndExport();
-                },
-                
-                // Drag & Drop
-                dragStart(event, costId) {
-                    this.draggingCost = costId;
-                    event.dataTransfer.effectAllowed = 'copy';
-                    event.dataTransfer.setData('text/plain', costId);
-                },
-                
-                dragEnd() {
-                    this.draggingCost = null;
                 },
                 
                 // Utility Methods
@@ -1579,17 +1173,73 @@
             }
         }
     </script>
+    <!-- Footer Accounting Advantage -->
+    <footer class="bg-gray-900 text-gray-300 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-white text-lg font-semibold mb-4">Accounting Advantage</h3>
+                    <p class="text-sm mb-4 italic">"Fazer um bom trabalho é Amar o que se faz"</p>
+                    <p class="text-sm">Sistema profissional de cálculo de IVA sobre margem para agências de viagens, desenvolvido com dedicação e expertise fiscal.</p>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-white text-lg font-semibold mb-4">Contactos</h4>
+                    <div class="space-y-2 text-sm">
+                        <p class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:geral@accountingadvantage.pt" class="hover:text-white transition-colors">
+                                geral@accountingadvantage.pt
+                            </a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <span>+351 219 586 265 / +351 910 542 488</span>
+                        </p>
+                        <p class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-400 mt-1"></i>
+                            <span>Rua Almada Negreiros Lote 5-lj 14<br>2615-275 Alverca Ribatejo</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Social & Credits -->
+                <div>
+                    <h4 class="text-white text-lg font-semibold mb-4">Siga-nos</h4>
+                    <div class="flex space-x-4 mb-6">
+                        <a href="https://www.facebook.com/AccountingAdvantage.pt" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/cláudia-patricia-azevedo/" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.advantage.pt" 
+                           target="_blank"
+                           class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </div>
+                    <p class="text-sm">
+                        Desenvolvido com <i class="fas fa-heart text-red-500"></i> por<br>
+                        <strong class="text-white">Accounting Advantage</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                <p>© 2025 Accounting Advantage. Todos os direitos reservados.</p>
+                <p class="mt-2 text-xs text-gray-500">
+                    IVA Margem Turismo v2.0 | Regime especial CIVA Art. 308º
+                </p>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Initialize AOS (Animate On Scroll) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out',
-                once: true,
-                offset: 100
-            });
-        });
-    </script>
 </body>
 </html>
