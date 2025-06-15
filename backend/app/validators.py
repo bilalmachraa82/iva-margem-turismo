@@ -128,3 +128,87 @@ class DataValidator:
             errors.append("Taxa IVA deve estar entre 0% e 100%")
         
         return errors
+    
+    @staticmethod
+    def validate_associations_integrity(sales: List[Dict], costs: List[Dict]) -> List[Dict]:
+        """
+        Valida integridade bidirecional das associações
+        
+        Args:
+            sales: Lista de vendas
+            costs: Lista de custos
+            
+        Returns:
+            Lista de erros de integridade encontrados
+        """
+        errors = []
+        
+        # Criar mapas para lookup rápido
+        sales_map = {sale["id"]: sale for sale in sales}
+        costs_map = {cost["id"]: cost for cost in costs}
+        
+        # Verificar integridade das vendas -> custos
+        for sale in sales:
+            for cost_id in sale.get("linked_costs", []):
+                if cost_id not in costs_map:
+                    errors.append({
+                        "type": "error",
+                        "entity": "sale",
+                        "id": sale["id"],
+                        "number": sale.get("number", "N/A"),
+                        "message": f"Venda referencia custo inexistente: {cost_id}"
+                    })
+                else:
+                    cost = costs_map[cost_id]
+                    if sale["id"] not in cost.get("linked_sales", []):
+                        errors.append({
+                            "type": "warning",
+                            "entity": "sale",
+                            "id": sale["id"],
+                            "number": sale.get("number", "N/A"),
+                            "message": f"Associação unidirecional: venda → custo {cost.get('supplier', cost_id)}"
+                        })
+        
+        # Verificar integridade dos custos -> vendas
+        for cost in costs:
+            for sale_id in cost.get("linked_sales", []):
+                if sale_id not in sales_map:
+                    errors.append({
+                        "type": "error",
+                        "entity": "cost",
+                        "id": cost["id"],
+                        "supplier": cost.get("supplier", "N/A"),
+                        "message": f"Custo referencia venda inexistente: {sale_id}"
+                    })
+                else:
+                    sale = sales_map[sale_id]
+                    if cost["id"] not in sale.get("linked_costs", []):
+                        errors.append({
+                            "type": "warning",
+                            "entity": "cost",
+                            "id": cost["id"],
+                            "supplier": cost.get("supplier", "N/A"),
+                            "message": f"Associação unidirecional: custo → venda {sale.get('number', sale_id)}"
+                        })
+        
+        # Verificar custos órfãos (sem associações)
+        orphan_costs = [cost for cost in costs if not cost.get("linked_sales", [])]
+        if orphan_costs:
+            errors.append({
+                "type": "info",
+                "entity": "costs",
+                "count": len(orphan_costs),
+                "message": f"{len(orphan_costs)} custos sem vendas associadas"
+            })
+        
+        # Verificar vendas sem custos (pode ser legítimo mas vale a pena avisar)
+        sales_without_costs = [sale for sale in sales if not sale.get("linked_costs", [])]
+        if sales_without_costs:
+            errors.append({
+                "type": "info",
+                "entity": "sales",
+                "count": len(sales_without_costs),
+                "message": f"{len(sales_without_costs)} vendas sem custos associados (margem 100%)"
+            })
+        
+        return errors

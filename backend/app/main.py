@@ -10,6 +10,7 @@ import os
 import uuid
 import json
 import shutil
+import asyncio
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import logging
@@ -36,10 +37,30 @@ logger = logging.getLogger(__name__)
 # Session storage (in-memory for simplicity)
 sessions = {}
 
+# Global reference to cleanup task
+cleanup_task = None
+
+
+async def periodic_cleanup():
+    """Run cleanup every hour"""
+    while True:
+        try:
+            await asyncio.sleep(3600)  # Wait 1 hour
+            clean_old_files()
+            logger.info("Periodic cleanup completed")
+        except asyncio.CancelledError:
+            logger.info("Periodic cleanup task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"Error in periodic cleanup: {str(e)}")
+            # Continue running even if there's an error
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
+    global cleanup_task
+    
     # Startup
     logger.info("Starting IVA Margem Turismo API...")
     
@@ -50,10 +71,22 @@ async def lifespan(app: FastAPI):
     # Clean old temp files
     clean_old_files()
     
+    # Start periodic cleanup task
+    cleanup_task = asyncio.create_task(periodic_cleanup())
+    logger.info("Started periodic cleanup task")
+    
     yield
     
     # Shutdown
     logger.info("Shutting down API...")
+    
+    # Cancel cleanup task
+    if cleanup_task:
+        cleanup_task.cancel()
+        try:
+            await cleanup_task
+        except asyncio.CancelledError:
+            pass
     
 
 # Create FastAPI app
@@ -65,14 +98,23 @@ app = FastAPI(
 )
 
 # Configure CORS
+# Get allowed origins from environment or use defaults
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else [
+    "http://localhost:3000",  # Local development
+    "http://localhost:8080",  # Local development
+    "https://iva-margem-turismo.vercel.app",  # Production frontend
+]
+
+# In production, add specific preview URLs as needed
+if os.getenv("ENVIRONMENT") != "production":
+    # Only allow wildcards in development/staging
+    ALLOWED_ORIGINS.extend([
+        "https://iva-margem-turismo-*.vercel.app",  # Preview deployments
+    ])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Local development
-        "http://localhost:8080",  # Local development
-        "https://iva-margem-turismo.vercel.app",  # Production frontend
-        "https://*.vercel.app",  # Vercel preview deployments
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
@@ -80,9 +122,12 @@ app.add_middleware(
 
 
 def clean_old_files():
-    """Clean temporary files older than 24 hours"""
+    """Clean temporary files and sessions older than 24 hours"""
     try:
         now = datetime.now()
+        
+        # Clean old files
+        cleaned_files = 0
         for folder in ['temp', 'uploads']:
             if os.path.exists(folder):
                 for filename in os.listdir(folder):
@@ -91,7 +136,31 @@ def clean_old_files():
                         file_time = datetime.fromtimestamp(os.path.getctime(filepath))
                         if now - file_time > timedelta(hours=24):
                             os.remove(filepath)
-                            logger.info(f"Removed old file: {filepath}")
+                            cleaned_files += 1
+                            logger.debug(f"Removed old file: {filepath}")
+        
+        # Clean old sessions
+        cleaned_sessions = 0
+        sessions_to_remove = []
+        for session_id, session_data in sessions.items():
+            created_at_str = session_data.get("created_at", "")
+            if created_at_str:
+                try:
+                    created_at = datetime.fromisoformat(created_at_str)
+                    if now - created_at > timedelta(hours=24):
+                        sessions_to_remove.append(session_id)
+                except:
+                    # If can't parse date, mark for removal
+                    sessions_to_remove.append(session_id)
+        
+        # Remove old sessions
+        for session_id in sessions_to_remove:
+            del sessions[session_id]
+            cleaned_sessions += 1
+            
+        if cleaned_files > 0 or cleaned_sessions > 0:
+            logger.info(f"Cleanup completed: {cleaned_files} files, {cleaned_sessions} sessions removed")
+            
     except Exception as e:
         logger.error(f"Error cleaning old files: {str(e)}")
 
@@ -184,8 +253,24 @@ async def upload_saft(file: UploadFile = File(...)):
             "filename": file.filename
         }
         
+        # Validate parsed data
+        validation_result = DataValidator.validate_margin_regime_data(
+            data["sales"], 
+            data["costs"]
+        )
+        
+        # Combine all errors and warnings
+        all_warnings = validation_result["warnings"] + data.get("parsing_warnings", [])
+        all_errors = validation_result["errors"] + data.get("parsing_errors", [])
+        
+        # Log if there are issues
+        if all_errors:
+            logger.error(f"Upload {session_id} has {len(all_errors)} errors")
+        if all_warnings:
+            logger.warning(f"Upload {session_id} has {len(all_warnings)} warnings")
+        
         # Prepare response
-        return UploadResponse(
+        response = UploadResponse(
             session_id=session_id,
             sales=data["sales"][:50],  # Limit to first 50 for response
             costs=data["costs"][:50],  # Limit to first 50 for response
@@ -194,9 +279,15 @@ async def upload_saft(file: UploadFile = File(...)):
                 "total_sales": len(data["sales"]),
                 "total_costs": len(data["costs"]),
                 "sales_amount": sum(s["amount"] for s in data["sales"]),
-                "costs_amount": sum(c["amount"] for c in data["costs"])
+                "costs_amount": sum(c["amount"] for c in data["costs"]),
+                "errors": all_errors[:10],  # Limit errors shown
+                "warnings": all_warnings[:10],  # Limit warnings shown
+                "total_errors": len(all_errors),
+                "total_warnings": len(all_warnings)
             }
         )
+        
+        return response
         
     except ValueError as e:
         # XML parsing error
@@ -248,6 +339,23 @@ async def associate_items(request: Association):
     }
 
 
+# Auto-match configuration
+AUTO_MATCH_CONFIG = {
+    "date_weight": 40,  # Weight for date proximity scoring
+    "value_weight": 30,  # Weight for value ratio scoring
+    "keyword_weight": 30,  # Weight for keyword matching
+    "max_date_diff": 30,  # Maximum days difference to consider
+    "min_value_ratio": 0.1,  # Minimum cost/sale ratio
+    "max_value_ratio": 0.8,  # Maximum cost/sale ratio
+    "stop_words": ["de", "da", "do", "e", "em", "para", "com", "lda", "sa", "unipessoal", "ltd", "inc"],
+    "date_proximity_brackets": [
+        (0, 7, 40),    # 0-7 days: max 40 points
+        (8, 14, 30),   # 8-14 days: max 30 points
+        (15, 30, 20),  # 15-30 days: max 20 points
+    ],
+    "min_keyword_length": 3,  # Minimum length for keyword to be considered
+}
+
 @app.post("/api/auto-match")
 async def auto_match(request: AIMatchRequest):
     """
@@ -264,6 +372,9 @@ async def auto_match(request: AIMatchRequest):
     costs = session_data["costs"]
     
     matches = []
+    
+    # Get config (could be overridden by request in future)
+    config = AUTO_MATCH_CONFIG.copy()
     
     # Auto-matching algorithm
     for cost in costs:
@@ -290,41 +401,61 @@ async def auto_match(request: AIMatchRequest):
             score = 0
             reason_parts = []
             
-            # 1. Date proximity (max 40 points)
+            # 1. Date proximity scoring
             date_diff = abs((sale_date - cost_date).days)
-            if date_diff <= 7:
-                date_score = 40 - (date_diff * 5)
-                score += date_score
-                reason_parts.append(f"Date proximity ({date_diff} days)")
-            elif date_diff <= 30:
-                date_score = 20 - (date_diff - 7) * 0.5
-                score += date_score
-                reason_parts.append(f"Date within month ({date_diff} days)")
+            date_score = 0
+            
+            # Check date proximity brackets
+            for min_days, max_days, max_score in config["date_proximity_brackets"]:
+                if min_days <= date_diff <= max_days:
+                    # Linear interpolation within bracket
+                    bracket_range = max_days - min_days
+                    if bracket_range > 0:
+                        date_score = max_score * (1 - (date_diff - min_days) / bracket_range)
+                    else:
+                        date_score = max_score
+                    reason_parts.append(f"Date proximity ({date_diff} days)")
+                    break
+            
+            # Skip if outside max date difference
+            if date_diff > config["max_date_diff"]:
+                continue
                 
-            # 2. Value compatibility (max 30 points)
-            if cost["amount"] < sale["amount"]:
+            score += date_score * (config["date_weight"] / 100)
+                
+            # 2. Value compatibility scoring
+            if cost["amount"] < sale["amount"] and sale["amount"] > 0:
                 ratio = cost["amount"] / sale["amount"]
-                if 0.1 <= ratio <= 0.8:  # Cost is 10-80% of sale
-                    value_score = 30 * ratio
-                    score += value_score
+                if config["min_value_ratio"] <= ratio <= config["max_value_ratio"]:
+                    # Higher score for ratios closer to typical margins (20-40%)
+                    if 0.2 <= ratio <= 0.4:
+                        value_score = 1.0
+                    else:
+                        value_score = 0.5
+                    score += value_score * config["value_weight"]
                     reason_parts.append(f"Value ratio {ratio:.1%}")
                     
-            # 3. Description/client matching (max 30 points)
-            cost_words = set(cost["description"].lower().split() + 
-                           cost["supplier"].lower().split())
-            sale_words = set(sale["client"].lower().split())
+            # 3. Description/client keyword matching
+            # Extract and clean words
+            cost_text = f"{cost.get('description', '')} {cost.get('supplier', '')}".lower()
+            sale_text = f"{sale.get('client', '')} {sale.get('number', '')}".lower()
             
-            # Remove common words
+            # Tokenize and filter
+            cost_words = set(word for word in cost_text.split() 
+                           if len(word) >= config["min_keyword_length"] 
+                           and word not in config["stop_words"])
+            sale_words = set(word for word in sale_text.split() 
+                           if len(word) >= config["min_keyword_length"] 
+                           and word not in config["stop_words"])
+            
+            # Find common meaningful words
             common_words = cost_words.intersection(sale_words)
-            common_words.discard("de")
-            common_words.discard("da")
-            common_words.discard("do")
-            common_words.discard("e")
             
             if common_words:
-                word_score = min(len(common_words) * 10, 30)
-                score += word_score
-                reason_parts.append(f"Keywords: {', '.join(common_words)}")
+                # Score based on number of matches (diminishing returns)
+                keyword_score = min(len(common_words) / 3, 1.0)
+                score += keyword_score * config["keyword_weight"]
+                reason_parts.append(f"Keywords: {', '.join(list(common_words)[:5])}")
                 
             # 4. Document type bonus
             if sale.get("invoice_type") == "FT" and cost["date"] < sale["date"]:
@@ -379,6 +510,21 @@ async def calculate_vat(request: CalculationRequest):
     session_data = sessions[request.session_id]["data"]
     
     try:
+        # First, validate associations integrity
+        integrity_errors = DataValidator.validate_associations_integrity(
+            session_data["sales"],
+            session_data["costs"]
+        )
+        
+        # Log any integrity issues
+        if integrity_errors:
+            logger.warning(f"Found {len(integrity_errors)} integrity issues")
+            for error in integrity_errors:
+                if error["type"] == "error":
+                    logger.error(f"Integrity error: {error['message']}")
+                elif error["type"] == "warning":
+                    logger.warning(f"Integrity warning: {error['message']}")
+        
         # Initialize calculator
         calculator = VATCalculator(vat_rate=request.vat_rate)
         

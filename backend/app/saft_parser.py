@@ -22,6 +22,9 @@ class SAFTParser:
             'saftpt': 'urn:OECD:StandardAuditFile-Tax:PT_1.04_01',
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
+        # Track parsing errors and warnings
+        self.parsing_errors = []
+        self.parsing_warnings = []
         
     def parse(self, xml_content: bytes) -> Dict:
         """
@@ -31,8 +34,12 @@ class SAFTParser:
             xml_content: XML file content as bytes
             
         Returns:
-            Dictionary with sales, costs and metadata
+            Dictionary with sales, costs, metadata, errors and warnings
         """
+        # Reset error tracking for new parse
+        self.parsing_errors = []
+        self.parsing_warnings = []
+        
         try:
             # Parse XML
             root = ET.fromstring(xml_content)
@@ -45,12 +52,19 @@ class SAFTParser:
             sales = self._extract_sales(root, ns)
             costs = self._extract_costs(root, ns)
             
-            logger.info(f"Parsed SAF-T: {len(sales)} sales, {len(costs)} costs")
+            # Add parsing statistics
+            total_docs = len(sales) + len(costs)
+            if total_docs == 0:
+                self.parsing_warnings.append("Nenhum documento encontrado no ficheiro SAF-T")
+            
+            logger.info(f"Parsed SAF-T: {len(sales)} sales, {len(costs)} costs, {len(self.parsing_errors)} errors, {len(self.parsing_warnings)} warnings")
             
             return {
                 "sales": sales,
                 "costs": costs,
-                "metadata": metadata
+                "metadata": metadata,
+                "parsing_errors": self.parsing_errors,
+                "parsing_warnings": self.parsing_warnings
             }
             
         except ET.ParseError as e:
@@ -116,7 +130,10 @@ class SAFTParser:
                 if sale:
                     sales.append(sale)
             except Exception as e:
-                logger.warning(f"Error parsing invoice: {str(e)}")
+                invoice_no = self._get_text(invoice, ['InvoiceNo', 'saft:InvoiceNo'], ns, 'Unknown')
+                error_msg = f"Erro ao processar fatura {invoice_no}: {str(e)}"
+                self.parsing_errors.append(error_msg)
+                logger.warning(error_msg)
                 continue
                 
         return sales
@@ -146,6 +163,14 @@ class SAFTParser:
         # Get customer name
         customer_name = self._get_customer_name(root, customer_id, ns)
         
+        # Validate important fields
+        if not invoice_date:
+            self.parsing_warnings.append(f"Fatura {invoice_no} sem data")
+        if not customer_id and not customer_name:
+            self.parsing_warnings.append(f"Fatura {invoice_no} sem identificação de cliente")
+        if net_total == 0:
+            self.parsing_warnings.append(f"Fatura {invoice_no} com valor zero")
+            
         # Generate unique ID
         sale_id = hashlib.md5(f"{invoice_no}_{invoice_date}".encode()).hexdigest()[:8]
         
@@ -205,8 +230,14 @@ class SAFTParser:
                     cost = self._parse_cost_document(doc, ns, config, root)
                     if cost and cost['amount'] > 0:
                         costs.append(cost)
+                    elif cost and cost['amount'] == 0:
+                        doc_no = self._get_text(doc, config['number_fields'], ns, 'Unknown')
+                        self.parsing_warnings.append(f"Custo {doc_no} com valor zero ignorado")
                 except Exception as e:
-                    logger.warning(f"Error parsing cost document: {str(e)}")
+                    doc_no = self._get_text(doc, config['number_fields'], ns, 'Unknown')
+                    error_msg = f"Erro ao processar documento de custo {doc_no}: {str(e)}"
+                    self.parsing_errors.append(error_msg)
+                    logger.warning(error_msg)
                     continue
                     
         return costs

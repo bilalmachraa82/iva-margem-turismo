@@ -43,21 +43,53 @@ class VATCalculator:
             List of calculation results with detailed breakdown
         """
         results = []
+        self.validation_errors = []  # Track validation errors
         
         # Create cost map for quick lookup
         costs_map = {cost["id"]: cost for cost in costs}
         
+        # First, validate all associations integrity
+        self._validate_associations(sales, costs, costs_map)
+        
         for sale in sales:
             try:
                 result = self._calculate_sale_margin(sale, costs_map)
-                results.append(result)
+                if result:  # Only add if calculation was successful
+                    results.append(result)
             except Exception as e:
                 logger.error(f"Error calculating margin for sale {sale.get('number', 'unknown')}: {str(e)}")
+                self.validation_errors.append({
+                    "type": "error",
+                    "sale": sale.get('number', 'unknown'),
+                    "message": f"Erro no cálculo: {str(e)}"
+                })
                 continue
                 
         return results
     
-    def _calculate_sale_margin(self, sale: Dict, costs_map: Dict[str, Dict]) -> Dict:
+    def _validate_associations(self, sales: List[Dict], costs: List[Dict], costs_map: Dict[str, Dict]):
+        """Validate bidirectional integrity of associations"""
+        for sale in sales:
+            for cost_id in sale.get("linked_costs", []):
+                if cost_id not in costs_map:
+                    logger.error(f"CRITICAL: Cost {cost_id} not found for sale {sale.get('number')}")
+                    self.validation_errors.append({
+                        "type": "critical",
+                        "sale": sale.get('number'),
+                        "message": f"Custo {cost_id} não encontrado no sistema"
+                    })
+                else:
+                    cost = costs_map[cost_id]
+                    # Check bidirectional link
+                    if sale["id"] not in cost.get("linked_sales", []):
+                        logger.warning(f"INTEGRITY WARNING: Sale {sale['id']} linked to cost {cost_id} but cost doesn't link back")
+                        self.validation_errors.append({
+                            "type": "warning",
+                            "sale": sale.get('number'),
+                            "message": f"Associação unidirecional com custo {cost['supplier']}"
+                        })
+    
+    def _calculate_sale_margin(self, sale: Dict, costs_map: Dict[str, Dict]) -> Optional[Dict]:
         """Calculate margin and VAT for a single sale"""
         
         # Initialize calculation
@@ -66,18 +98,43 @@ class VATCalculator:
         total_allocated_costs = 0
         
         # Process linked costs
+        has_critical_errors = False
         for cost_id in sale.get("linked_costs", []):
             if cost_id not in costs_map:
-                logger.warning(f"Cost {cost_id} not found for sale {sale.get('number')}")
+                logger.error(f"CRITICAL: Cost {cost_id} not found for sale {sale.get('number')}")
+                self.validation_errors.append({
+                    "type": "critical",
+                    "sale": sale.get('number'),
+                    "message": f"Custo {cost_id} referenciado mas não existe"
+                })
+                has_critical_errors = True
                 continue
                 
             cost = costs_map[cost_id]
+            
+            # Validate bidirectional link
+            if sale["id"] not in cost.get("linked_sales", []):
+                logger.warning(f"Cost {cost_id} not linked back to sale {sale['id']}")
+                # Auto-fix the bidirectional link
+                if "linked_sales" not in cost:
+                    cost["linked_sales"] = []
+                cost["linked_sales"].append(sale["id"])
             
             # Calculate cost allocation
             # If cost is linked to multiple sales, distribute proportionally
             num_linked_sales = len(cost.get("linked_sales", []))
             if num_linked_sales == 0:
+                logger.error(f"Cost {cost_id} has no linked sales but is referenced")
                 num_linked_sales = 1  # Avoid division by zero
+                
+            # Validate allocation makes sense
+            if num_linked_sales > 10:
+                logger.warning(f"Cost {cost_id} linked to {num_linked_sales} sales - unusual")
+                self.validation_errors.append({
+                    "type": "warning",
+                    "sale": sale.get('number'),
+                    "message": f"Custo partilhado com {num_linked_sales} vendas"
+                })
                 
             # Simple proportional allocation
             allocated_amount = cost["amount"] / num_linked_sales
@@ -97,6 +154,11 @@ class VATCalculator:
                 "date": cost.get("date", "")
             })
         
+        # Don't proceed with calculation if critical errors found
+        if has_critical_errors:
+            logger.error(f"Skipping calculation for sale {sale.get('number')} due to critical errors")
+            return None
+            
         # Calculate margin
         gross_margin = sale_amount - total_allocated_costs
         
@@ -256,3 +318,12 @@ class VATCalculator:
                 })
                 
         return issues
+    
+    def get_validation_errors(self) -> List[Dict]:
+        """
+        Get validation errors from last calculation
+        
+        Returns:
+            List of validation errors and warnings
+        """
+        return getattr(self, 'validation_errors', [])
