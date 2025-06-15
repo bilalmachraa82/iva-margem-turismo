@@ -151,15 +151,41 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Reset Button -->
+        <div x-show="currentStep > 1" class="flex justify-end mb-4">
+            <button @click="resetSession()" 
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center">
+                <i class="fas fa-trash-alt mr-2"></i>
+                <span>Reset Dados</span>
+            </button>
+        </div>
         <!-- Step 1: Upload -->
         <div x-show="currentStep === 1" class="animate-slide-up">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                 <div class="max-w-2xl mx-auto">
                     <h2 class="text-2xl font-semibold text-gray-900 mb-2">Começar Análise</h2>
-                    <p class="text-gray-600 mb-8">Faça upload do ficheiro SAF-T ou use dados de demonstração</p>
+                    <p class="text-gray-600 mb-8">Escolha o tipo de ficheiro para importar ou use dados de demonstração</p>
                     
-                    <!-- Upload Area -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors"
+                    <!-- Upload Type Tabs -->
+                    <div class="mb-6">
+                        <div class="flex border-b border-gray-200">
+                            <button @click="uploadType = 'saft'"
+                                    class="px-6 py-3 text-sm font-medium transition-colors"
+                                    :class="uploadType === 'saft' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'">
+                                <i class="fas fa-file-code mr-2"></i>
+                                Ficheiro SAF-T (XML)
+                            </button>
+                            <button @click="uploadType = 'efatura'"
+                                    class="px-6 py-3 text-sm font-medium transition-colors"
+                                    :class="uploadType === 'efatura' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'">
+                                <i class="fas fa-file-csv mr-2"></i>
+                                Ficheiros e-Fatura (CSV)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Area for SAF-T -->
+                    <div x-show="uploadType === 'saft'" class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors"
                          :class="dragOver ? 'border-blue-400 bg-blue-50' : ''"
                          @dragover.prevent="dragOver = true"
                          @dragleave.prevent="dragOver = false"
@@ -181,6 +207,68 @@
                         </button>
                         
                         <p class="text-xs text-gray-500 mt-4">Formato XML • Máximo 50MB</p>
+                    </div>
+                    
+                    <!-- Upload Area for e-Fatura -->
+                    <div x-show="uploadType === 'efatura'" class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                                <div class="text-sm text-blue-800">
+                                    <p class="font-medium mb-1">Instruções para exportar do e-Fatura:</p>
+                                    <ol class="list-decimal list-inside space-y-1 text-xs">
+                                        <li>Aceda ao Portal das Finanças > e-Fatura</li>
+                                        <li>Vá para "Consultar" > "Documentos Emitidos" (vendas)</li>
+                                        <li>Defina o período e clique em "Exportar para CSV"</li>
+                                        <li>Repita para "Documentos Adquiridos" (compras)</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Vendas CSV Upload -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Ficheiro de Vendas (CSV)</h3>
+                                    <p class="text-sm text-gray-500">Documentos emitidos do e-Fatura</p>
+                                </div>
+                                <i class="fas fa-file-csv text-2xl text-green-600"></i>
+                            </div>
+                            <input type="file" id="vendasInput" class="hidden" accept=".csv" @change="handleVendasSelect">
+                            <button onclick="document.getElementById('vendasInput').click()"
+                                    class="w-full py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    :class="efaturaFiles.vendas ? 'bg-green-50 border-green-300' : ''">
+                                <i class="fas fa-upload mr-2"></i>
+                                <span x-text="efaturaFiles.vendas ? efaturaFiles.vendas.name : 'Selecionar ficheiro de vendas'"></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Compras CSV Upload -->
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Ficheiro de Compras (CSV)</h3>
+                                    <p class="text-sm text-gray-500">Documentos adquiridos do e-Fatura</p>
+                                </div>
+                                <i class="fas fa-file-csv text-2xl text-red-600"></i>
+                            </div>
+                            <input type="file" id="comprasInput" class="hidden" accept=".csv" @change="handleComprasSelect">
+                            <button onclick="document.getElementById('comprasInput').click()"
+                                    class="w-full py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    :class="efaturaFiles.compras ? 'bg-green-50 border-green-300' : ''">
+                                <i class="fas fa-upload mr-2"></i>
+                                <span x-text="efaturaFiles.compras ? efaturaFiles.compras.name : 'Selecionar ficheiro de compras'"></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Upload Button -->
+                        <button @click="uploadEfaturaFiles"
+                                :disabled="!efaturaFiles.vendas || !efaturaFiles.compras"
+                                class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                            <i class="fas fa-upload mr-2"></i>
+                            Carregar Ficheiros e-Fatura
+                        </button>
                     </div>
                     
                     <!-- Demo Data Option -->
@@ -605,8 +693,10 @@
     <script>
         function ivaApp() {
             return {
-                // API Configuration  
-                apiUrl: window.location.hostname === 'localhost' 
+                // API Configuration - Fixed for file:// protocol
+                apiUrl: (window.location.hostname === 'localhost' || 
+                        window.location.hostname === '' || 
+                        window.location.protocol === 'file:') 
                     ? 'http://localhost:8000' 
                     : 'https://iva-margem-turismo-backend.up.railway.app',
                 
@@ -616,6 +706,11 @@
                 loading: false,
                 loadingMessage: 'A processar...',
                 dragOver: false,
+                uploadType: 'saft', // 'saft' or 'efatura'
+                efaturaFiles: {
+                    vendas: null,
+                    compras: null
+                },
                 
                 // Data
                 sales: [],
@@ -746,6 +841,149 @@
                     const file = event.target.files[0];
                     if (file) {
                         this.uploadFile(file);
+                    }
+                },
+                
+                // e-Fatura file handlers
+                handleVendasSelect(event) {
+                    const file = event.target.files[0];
+                    if (file && file.name.endsWith('.csv')) {
+                        this.efaturaFiles.vendas = file;
+                    } else {
+                        this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
+                    }
+                },
+                
+                handleComprasSelect(event) {
+                    const file = event.target.files[0];
+                    if (file && file.name.endsWith('.csv')) {
+                        this.efaturaFiles.compras = file;
+                    } else {
+                        this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
+                    }
+                },
+                
+                async uploadEfaturaFiles() {
+                    if (!this.efaturaFiles.vendas || !this.efaturaFiles.compras) {
+                        this.showNotification('Aviso', 'Por favor selecione ambos os ficheiros (vendas e compras)', 'warning');
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.loadingMessage = 'A processar ficheiros e-Fatura...';
+                    
+                    const formData = new FormData();
+                    formData.append('vendas', this.efaturaFiles.vendas);
+                    formData.append('compras', this.efaturaFiles.compras);
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/upload-efatura`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.detail || 'Erro no upload');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        this.sessionId = data.session_id;
+                        this.sales = data.sales || [];
+                        this.costs = data.costs || [];
+                        
+                        this.saveSession();
+                        
+                        this.showNotification(
+                            'Sucesso!', 
+                            `Importados ${this.sales.length} vendas e ${this.costs.length} custos`,
+                            'success'
+                        );
+                        
+                        if (data.warnings && data.warnings.length > 0) {
+                            data.warnings.forEach(warning => {
+                                this.showNotification('Aviso', warning, 'warning');
+                            });
+                        }
+                        
+                        this.currentStep = 2;
+                        
+                    } catch (error) {
+                        console.error('e-Fatura upload error:', error);
+                        this.showNotification('Erro', error.message || 'Erro ao carregar ficheiros', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                handleComprasSelect(event) {
+                    const file = event.target.files[0];
+                    if (file && file.name.endsWith('.csv')) {
+                        this.efaturaFiles.compras = file;
+                    } else {
+                        this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
+                    }
+                },
+                
+                async uploadEfaturaFiles() {
+                    if (!this.efaturaFiles.vendas || !this.efaturaFiles.compras) {
+                        this.showNotification('Erro', 'Por favor selecione ambos os ficheiros', 'error');
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.loadingMessage = 'A carregar ficheiros e-Fatura...';
+                    
+                    const formData = new FormData();
+                    formData.append('vendas', this.efaturaFiles.vendas);
+                    formData.append('compras', this.efaturaFiles.compras);
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/upload-efatura`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.detail || 'Erro no upload');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        this.sessionId = data.session_id;
+                        this.sales = data.sales;
+                        this.costs = data.costs;
+                        
+                        this.saveSession();
+                        
+                        // Show summary with warnings/errors if any
+                        let message = `Importados ${data.summary.total_sales} vendas e ${data.summary.total_costs} custos`;
+                        if (data.summary.total_warnings > 0) {
+                            message += ` (${data.summary.total_warnings} avisos)`;
+                        }
+                        
+                        this.showNotification('Sucesso!', message, 'success');
+                        
+                        // Show warnings if any
+                        if (data.summary.warnings && data.summary.warnings.length > 0) {
+                            setTimeout(() => {
+                                this.showNotification(
+                                    'Avisos encontrados',
+                                    data.summary.warnings[0],
+                                    'warning'
+                                );
+                            }, 2000);
+                        }
+                        
+                        this.currentStep = 2;
+                        
+                    } catch (error) {
+                        console.error('e-Fatura upload error:', error);
+                        this.showNotification('Erro', error.message || 'Erro ao carregar ficheiros', 'error');
+                    } finally {
+                        this.loading = false;
                     }
                 },
                 
@@ -1139,6 +1377,12 @@
                     localStorage.removeItem('ivaSession');
                     
                     this.showNotification('Nova Sessão', 'Pronto para nova análise', 'info');
+                },
+                
+                resetSession() {
+                    if (confirm('Tem certeza que deseja resetar todos os dados?')) {
+                        this.startNew();
+                    }
                 },
                 
                 // Notifications

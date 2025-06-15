@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(source:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)",
+      "Bash(./test_completo_efatura.sh:*)",
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(pkill:*)",
+      "Bash(grep:*)",
+      "Bash(./test_detailed_view.sh:*)",
+      "Bash(curl:*)",
+      "Bash(./test_completo_sistema.sh:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(. venv/bin/activate)",
+      "Bash(git checkout:*)",
+      "Bash(pip3 list:*)",
+      "Bash(pip install:*)",
+      "Bash(python test:*)",
+      "Bash(backend/venv/bin/pip install aiohttp)"
+    ],
+    "deny": []
+  }
+}

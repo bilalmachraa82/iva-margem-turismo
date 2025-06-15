@@ -23,6 +23,7 @@ from .models import (
     CalculationResult, AIMatchResult
 )
 from .saft_parser import SAFTParser
+from .efatura_parser import EFaturaParser
 from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
@@ -97,26 +98,12 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS
-# Get allowed origins from environment or use defaults
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else [
-    "http://localhost:3000",  # Local development
-    "http://localhost:8080",  # Local development
-    "https://iva-margem-turismo.vercel.app",  # Production frontend
-]
-
-# In production, add specific preview URLs as needed
-if os.getenv("ENVIRONMENT") != "production":
-    # Only allow wildcards in development/staging
-    ALLOWED_ORIGINS.extend([
-        "https://iva-margem-turismo-*.vercel.app",  # Preview deployments
-    ])
-
+# Configure CORS - Allow all origins in development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -173,6 +160,7 @@ async def root():
         "version": "1.0.0",
         "endpoints": {
             "upload": "/api/upload",
+            "upload_efatura": "/api/upload-efatura",
             "associate": "/api/associate",
             "calculate": "/api/calculate",
             "docs": "/docs"
@@ -300,6 +288,94 @@ async def upload_saft(file: UploadFile = File(...)):
             os.remove(temp_path)
         logger.error(f"Upload error: {str(e)}")
         raise HTTPException(500, f"Error processing file: {str(e)}")
+
+
+@app.post("/api/upload-efatura", response_model=UploadResponse)
+async def upload_efatura_files(
+    vendas: UploadFile = File(..., description="Ficheiro CSV de vendas do e-Fatura"),
+    compras: UploadFile = File(..., description="Ficheiro CSV de compras do e-Fatura")
+):
+    """
+    Upload e-Fatura CSV files (vendas and compras)
+    
+    Both files must be uploaded together for proper processing
+    """
+    # Validate file types
+    for file, name in [(vendas, "vendas"), (compras, "compras")]:
+        if not file.filename.endswith('.csv'):
+            raise HTTPException(400, f"File {name} must be CSV format")
+    
+    # Generate session ID
+    session_id = str(uuid.uuid4())[:8]
+    
+    try:
+        # Read both files
+        vendas_content = await vendas.read()
+        compras_content = await compras.read()
+        
+        # Check file sizes (10MB limit for CSV)
+        if len(vendas_content) > 10 * 1024 * 1024:
+            raise HTTPException(413, "Vendas file too large (max 10MB)")
+        if len(compras_content) > 10 * 1024 * 1024:
+            raise HTTPException(413, "Compras file too large (max 10MB)")
+        
+        # Parse e-Fatura files
+        parser = EFaturaParser()
+        data = parser.parse(vendas_content, compras_content)
+        
+        # Store in session
+        sessions[session_id] = {
+            "created_at": datetime.now().isoformat(),
+            "data": data,
+            "filenames": {
+                "vendas": vendas.filename,
+                "compras": compras.filename
+            }
+        }
+        
+        # Validate parsed data
+        validation_result = DataValidator.validate_margin_regime_data(
+            data["sales"], 
+            data["costs"]
+        )
+        
+        # Combine all errors and warnings
+        all_warnings = validation_result["warnings"] + data.get("parsing_warnings", [])
+        all_errors = validation_result["errors"] + data.get("parsing_errors", [])
+        
+        # Log if there are issues
+        if all_errors:
+            logger.error(f"e-Fatura upload {session_id} has {len(all_errors)} errors")
+        if all_warnings:
+            logger.warning(f"e-Fatura upload {session_id} has {len(all_warnings)} warnings")
+        
+        # Prepare response
+        response = UploadResponse(
+            session_id=session_id,
+            sales=data["sales"][:50],  # Limit to first 50 for response
+            costs=data["costs"][:50],  # Limit to first 50 for response
+            metadata=data["metadata"],
+            summary={
+                "total_sales": len(data["sales"]),
+                "total_costs": len(data["costs"]),
+                "sales_amount": sum(s["amount"] for s in data["sales"]),
+                "costs_amount": sum(c["amount"] for c in data["costs"]),
+                "errors": all_errors[:10],  # Limit errors shown
+                "warnings": all_warnings[:10],  # Limit warnings shown
+                "total_errors": len(all_errors),
+                "total_warnings": len(all_warnings)
+            }
+        )
+        
+        return response
+        
+    except ValueError as e:
+        # CSV parsing error
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        # Other errors
+        logger.error(f"e-Fatura upload error: {str(e)}")
+        raise HTTPException(500, f"Error processing files: {str(e)}")
 
 
 @app.post("/api/associate")

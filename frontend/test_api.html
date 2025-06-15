@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste API - IVA Margem Turismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-8">Teste de API - IVA Margem Turismo</h1>
+        
+        <div class="space-y-4">
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">1. Verificar Status API</h2>
+                <button onclick="testStatus()" class="bg-blue-500 text-white px-4 py-2 rounded">Testar Status</button>
+                <div id="status-result" class="mt-2 text-sm"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">2. Carregar Dados Demo</h2>
+                <button onclick="testMockData()" class="bg-green-500 text-white px-4 py-2 rounded">Carregar Demo</button>
+                <div id="mock-result" class="mt-2 text-sm"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">3. Testar Associação</h2>
+                <button onclick="testAssociate()" class="bg-purple-500 text-white px-4 py-2 rounded">Testar Associar</button>
+                <div id="associate-result" class="mt-2 text-sm"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="font-semibold mb-2">4. Testar Cálculo</h2>
+                <button onclick="testCalculate()" class="bg-orange-500 text-white px-4 py-2 rounded">Testar Calcular</button>
+                <div id="calculate-result" class="mt-2 text-sm"></div>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-white p-4 rounded shadow">
+            <h2 class="font-semibold mb-2">Session ID:</h2>
+            <div id="session-id" class="font-mono text-sm">-</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let sessionId = null;
+
+        async function testStatus() {
+            const resultDiv = document.getElementById('status-result');
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre class="text-green-600">${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">Erro: ${error.message}</div>`;
+            }
+        }
+
+        async function testMockData() {
+            const resultDiv = document.getElementById('mock-result');
+            try {
+                const response = await fetch(`${API_URL}/api/mock-data`);
+                const data = await response.json();
+                sessionId = data.session_id;
+                document.getElementById('session-id').textContent = sessionId;
+                resultDiv.innerHTML = `<div class="text-green-600">
+                    Sucesso! Session ID: ${data.session_id}<br>
+                    Vendas: ${data.sales_count}<br>
+                    Custos: ${data.costs_count}
+                </div>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">Erro: ${error.message}</div>`;
+            }
+        }
+
+        async function testAssociate() {
+            const resultDiv = document.getElementById('associate-result');
+            if (!sessionId) {
+                resultDiv.innerHTML = `<div class="text-yellow-600">Carregue os dados demo primeiro!</div>`;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/associate`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        sale_ids: ['s1', 's2'],
+                        cost_ids: ['c1', 'c2']
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<div class="text-green-600">
+                        Sucesso! ${data.associations_made} associações criadas
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="text-red-600">Erro: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">Erro: ${error.message}</div>`;
+            }
+        }
+
+        async function testCalculate() {
+            const resultDiv = document.getElementById('calculate-result');
+            if (!sessionId) {
+                resultDiv.innerHTML = `<div class="text-yellow-600">Carregue os dados demo primeiro!</div>`;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/calculate`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        vat_rate: 23
+                    })
+                });
+                
+                if (response.ok) {
+                    // Parse headers for results
+                    const results = JSON.parse(response.headers.get('X-Calculation-Results') || '{}');
+                    resultDiv.innerHTML = `<div class="text-green-600">
+                        Sucesso! Excel gerado<br>
+                        Margem: €${results.gross_margin?.toFixed(2)}<br>
+                        IVA: €${results.vat_amount?.toFixed(2)}
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="text-red-600">Erro: ${response.status} ${response.statusText}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-600">Erro: ${error.message}</div>`;
+            }
+        }
+
+        // Teste inicial
+        testStatus();
+    </script>
+</body>
+</html>

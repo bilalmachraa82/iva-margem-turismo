@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Frontend - IVA Margem Turismo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Completo do Frontend - IVA Margem Turismo</h1>
+
+    <div class="test-section">
+        <h2>Estado do Sistema</h2>
+        <div id="system-status"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Testes Automáticos</h2>
+        <button onclick="runAllTests()">Executar Todos os Testes</button>
+        <button onclick="clearTests()">Limpar Resultados</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Frontend Incorporado</h2>
+        <iframe src="./frontend/index.html" id="frontend-frame"></iframe>
+    </div>
+
+    <div class="test-section">
+        <h2>Console de Debug</h2>
+        <pre id="debug-console"></pre>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let testResults = [];
+
+        async function log(message, type = 'info') {
+            const console = document.getElementById('debug-console');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            console.textContent += entry;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const data = await response.json();
+                
+                const statusDiv = document.getElementById('system-status');
+                if (data.status === 'operational') {
+                    statusDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ API Backend: Operacional<br>
+                            URL: ${API_URL}<br>
+                            Versão: ${data.version || '1.0.0'}
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="test-result error">
+                            ❌ API Backend: Status inesperado - ${data.status}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('system-status').innerHTML = `
+                    <div class="test-result error">
+                        ❌ API Backend: Não acessível<br>
+                        Erro: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testUploadFunctionality() {
+            log('Testando funcionalidade de upload...');
+            
+            // Criar arquivos de teste
+            const vendasContent = `NIF do adquirente (cliente);Nome do adquirente;Pais do adquirente;Tipo de documento;N.° de documento;Data do documento;Base tributável ou Valor Líquido;Taxa de IVA;IVA Liquidado;Não liquidado imposto (art.º 2º nº 5 do regime do IVA de Caixa);Valor Total;IVA suportado cativo;Motivo isenção de IVA;Imposto do selo;Total de retencoes na fonte;Percentagem da isencao de IVA;Espaço fiscal
+;Test Client 1;Portugal;NC;NC TEST/1;2024-12-01;1000.00;Isento art. 14º;0;0;1000.00;0;;0;0;100%;PT`;
+            
+            const comprasContent = `Nome do fornecedor;NIF do fornecedor;Pais do fornecedor;Tipo de documento;Número do documento;Data do documento;Base tributável ou Valor Líquido;Taxa de IVA;IVA suportado;Valor Total;NIF do adquirente;Nome do adquirente;País do adquirente
+Test Supplier 1;PT123456789;Portugal;FA;FA TEST/1;2024-11-25;800.00;23%;184.00;984.00;;;`;
+
+            const vendasBlob = new Blob([vendasContent], { type: 'text/csv' });
+            const comprasBlob = new Blob([comprasContent], { type: 'text/csv' });
+            
+            const formData = new FormData();
+            formData.append('vendas', vendasBlob, 'test_vendas.csv');
+            formData.append('compras', comprasBlob, 'test_compras.csv');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/upload-efatura`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.session_id) {
+                    addTestResult('Upload de Ficheiros', true, 
+                        `Session ID: ${data.session_id}, Vendas: ${data.sales?.length || 0}, Custos: ${data.costs?.length || 0}`);
+                    return data.session_id;
+                } else {
+                    addTestResult('Upload de Ficheiros', false, `Erro: ${JSON.stringify(data)}`);
+                    return null;
+                }
+            } catch (error) {
+                addTestResult('Upload de Ficheiros', false, `Erro: ${error.message}`);
+                return null;
+            }
+        }
+
+        async function testAssociations(sessionId) {
+            if (!sessionId) {
+                addTestResult('Teste de Associações', false, 'Sem session ID');
+                return;
+            }
+            
+            log(`Testando associações para sessão ${sessionId}...`);
+            
+            try {
+                // Obter dados da sessão
+                const sessionResp = await fetch(`${API_URL}/api/session/${sessionId}`);
+                const sessionData = await sessionResp.json();
+                
+                if (!sessionData.sales?.length || !sessionData.costs?.length) {
+                    addTestResult('Teste de Associações', false, 'Sem dados para associar');
+                    return;
+                }
+                
+                // Testar associação manual
+                const assocData = {
+                    session_id: sessionId,
+                    sale_ids: [sessionData.sales[0].id],
+                    cost_ids: [sessionData.costs[0].id]
+                };
+                
+                const assocResp = await fetch(`${API_URL}/api/associate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(assocData)
+                });
+                
+                if (assocResp.ok) {
+                    addTestResult('Associação Manual', true, 'Associação criada com sucesso');
+                } else {
+                    const error = await assocResp.json();
+                    addTestResult('Associação Manual', false, `Erro: ${JSON.stringify(error)}`);
+                }
+                
+                // Testar auto-match
+                const matchResp = await fetch(`${API_URL}/api/auto-match`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, threshold: 30 })
+                });
+                
+                if (matchResp.ok) {
+                    const matchData = await matchResp.json();
+                    addTestResult('Auto-Match', true, `${matchData.matches || 0} associações criadas`);
+                } else {
+                    addTestResult('Auto-Match', false, 'Erro no auto-match');
+                }
+                
+            } catch (error) {
+                addTestResult('Teste de Associações', false, `Erro: ${error.message}`);
+            }
+        }
+
+        async function testCalculation(sessionId) {
+            if (!sessionId) {
+                addTestResult('Teste de Cálculo', false, 'Sem session ID');
+                return;
+            }
+            
+            log(`Testando cálculo e export para sessão ${sessionId}...`);
+            
+            try {
+                const calcResp = await fetch(`${API_URL}/api/calculate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, vat_rate: 23 })
+                });
+                
+                if (calcResp.ok) {
+                    const contentType = calcResp.headers.get('Content-Type');
+                    if (contentType?.includes('application/vnd.openxmlformats')) {
+                        const blob = await calcResp.blob();
+                        addTestResult('Cálculo e Export Excel', true, 
+                            `Excel gerado com ${blob.size} bytes`);
+                        
+                        // Download automático para teste
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `test_export_${sessionId}.xlsx`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    } else {
+                        addTestResult('Cálculo e Export Excel', false, 
+                            'Resposta não é um arquivo Excel');
+                    }
+                } else {
+                    const error = await calcResp.json();
+                    addTestResult('Cálculo e Export Excel', false, 
+                        `Erro: ${JSON.stringify(error)}`);
+                }
+            } catch (error) {
+                addTestResult('Cálculo e Export Excel', false, `Erro: ${error.message}`);
+            }
+        }
+
+        async function testFrontendIntegration() {
+            log('Testando integração com frontend...');
+            
+            try {
+                const iframe = document.getElementById('frontend-frame');
+                
+                // Verificar se o iframe carregou
+                if (iframe && iframe.contentWindow) {
+                    addTestResult('Carregamento do Frontend', true, 
+                        'Frontend carregado no iframe');
+                    
+                    // Tentar acessar o Alpine.js no frontend
+                    setTimeout(() => {
+                        try {
+                            const frontendWindow = iframe.contentWindow;
+                            if (frontendWindow.Alpine) {
+                                addTestResult('Alpine.js no Frontend', true, 
+                                    'Alpine.js detectado e funcionando');
+                            } else {
+                                addTestResult('Alpine.js no Frontend', false, 
+                                    'Alpine.js não detectado');
+                            }
+                        } catch (e) {
+                            addTestResult('Alpine.js no Frontend', false, 
+                                `Erro ao acessar: ${e.message}`);
+                        }
+                    }, 2000);
+                } else {
+                    addTestResult('Carregamento do Frontend', false, 
+                        'Iframe não carregado');
+                }
+            } catch (error) {
+                addTestResult('Integração Frontend', false, `Erro: ${error.message}`);
+            }
+        }
+
+        function addTestResult(testName, success, details = '') {
+            const result = {
+                name: testName,
+                success: success,
+                details: details,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            testResults.push(result);
+            
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${success ? 'success' : 'error'}`;
+            resultDiv.innerHTML = `
+                <strong>${success ? '✅' : '❌'} ${testName}</strong> [${result.timestamp}]
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            resultsDiv.appendChild(resultDiv);
+            
+            log(`${testName}: ${success ? 'PASS' : 'FAIL'} - ${details}`, 
+                success ? 'info' : 'error');
+        }
+
+        async function runAllTests() {
+            clearTests();
+            log('Iniciando bateria completa de testes...', 'info');
+            
+            // 1. Teste de upload
+            const sessionId = await testUploadFunctionality();
+            
+            // 2. Teste de associações
+            if (sessionId) {
+                await testAssociations(sessionId);
+                
+                // 3. Teste de cálculo
+                await testCalculation(sessionId);
+            }
+            
+            // 4. Teste de integração frontend
+            await testFrontendIntegration();
+            
+            // Resumo
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.success).length;
+            const failed = total - passed;
+            
+            log(`\nRESUMO: ${passed}/${total} testes passaram (${(passed/total*100).toFixed(1)}%)`, 
+                failed > 0 ? 'warning' : 'success');
+            
+            const summary = document.createElement('div');
+            summary.className = `test-result ${failed > 0 ? 'warning' : 'success'}`;
+            summary.innerHTML = `
+                <h3>📊 Resumo dos Testes</h3>
+                Total: ${total} testes<br>
+                ✅ Passaram: ${passed}<br>
+                ❌ Falharam: ${failed}<br>
+                Taxa de sucesso: ${(passed/total*100).toFixed(1)}%
+            `;
+            document.getElementById('test-results').appendChild(summary);
+        }
+
+        function clearTests() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('debug-console').textContent = '';
+            log('Console limpo. Pronto para novos testes.', 'info');
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            checkSystemStatus();
+            log('Sistema de testes carregado e pronto.', 'success');
+        });
+
+        // Atualizar status a cada 30 segundos
+        setInterval(checkSystemStatus, 30000);
+    </script>
+</body>
+</html>

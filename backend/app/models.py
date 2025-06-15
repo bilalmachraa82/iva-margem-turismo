@@ -12,9 +12,9 @@ class Sale(BaseModel):
     number: str
     date: str
     client: str
-    amount: float = Field(ge=0, description="Amount without VAT")
-    vat_amount: float = Field(default=0, ge=0)
-    gross_total: float = Field(default=0, ge=0)
+    amount: float = Field(description="Amount without VAT")
+    vat_amount: float = Field(default=0)
+    gross_total: float = Field(default=0)
     linked_costs: List[str] = Field(default_factory=list)
     
     class Config:
@@ -92,7 +92,7 @@ class UploadResponse(BaseModel):
     sales: List[Sale]
     costs: List[Cost]
     metadata: Dict[str, Any]
-    summary: Dict[str, float]
+    summary: Dict[str, Any]  # Changed to Any to support mixed types
 
 
 class CalculationResult(BaseModel):
