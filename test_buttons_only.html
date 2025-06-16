@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Botões Step 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50" x-data="testApp()">
+    <div class="max-w-4xl mx-auto p-8">
+        <h1 class="text-2xl font-bold mb-8">Teste Botões - Step 3</h1>
+        
+        <!-- Mock Step 3 -->
+        <div x-show="currentStep === 3" class="space-y-8">
+            <div class="bg-white p-6 rounded shadow">
+                <h2 class="text-xl font-semibold mb-4">Resultados</h2>
+                <p>Total Sales: €125,450</p>
+                <p>Total VAT: €4,169</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center space-x-4">
+                <button @click="goBack()" 
+                        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Voltar
+                </button>
+                
+                <button @click="downloadExcel()" 
+                        class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-file-excel mr-2"></i>
+                    Descarregar Excel
+                </button>
+                
+                <button @click="downloadPDF()" 
+                        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-file-pdf mr-2"></i>
+                    Descarregar PDF
+                </button>
+                
+                <button @click="startNew()" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nova Análise
+                </button>
+            </div>
+        </div>
+        
+        <!-- Debug Info -->
+        <div class="mt-8 p-4 bg-yellow-100 rounded">
+            <p>Current Step: <span x-text="currentStep"></span></p>
+            <p>Session ID: <span x-text="sessionId"></span></p>
+            <button @click="currentStep = 3" class="px-4 py-2 bg-purple-500 text-white rounded mt-2">
+                Force Step 3
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function testApp() {
+            return {
+                currentStep: 3,
+                sessionId: 'test-123',
+                apiUrl: 'http://localhost:8000',
+                finalResults: {
+                    totalSales: 125450,
+                    totalCosts: 107324,
+                    grossMargin: 18126,
+                    totalVAT: 4169,
+                    netMargin: 13957
+                },
+                vatRate: 23,
+                
+                goBack() {
+                    console.log('Going back...');
+                    alert('Voltar clicked - going to step 2');
+                    this.currentStep = 2;
+                },
+                
+                async downloadExcel() {
+                    alert('Download Excel clicked');
+                    console.log('Excel download...');
+                },
+                
+                async downloadPDF() {
+                    alert('Download PDF clicked');
+                    console.log('PDF download...');
+                },
+                
+                startNew() {
+                    if (confirm('Start new analysis?')) {
+                        alert('Starting new...');
+                        this.currentStep = 1;
+                        this.sessionId = null;
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

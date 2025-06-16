@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste PDF Completo</title>
+</head>
+<body>
+    <h1>Teste PDF com Sessão Real</h1>
+    
+    <button onclick="step1()">1. Carregar Mock Data</button>
+    <button onclick="step2()" id="btn2" disabled>2. Fazer Associações</button>
+    <button onclick="step3()" id="btn3" disabled>3. Gerar PDF</button>
+    
+    <pre id="results"></pre>
+    
+    <script>
+        let sessionId = null;
+        const apiUrl = 'http://localhost:8000';
+        
+        function log(msg) {
+            document.getElementById('results').textContent += msg + '\n';
+        }
+        
+        async function step1() {
+            try {
+                log('Carregando mock data...');
+                const response = await fetch(`${apiUrl}/api/mock-data`);
+                const data = await response.json();
+                
+                sessionId = data.session_id;
+                log(`✓ Session ID: ${sessionId}`);
+                log(`✓ Vendas: ${data.sales_count}, Custos: ${data.costs_count}`);
+                
+                document.getElementById('btn2').disabled = false;
+            } catch (error) {
+                log('✗ Erro: ' + error.message);
+            }
+        }
+        
+        async function step2() {
+            try {
+                log('Criando associações...');
+                const response = await fetch(`${apiUrl}/api/associate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        sale_ids: ['s1', 's2', 's3'],
+                        cost_ids: ['c1', 'c2', 'c3']
+                    })
+                });
+                
+                const data = await response.json();
+                log(`✓ Associações criadas: ${data.message}`);
+                
+                document.getElementById('btn3').disabled = false;
+            } catch (error) {
+                log('✗ Erro: ' + error.message);
+            }
+        }
+        
+        async function step3() {
+            try {
+                log('Gerando PDF...');
+                const response = await fetch(`${apiUrl}/api/export-pdf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        vat_rate: 23,
+                        results: {
+                            totalSales: 125450,
+                            totalCosts: 107324,
+                            grossMargin: 18126,
+                            totalVAT: 4169,
+                            netMargin: 13957
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    log('✓ PDF gerado com sucesso!');
+                    const html = await response.text();
+                    const win = window.open('', '_blank');
+                    win.document.write(html);
+                    win.document.close();
+                } else {
+                    const text = await response.text();
+                    log(`✗ Erro ${response.status}: ${text}`);
+                }
+            } catch (error) {
+                log('✗ Erro: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

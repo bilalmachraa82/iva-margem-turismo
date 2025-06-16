@@ -27,6 +27,7 @@ from .efatura_parser import EFaturaParser
 from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
+from .pdf_export_professional import generate_pdf_report
 
 # Configure logging
 logging.basicConfig(
@@ -632,6 +633,70 @@ async def calculate_vat(request: CalculationRequest):
     except Exception as e:
         logger.error(f"Calculation error: {str(e)}")
         raise HTTPException(500, f"Error calculating VAT: {str(e)}")
+
+
+@app.post("/api/export-pdf")
+@app.options("/api/export-pdf")
+async def export_pdf(request: Dict = None):
+    """
+    Generate PDF report with calculation results
+    """
+    # Handle OPTIONS request
+    if request is None:
+        return {"status": "ok"}
+        
+    try:
+        # Validate request
+        session_id = request.get("session_id")
+        vat_rate = request.get("vat_rate", 23)
+        final_results = request.get("results", {})
+        
+        if not session_id:
+            # Create test session for PDF preview
+            session_data = {
+                "sales": [],
+                "costs": [],
+                "metadata": {}
+            }
+            calculations = []
+        elif session_id not in sessions:
+            raise HTTPException(404, "Session not found")
+        else:
+            session_data = sessions[session_id]["data"]
+            
+            # Initialize calculator
+            calculator = VATCalculator(vat_rate=vat_rate)
+            
+            # Calculate VAT for all sales
+            calculations = calculator.calculate_all(
+                session_data["sales"], 
+                session_data["costs"]
+            )
+        
+        # Generate PDF
+        logger.info(f"Generating PDF with {len(calculations)} calculations")
+        logger.info(f"Session has {len(session_data.get('sales', []))} sales and {len(session_data.get('costs', []))} costs")
+        logger.info(f"Final results: {final_results}")
+        
+        pdf_bytes = generate_pdf_report(
+            session_data=session_data,
+            calculation_results=calculations,
+            vat_rate=vat_rate,
+            final_results=final_results
+        )
+        
+        # Return HTML that can be printed to PDF
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(
+            content=pdf_bytes.decode('utf-8'),
+            headers={
+                "Content-Type": "text/html; charset=utf-8"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}")
+        raise HTTPException(500, f"Error generating PDF: {str(e)}")
 
 
 @app.delete("/api/unlink")

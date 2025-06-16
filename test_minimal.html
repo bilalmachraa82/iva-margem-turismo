@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Mínimo IVA Margem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50" x-data="app()">
+    <div class="max-w-4xl mx-auto p-8">
+        <h1 class="text-2xl font-bold mb-8">Teste Botões IVA Margem</h1>
+        
+        <!-- Debug info -->
+        <div class="bg-yellow-100 p-4 mb-4 rounded">
+            <p>Loading: <span x-text="loading"></span></p>
+            <p>Step: <span x-text="currentStep"></span></p>
+            <p>Session: <span x-text="sessionId || 'none'"></span></p>
+        </div>
+        
+        <!-- Step 3 simulation -->
+        <div x-show="currentStep === 3" class="space-y-4">
+            <h2 class="text-xl font-semibold">Página de Resultados (Step 3)</h2>
+            
+            <div class="flex gap-4">
+                <button @click="goBack()" class="px-4 py-2 bg-gray-500 text-white rounded">
+                    Voltar (Alpine)
+                </button>
+                
+                <button onclick="alert('onclick works')" class="px-4 py-2 bg-blue-500 text-white rounded">
+                    Test onclick
+                </button>
+                
+                <button @click="testPDF()" class="px-4 py-2 bg-red-500 text-white rounded">
+                    Test PDF
+                </button>
+                
+                <button @click="newAnalysis()" class="px-4 py-2 bg-green-500 text-white rounded">
+                    Nova Análise
+                </button>
+            </div>
+        </div>
+        
+        <!-- Other steps -->
+        <div x-show="currentStep !== 3">
+            <p>Current step: <span x-text="currentStep"></span></p>
+            <button @click="currentStep = 3" class="px-4 py-2 bg-purple-500 text-white rounded">
+                Go to Step 3
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function app() {
+            return {
+                loading: false,
+                currentStep: 3,
+                sessionId: 'test-123',
+                
+                goBack() {
+                    console.log('Going back...');
+                    alert('Voltar clicked');
+                    this.currentStep = 2;
+                },
+                
+                testPDF() {
+                    console.log('Testing PDF...');
+                    alert('PDF test clicked');
+                },
+                
+                newAnalysis() {
+                    console.log('New analysis...');
+                    if (confirm('Start new?')) {
+                        this.currentStep = 1;
+                        this.sessionId = null;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
