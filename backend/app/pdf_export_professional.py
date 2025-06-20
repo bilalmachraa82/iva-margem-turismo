@@ -392,7 +392,7 @@ class ProfessionalReportGenerator:
             
             <!-- Title -->
             <text x="{width/2}" y="30" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="{self.colors['dark']}">
-                Análise de Tendências Mensais - Evolução das Margens
+                Análise de Tendências Mensais
             </text>
             <text x="{width/2}" y="50" text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors['gray']}">
                 Período: {months[0][0]} a {months[-1][0]}
@@ -533,7 +533,7 @@ class ProfessionalReportGenerator:
         bar_chart = self.generate_advanced_bar_chart(final_results)
         pie_chart = self.generate_pie_chart(final_results)
         comparison_chart = self.generate_comparison_chart(final_results, vat_rate)
-        trend_chart = self.generate_trend_chart(calculation_results)
+        # trend_chart = self.generate_trend_chart(calculation_results)  # Removido conforme solicitado
         
         # Calculate key metrics
         total_documents = len(session_data.get('sales', []))
@@ -875,14 +875,6 @@ class ProfessionalReportGenerator:
                     </div>
                 </div>
                 
-                <!-- Trend Analysis -->
-                <div class="section">
-                    <h2 class="section-title">Evolução das Margens</h2>
-                    <div class="chart-container">
-                        {trend_chart}
-                    </div>
-                </div>
-                
                 <!-- Savings Highlight -->
                 <div class="highlight-box">
                     <h3>💰 Análise de Poupança Fiscal</h3>
@@ -913,7 +905,7 @@ class ProfessionalReportGenerator:
                 <div class="section page-break">
                     <h2 class="section-title">Análise Detalhada por Documento</h2>
                     <p style="color: #6b7280; margin-bottom: 20px;">
-                        Apresentamos os primeiros 30 documentos de um total de {len(calculation_results)} processados.
+                        Apresentamos os primeiros {min(30, len(calculation_results))} documentos de um total de {len(calculation_results)} processados.
                         Para a lista completa, consulte o ficheiro Excel exportado.
                     </p>
                     
@@ -934,7 +926,7 @@ class ProfessionalReportGenerator:
         """
         
         # Add detailed results (limit to 30)
-        for i, result in enumerate(calculation_results[:30]):
+        for i, result in enumerate(calculation_results[:min(30, len(calculation_results))]):
             margin_pct = (result.get('gross_margin', 0) / result.get('sale_amount', 1) * 100) if result.get('sale_amount', 0) > 0 else 0
             row_class = 'style="background: #f9fafb;"' if i % 2 == 0 else ''
             

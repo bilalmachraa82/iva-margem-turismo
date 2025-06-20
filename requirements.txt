@@ -1,0 +1,29 @@
+# FastAPI e dependências core
+fastapi==0.115.5
+uvicorn==0.30.6
+python-multipart==0.0.7
+
+# Parser XML
+lxml==4.9.4
+
+# Excel
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# PDF
+reportlab==4.0.9
+pypdf==3.17.4
+
+# Data processing
+pandas==2.1.3
+numpy==1.26.2
+
+# Tipos e validação
+pydantic==2.10.5
+typing-extensions==4.12.2
+
+# HTTP
+httpx==0.27.2
+
+# Ambiente
+python-dotenv==1.0.1

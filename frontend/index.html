@@ -94,18 +94,6 @@
     </style>
 </head>
 <body class="bg-gray-50" x-data="ivaApp()">
-    <!-- Debug Alpine Test -->
-    <div class="fixed top-0 right-0 p-2 bg-yellow-200 text-xs z-50">
-        <button @click="alert('Alpine funciona!')" class="px-2 py-1 bg-blue-500 text-white rounded">
-            Teste Alpine
-        </button>
-        <span x-text="'Step: ' + currentStep"></span>
-        <span x-text="'Loading: ' + loading" class="ml-2"></span>
-        <button @click="loading = false" class="px-2 py-1 bg-red-500 text-white rounded ml-2">
-            Stop Loading
-        </button>
-    </div>
-    
     <!-- Clean Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -646,44 +634,27 @@
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex justify-center space-x-4" style="position: relative; z-index: 100; pointer-events: auto;">
-                    <!-- Simple test button -->
-                    <button onclick="alert('onclick works')" 
-                            style="padding: 8px 16px; background: purple; color: white; border-radius: 4px;">
-                        Test onclick
-                    </button>
-                    
+                <div class="flex justify-center space-x-4">
                     <button @click="currentStep = 2" 
-                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                            style="pointer-events: auto; cursor: pointer;">
+                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Voltar
                     </button>
                     
                     <button @click="downloadExcel()" 
-                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                            style="pointer-events: auto; cursor: pointer;">
+                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                         <i class="fas fa-file-excel mr-2"></i>
                         Descarregar Excel
                     </button>
                     
                     <button @click="downloadPDF()" 
-                            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                            style="pointer-events: auto; cursor: pointer;">
+                            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                         <i class="fas fa-file-pdf mr-2"></i>
                         Descarregar PDF
                     </button>
                     
-                    <!-- Debug button -->
-                    <button @click="testPDFDirect()" 
-                            class="px-4 py-1 bg-gray-500 text-white rounded text-sm"
-                            style="pointer-events: auto; cursor: pointer;">
-                        Teste PDF
-                    </button>
-                    
                     <button @click="startNew()" 
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            style="pointer-events: auto; cursor: pointer;">
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                         <i class="fas fa-plus mr-2"></i>
                         Nova Análise
                     </button>
@@ -749,16 +720,10 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
-    <!-- Temporarily disabled due to errors
     <script src="advanced_charts.js"></script>
-    -->
     
     <!-- Alpine.js App -->
     <script>
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('Global error:', e.message, e.filename, e.lineno, e.colno, e.error);
-        });
         
         function ivaApp() {
             return {
@@ -1583,14 +1548,12 @@
                                 new Chart(trendCtx, trendConfig);
                             }
                             
-                            // Top Clients Chart - Temporarily disabled due to horizontalBar issue
-                            /*
+                            // Top Clients Chart
                             const clientsCtx = document.getElementById('topClientsChart');
                             if (clientsCtx && calculations.length > 0) {
                                 const clientsConfig = window.advancedCharts.generateTopClientsChart(calculations);
                                 new Chart(clientsCtx, clientsConfig);
                             }
-                            */
                         } catch (chartError) {
                             console.error('Advanced charts error:', chartError);
                         }
@@ -1793,10 +1756,6 @@
                 
                 // Download PDF function
                 async downloadPDF() {
-                    console.log('downloadPDF called');
-                    console.log('sessionId:', this.sessionId);
-                    console.log('finalResults:', this.finalResults);
-                    
                     if (!this.sessionId || !this.finalResults.totalSales) {
                         this.showNotification('Aviso', 'Por favor calcule primeiro os resultados', 'warning');
                         return;
@@ -1806,27 +1765,21 @@
                     this.loadingMessage = 'A gerar relatório PDF...';
                     
                     try {
-                        const requestData = {
-                            session_id: this.sessionId,
-                            vat_rate: this.vatRate,
-                            results: this.finalResults
-                        };
-                        console.log('PDF request data:', requestData);
-                        
                         const response = await fetch(`${this.apiUrl}/api/export-pdf`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(requestData)
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                vat_rate: this.vatRate,
+                                results: this.finalResults
+                            })
                         });
                         
                         if (!response.ok) {
-                            const errorText = await response.text();
-                            console.error('PDF error response:', errorText);
-                            throw new Error(`Erro ao gerar PDF: ${response.status} - ${errorText}`);
+                            throw new Error('Erro ao gerar PDF');
                         }
                         
                         const html = await response.text();
-                        console.log('PDF HTML received, length:', html.length);
                         
                         // Open in new window/tab for printing
                         const printWindow = window.open('', '_blank');
@@ -1845,42 +1798,6 @@
                         this.showNotification('Erro', 'Erro ao gerar relatório PDF', 'error');
                     } finally {
                         this.loading = false;
-                    }
-                },
-                
-                // Test PDF Direct
-                async testPDFDirect() {
-                    console.log('Testing PDF direct...');
-                    try {
-                        const response = await fetch(`${this.apiUrl}/api/export-pdf`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                vat_rate: 23,
-                                results: {
-                                    totalSales: 125450,
-                                    totalCosts: 107324,
-                                    grossMargin: 18126,
-                                    totalVAT: 4169,
-                                    netMargin: 13957
-                                }
-                            })
-                        });
-                        
-                        if (response.ok) {
-                            const html = await response.text();
-                            const win = window.open('', '_blank');
-                            win.document.write(html);
-                            win.document.close();
-                            this.showNotification('Sucesso', 'PDF de teste gerado', 'success');
-                        } else {
-                            const error = await response.text();
-                            console.error('PDF test error:', error);
-                            this.showNotification('Erro', `Erro no teste: ${response.status}`, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Test PDF error:', error);
-                        this.showNotification('Erro', 'Erro no teste PDF', 'error');
                     }
                 },
                 
