@@ -30,10 +30,14 @@ class ProfessionalReportGenerator:
     
     def generate_advanced_bar_chart(self, data: Dict[str, float], title: str = "Análise Financeira Completa") -> str:
         """Generate professional bar chart with proper scaling and annotations"""
+        # Check if we're in period mode
+        is_period_mode = data.get('calculationType') == 'period'
+        margin_label = 'Margem Compensada' if is_period_mode else 'Margem Bruta'
+        
         values = [
             ('Total Vendas', data.get('totalSales', 0), self.colors['success'], True),
             ('Total Custos', data.get('totalCosts', 0), self.colors['danger'], False),
-            ('Margem Bruta', data.get('grossMargin', 0), self.colors['info'], True),
+            (margin_label, data.get('grossMargin', 0), self.colors['info'], True),
             ('IVA s/ Margem', data.get('totalVAT', 0), self.colors['purple'], False),
             ('Margem Líquida', data.get('netMargin', 0), self.colors['primary'], True)
         ]
@@ -529,10 +533,20 @@ class ProfessionalReportGenerator:
                        vat_rate: float, final_results: Dict[str, float]) -> bytes:
         """Generate professional PDF report with multiple visualizations"""
         
+        # Check if period calculation mode
+        is_period_mode = final_results.get('calculationType') == 'period'
+        
+        # Adjust chart data for period mode
+        chart_data = final_results.copy()
+        if is_period_mode:
+            # For period mode, show compensated margin in charts
+            chart_data['grossMargin'] = final_results.get('compensatedMargin', final_results.get('grossMargin', 0))
+            chart_data['calculationType'] = 'period'
+        
         # Generate all charts
-        bar_chart = self.generate_advanced_bar_chart(final_results)
-        pie_chart = self.generate_pie_chart(final_results)
-        comparison_chart = self.generate_comparison_chart(final_results, vat_rate)
+        bar_chart = self.generate_advanced_bar_chart(chart_data)
+        pie_chart = self.generate_pie_chart(chart_data)
+        comparison_chart = self.generate_comparison_chart(chart_data, vat_rate)
         # trend_chart = self.generate_trend_chart(calculation_results)  # Removido conforme solicitado
         
         # Calculate key metrics
@@ -849,6 +863,80 @@ class ProfessionalReportGenerator:
                         <div class="change" style="color: #16a34a;">Regime margem</div>
                     </div>
                 </div>
+                
+                <!-- Period Calculation Details (if applicable) -->
+                {"" if not is_period_mode else f"""
+                <div class="section" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9;">
+                    <h2 class="section-title" style="color: #0369a1;">📅 Cálculo por Período Fiscal</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Período de Análise</div>
+                            <div style="font-size: 1.3em; font-weight: 700; color: #0369a1;">
+                                {final_results.get('period', {}).get('start', '')} a {final_results.get('period', {}).get('end', '')}
+                            </div>
+                            {"<div style='font-size: 0.85em; color: #0891b2; margin-top: 4px;'>Trimestre " + str(final_results.get('period', {}).get('quarter', '')) + "/" + str(final_results.get('period', {}).get('year', '')) + "</div>" if final_results.get('period', {}).get('quarter') else ""}
+                        </div>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Margem Bruta do Período</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: {'#16a34a' if final_results.get('grossMargin', 0) >= 0 else '#dc2626'};">
+                                €{final_results.get('grossMargin', 0):,.2f}
+                            </div>
+                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
+                                Vendas - Custos
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">(-) Margem Negativa Anterior</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: #dc2626;">
+                                €{final_results.get('previousNegative', 0):,.2f}
+                            </div>
+                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
+                                Compensação períodos anteriores
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">(=) Margem Compensada</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: {'#16a34a' if final_results.get('compensatedMargin', 0) >= 0 else '#dc2626'};">
+                                €{final_results.get('compensatedMargin', 0):,.2f}
+                            </div>
+                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
+                                Base tributável após compensação
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">IVA a Pagar ({vat_rate}%)</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: #7c3aed;">
+                                €{final_results.get('totalVAT', 0):,.2f}
+                            </div>
+                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
+                                Sobre margem {"positiva" if final_results.get('compensatedMargin', 0) > 0 else "zero (negativa)"}
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Margem a Transportar</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: {'#dc2626' if final_results.get('carryForward', 0) < 0 else '#16a34a'};">
+                                €{abs(final_results.get('carryForward', 0)):,.2f}
+                            </div>
+                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
+                                Para próximo período
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                        <h4 style="margin: 0 0 8px 0; color: #92400e;">⚖️ Conformidade Legal</h4>
+                        <p style="margin: 0; color: #78350f; font-size: 0.9em;">
+                            Cálculo realizado conforme <strong>Artigo 308º do CIVA</strong> - Regime especial de tributação da margem.<br>
+                            A compensação de margens negativas entre períodos está em conformidade com as orientações da AT.
+                        </p>
+                    </div>
+                </div>
+                """}
                 
                 <!-- Main Analysis Section -->
                 <div class="section">
