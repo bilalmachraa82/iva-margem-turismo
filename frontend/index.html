@@ -397,7 +397,7 @@
             <!-- Action Buttons -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <button @click="autoMatch" 
                             class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
                             :disabled="loading">
@@ -422,6 +422,19 @@
                                 </p>
                             </div>
                             <i class="fas fa-link text-green-600"></i>
+                        </div>
+                    </button>
+                    
+                    <button @click="clearAllAssociations" 
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                            :disabled="!hasAssociations || loading"
+                            x-show="hasAssociations">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-900">Limpar Associações</h4>
+                                <p class="text-sm text-gray-600 mt-1">Remover todas as ligações</p>
+                            </div>
+                            <i class="fas fa-unlink text-orange-600"></i>
                         </div>
                     </button>
                     
@@ -574,6 +587,77 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                 <h2 class="text-2xl font-semibold text-gray-900 mb-6">Resultados do Cálculo</h2>
                 
+                <!-- Calculation Mode Selector -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-blue-900">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Modo de Cálculo
+                        </h3>
+                        <div class="flex space-x-2">
+                            <button @click="calculationMode = 'transaction'" 
+                                    :class="calculationMode === 'transaction' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors">
+                                Por Transação
+                            </button>
+                            <button @click="calculationMode = 'period'" 
+                                    :class="calculationMode === 'period' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+                                    class="px-4 py-2 rounded-lg font-medium transition-colors">
+                                Por Período
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Period Selection -->
+                    <div x-show="calculationMode === 'period'" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data Início</label>
+                            <input type="date" x-model="periodStart" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data Fim</label>
+                            <input type="date" x-model="periodEnd" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Região</label>
+                            <select x-model="vatRegion" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="continental">Continental (23%)</option>
+                                <option value="madeira">Madeira (22%)</option>
+                                <option value="azores">Açores (18%)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Previous Negative Margin -->
+                    <div x-show="calculationMode === 'period'" class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Margem Negativa Anterior (se aplicável)
+                        </label>
+                        <div class="flex items-center">
+                            <span class="mr-2">€</span>
+                            <input type="number" x-model="previousNegativeMargin" 
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="0.00" step="0.01">
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            Insira o valor absoluto da margem negativa a compensar
+                        </p>
+                    </div>
+                    
+                    <!-- Recalculate Button -->
+                    <div x-show="calculationMode === 'period'" class="mt-4">
+                        <button @click="calculatePeriodVAT" 
+                                class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                                :disabled="loading">
+                            <i class="fas fa-calculator mr-2"></i>
+                            Calcular IVA por Período
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Results Summary -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
@@ -601,35 +685,120 @@
                         <p class="text-xl font-bold text-blue-600" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT')"></p>
                     </div>
                 </div>
-
-                <!-- Main Charts Container -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <!-- Bar Chart -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <canvas id="marginChart" width="400" height="300"></canvas>
-                    </div>
-                    
-                    <!-- Pie Chart -->
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <canvas id="marginPieChart" width="400" height="300"></canvas>
-                    </div>
-                </div>
                 
-                <!-- Advanced Analytics Section -->
-                <div class="bg-blue-50 rounded-lg p-6 mb-8">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">
-                        <i class="fas fa-chart-line mr-2 text-blue-600"></i>
-                        Análise Avançada de Tendências
+                <!-- Period Calculation Results -->
+                <div x-show="calculationMode === 'period' && periodResults" class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-semibold text-yellow-900 mb-4">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        Resultados do Cálculo por Período
                     </h3>
                     
-                    <!-- Trend Chart -->
-                    <div class="bg-white rounded-lg p-6 mb-6">
-                        <canvas id="trendChart" width="800" height="400"></canvas>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Período</p>
+                            <p class="font-semibold" x-text="periodResults ? `${new Date(periodResults.period.start).toLocaleDateString('pt-PT')} a ${new Date(periodResults.period.end).toLocaleDateString('pt-PT')}` : ''"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Região</p>
+                            <p class="font-semibold" x-text="periodResults ? periodResults.region : ''"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Taxa IVA</p>
+                            <p class="font-semibold" x-text="periodResults ? periodResults.vat_rate + '%' : ''"></p>
+                        </div>
                     </div>
                     
-                    <!-- Top Clients Chart -->
-                    <div class="bg-white rounded-lg p-6">
-                        <canvas id="topClientsChart" width="800" height="300"></canvas>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Margem Bruta do Período:</span>
+                            <span class="font-semibold" x-text="periodResults ? '€' + periodResults.totals.gross_margin.toFixed(2) : ''"></span>
+                        </div>
+                        <div class="flex justify-between" x-show="periodResults && periodResults.totals.previous_negative > 0">
+                            <span>(-) Margem Negativa Anterior:</span>
+                            <span class="font-semibold text-red-600" x-text="periodResults ? '€' + periodResults.totals.previous_negative.toFixed(2) : ''"></span>
+                        </div>
+                        <div class="flex justify-between border-t pt-2">
+                            <span>Margem Compensada:</span>
+                            <span class="font-bold" x-text="periodResults ? '€' + periodResults.totals.compensated_margin.toFixed(2) : ''"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Base Tributável:</span>
+                            <span class="font-semibold" x-text="periodResults ? '€' + periodResults.totals.vat_base.toFixed(2) : ''"></span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold border-t pt-2">
+                            <span>IVA a Pagar:</span>
+                            <span class="text-green-600" x-text="periodResults ? '€' + periodResults.totals.vat_amount.toFixed(2) : ''"></span>
+                        </div>
+                        <div x-show="periodResults && periodResults.totals.carry_forward < 0" class="mt-4 p-3 bg-orange-100 rounded">
+                            <p class="text-sm text-orange-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                Margem negativa a compensar no próximo período: 
+                                <span class="font-bold">€<span x-text="Math.abs(periodResults.totals.carry_forward).toFixed(2)"></span></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Charts Section - Aligned with PDF -->
+                <div class="space-y-8 mb-8">
+                    <!-- Bar Chart - Financial Analysis -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                            Análise Financeira Completa
+                        </h3>
+                        <div style="position: relative; height: 400px;">
+                            <canvas id="marginChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Distribution and Comparison Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Pie Chart - Value Distribution -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <i class="fas fa-chart-pie mr-2 text-green-600"></i>
+                                Distribuição de Valores
+                            </h3>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="marginPieChart"></canvas>
+                            </div>
+                            <!-- Custom Legend -->
+                            <div class="mt-4 space-y-2" id="pieLegend">
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(59, 130, 246, 0.8)"></span>
+                                        <span>Margem Líquida</span>
+                                    </div>
+                                    <span class="font-semibold" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(147, 51, 234, 0.8)"></span>
+                                        <span>IVA</span>
+                                    </div>
+                                    <span class="font-semibold" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(239, 68, 68, 0.8)"></span>
+                                        <span>Custos</span>
+                                    </div>
+                                    <span class="font-semibold" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Comparison Chart - Normal VAT vs Margin VAT -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                <i class="fas fa-balance-scale mr-2 text-purple-600"></i>
+                                Comparação: IVA Normal vs IVA Margem
+                            </h3>
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -720,11 +889,11 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="advanced_charts.js"></script>
     
     <!-- Alpine.js App -->
     <script>
-        
         function ivaApp() {
             return {
                 // API Configuration - Fixed for file:// protocol
@@ -759,6 +928,14 @@
                 
                 // Results
                 finalResults: {},
+                
+                // Period calculation
+                calculationMode: 'transaction',
+                periodStart: '',
+                periodEnd: '',
+                vatRegion: 'continental',
+                previousNegativeMargin: 0,
+                periodResults: null,
                 
                 // Notifications
                 notifications: [],
@@ -1225,6 +1402,119 @@
                     }
                 },
                 
+                async clearAllAssociations() {
+                    if (!confirm('Tem certeza que deseja limpar todas as associações?')) {
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.loadingMessage = 'A limpar associações...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/clear-associations`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        // Clear local associations
+                        this.sales.forEach(sale => sale.linked_costs = []);
+                        this.costs.forEach(cost => cost.linked_sales = []);
+                        
+                        this.saveSession();
+                        
+                        this.showNotification(
+                            'Associações Limpas',
+                            `${result.associations_cleared} associações removidas`,
+                            'success'
+                        );
+                        
+                    } catch (error) {
+                        console.error('Clear associations error:', error);
+                        this.showNotification('Erro', 'Erro ao limpar associações', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                // Period VAT Calculation
+                async calculatePeriodVAT() {
+                    if (!this.sessionId) {
+                        this.showNotification('Erro', 'Sessão não encontrada', 'error');
+                        return;
+                    }
+                    
+                    if (!this.periodStart || !this.periodEnd) {
+                        this.showNotification('Erro', 'Por favor selecione as datas do período', 'error');
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.loadingMessage = 'A calcular IVA por período com compensação...';
+                    
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/calculate-period`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                start_date: this.periodStart,
+                                end_date: this.periodEnd,
+                                region: this.vatRegion,
+                                previous_negative_margin: this.previousNegativeMargin || 0
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.detail || 'Erro no cálculo');
+                        }
+                        
+                        const result = await response.json();
+                        this.periodResults = result;
+                        
+                        // Update final results with period calculation
+                        this.finalResults = {
+                            ...this.finalResults,
+                            totalSales: result.totals.sales,
+                            totalCosts: result.totals.costs,
+                            grossMargin: result.totals.gross_margin,
+                            totalVAT: result.totals.vat_amount,
+                            netMargin: result.totals.gross_margin - result.totals.vat_amount,
+                            calculationType: 'period',
+                            period: result.period,
+                            compensatedMargin: result.totals.compensated_margin,
+                            previousNegative: result.totals.previous_negative,
+                            carryForward: result.totals.carry_forward
+                        };
+                        
+                        // Show results notification
+                        if (result.totals.carry_forward < 0) {
+                            this.showNotification(
+                                'Cálculo por Período Completo',
+                                `Margem negativa de €${Math.abs(result.totals.carry_forward).toFixed(2)} a compensar no próximo período`,
+                                'warning'
+                            );
+                        } else {
+                            this.showNotification(
+                                'Cálculo por Período Completo',
+                                `IVA a pagar: €${result.totals.vat_amount.toFixed(2)}`,
+                                'success'
+                            );
+                        }
+                        
+                    } catch (error) {
+                        console.error('Period calculation error:', error);
+                        this.showNotification('Erro', error.message || 'Erro no cálculo por período', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
                 // Calculation Methods
                 async calculateAndExport() {
                     if (!this.sessionId) {
@@ -1355,9 +1645,9 @@
                                 label: 'Valores (€)',
                                 data: [
                                     this.finalResults.totalSales,
-                                    -this.finalResults.totalCosts,
+                                    this.finalResults.totalCosts,
                                     this.finalResults.grossMargin,
-                                    -this.finalResults.totalVAT,
+                                    this.finalResults.totalVAT,
                                     this.finalResults.netMargin
                                 ],
                                 backgroundColor: [
@@ -1379,22 +1669,43 @@
                                 borderSkipped: false,
                             }]
                         },
+                        plugins: [{
+                            afterDatasetsDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                chart.data.datasets.forEach((dataset, i) => {
+                                    const meta = chart.getDatasetMeta(i);
+                                    meta.data.forEach((bar, index) => {
+                                        const data = dataset.data[index];
+                                        const value = Math.abs(data);
+                                        const formattedValue = '€' + value.toLocaleString('pt-PT', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        
+                                        ctx.fillStyle = dataset.borderColor[index];
+                                        ctx.font = 'bold 14px Arial';
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'bottom';
+                                        ctx.fillText(formattedValue, bar.x, bar.y - 5);
+                                    });
+                                });
+                            }
+                        }],
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            layout: {
+                                padding: {
+                                    top: 40,
+                                    bottom: 30
+                                }
+                            },
                             plugins: {
                                 legend: {
                                     display: false
                                 },
                                 title: {
-                                    display: true,
-                                    text: 'Análise Financeira - IVA sobre Margem',
-                                    font: {
-                                        size: 18,
-                                        weight: 'bold',
-                                        family: "'Work Sans', sans-serif"
-                                    },
-                                    padding: 20
+                                    display: false  // Title is now in the HTML
                                 },
                                 tooltip: {
                                     callbacks: {
@@ -1428,6 +1739,7 @@
                                     beginAtZero: true,
                                     grid: {
                                         color: 'rgba(0, 0, 0, 0.05)',
+                                        borderDash: [3, 3],
                                         drawBorder: false
                                     },
                                     ticks: {
@@ -1436,7 +1748,8 @@
                                         },
                                         font: {
                                             size: 12
-                                        }
+                                        },
+                                        padding: 10
                                     }
                                 },
                                 x: {
@@ -1446,8 +1759,24 @@
                                     },
                                     ticks: {
                                         font: {
-                                            size: 13,
-                                            weight: '500'
+                                            size: 12,
+                                            weight: '600'
+                                        },
+                                        autoSkip: false,
+                                        maxRotation: 0,
+                                        padding: 5,
+                                        callback: function(value, index) {
+                                            const labels = ['Vendas', 'Custos', 'Margem Bruta', 'IVA', 'Margem Líquida'];
+                                            const values = [
+                                                this.chart.data.datasets[0].data[0],
+                                                Math.abs(this.chart.data.datasets[0].data[1]),
+                                                this.chart.data.datasets[0].data[2],
+                                                Math.abs(this.chart.data.datasets[0].data[3]),
+                                                this.chart.data.datasets[0].data[4]
+                                            ];
+                                            const totalSales = values[0];
+                                            const percentage = (values[index] / totalSales * 100).toFixed(1);
+                                            return [labels[index], `(${percentage}%)`];
                                         }
                                     }
                                 }
@@ -1467,7 +1796,49 @@
                         }
                         
                         this.pieChart = new Chart(pieCtx, {
-                            type: 'doughnut',
+                            type: 'pie',
+                            plugins: [{
+                                afterDatasetsDraw: function(chart) {
+                                    const ctx = chart.ctx;
+                                    const dataset = chart.data.datasets[0];
+                                    const meta = chart.getDatasetMeta(0);
+                                    const total = dataset.data.reduce((a, b) => (a || 0) + (b || 0), 0);
+                                    
+                                    if (total === 0) return;
+                                    
+                                    meta.data.forEach((arc, index) => {
+                                        const value = dataset.data[index] || 0;
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        
+                                        // Get the model
+                                        const model = arc;
+                                        
+                                        // Calculate the angle
+                                        const midAngle = model.startAngle + (model.endAngle - model.startAngle) / 2;
+                                        
+                                        // Calculate position - place text at 2/3 of radius
+                                        const radius = model.outerRadius * 0.7;
+                                        const x = model.x + Math.cos(midAngle) * radius;
+                                        const y = model.y + Math.sin(midAngle) * radius;
+                                        
+                                        // Draw background for better readability
+                                        ctx.save();
+                                        ctx.globalAlpha = 0.8;
+                                        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                                        ctx.beginPath();
+                                        ctx.arc(x, y, 25, 0, 2 * Math.PI);
+                                        ctx.fill();
+                                        ctx.restore();
+                                        
+                                        // Draw percentage
+                                        ctx.fillStyle = '#ffffff';
+                                        ctx.font = 'bold 14px Arial';
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillText(percentage + '%', x, y);
+                                    });
+                                }
+                            }],
                             data: {
                                 labels: ['Margem Líquida', 'IVA', 'Custos'],
                                 datasets: [{
@@ -1492,24 +1863,33 @@
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                layout: {
+                                    padding: {
+                                        top: 20,
+                                        bottom: 40,
+                                        left: 20,
+                                        right: 20
+                                    }
+                                },
                                 plugins: {
                                     legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            padding: 20,
-                                            font: {
-                                                size: 13
-                                            }
+                                        display: false  // Using custom legend instead
+                                    },
+                                    datalabels: {
+                                        display: true,
+                                        color: 'white',
+                                        font: {
+                                            weight: 'bold',
+                                            size: 16
+                                        },
+                                        formatter: (value, ctx) => {
+                                            const sum = ctx.dataset.data.reduce((a, b) => (a || 0) + (b || 0), 0);
+                                            const percentage = sum > 0 ? ((value / sum) * 100).toFixed(1) + '%' : '0%';
+                                            return percentage;
                                         }
                                     },
                                     title: {
-                                        display: true,
-                                        text: 'Distribuição da Margem',
-                                        font: {
-                                            size: 16,
-                                            weight: 'bold'
-                                        },
-                                        padding: 20
+                                        display: false  // Title is now in the HTML
                                     },
                                     tooltip: {
                                         callbacks: {
@@ -1532,32 +1912,122 @@
                         });
                     }
                     
-                    // Draw advanced charts if available
-                    if (window.advancedCharts) {
-                        try {
-                            // Get calculation results from the current session
-                            const calculations = this.getCalculationResults();
-                            
-                            // Trend Chart
-                            const trendCtx = document.getElementById('trendChart');
-                            if (trendCtx && calculations.length > 0) {
-                                const trendConfig = window.advancedCharts.generateAdvancedTrendChart(
-                                    calculations, 
-                                    this.finalResults
-                                );
-                                new Chart(trendCtx, trendConfig);
-                            }
-                            
-                            // Top Clients Chart
-                            const clientsCtx = document.getElementById('topClientsChart');
-                            if (clientsCtx && calculations.length > 0) {
-                                const clientsConfig = window.advancedCharts.generateTopClientsChart(calculations);
-                                new Chart(clientsCtx, clientsConfig);
-                            }
-                        } catch (chartError) {
-                            console.error('Advanced charts error:', chartError);
+                    // Create comparison chart (Normal VAT vs Margin VAT)
+                    const comparisonCtx = document.getElementById('comparisonChart');
+                    if (comparisonCtx) {
+                        if (this.comparisonChart) {
+                            this.comparisonChart.destroy();
                         }
+                        
+                        const normalVat = this.finalResults.totalSales * this.vatRate / 100;
+                        const marginVat = this.finalResults.totalVAT;
+                        const savings = normalVat - marginVat;
+                        const savingsPercentage = normalVat > 0 ? (savings / normalVat * 100) : 0;
+                        
+                        this.comparisonChart = new Chart(comparisonCtx, {
+                            type: 'bar',
+                            plugins: [{
+                                afterDatasetsDraw: function(chart) {
+                                    const ctx = chart.ctx;
+                                    chart.data.datasets.forEach((dataset, i) => {
+                                        const meta = chart.getDatasetMeta(i);
+                                        meta.data.forEach((bar, index) => {
+                                            const data = dataset.data[index];
+                                            const formattedValue = '€' + data.toLocaleString('pt-PT', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                            
+                                            ctx.fillStyle = dataset.borderColor[index];
+                                            ctx.font = 'bold 14px Arial';
+                                            ctx.textAlign = 'left';
+                                            ctx.textBaseline = 'middle';
+                                            ctx.fillText(formattedValue, bar.x + bar.width + 10, bar.y);
+                                        });
+                                    });
+                                }
+                            }],
+                            data: {
+                                labels: ['IVA Regime Normal', 'IVA sobre Margem'],
+                                datasets: [{
+                                    label: 'Valor do IVA (€)',
+                                    data: [normalVat, marginVat],
+                                    backgroundColor: [
+                                        'rgba(239, 68, 68, 0.8)',
+                                        'rgba(34, 197, 94, 0.8)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(239, 68, 68, 1)',
+                                        'rgba(34, 197, 94, 1)'
+                                    ],
+                                    borderWidth: 2,
+                                    borderRadius: 8
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: `Poupança Fiscal: €${savings.toFixed(2)} (${savingsPercentage.toFixed(1)}%)`,
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        },
+                                        padding: 20,
+                                        color: 'rgba(34, 197, 94, 1)'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.dataset.label + ': €' + 
+                                                    context.parsed.x.toLocaleString('pt-PT', {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 2
+                                                    });
+                                            },
+                                            afterLabel: function(context) {
+                                                if (context.dataIndex === 0) {
+                                                    return `Taxa: ${this.vatRate || 23}% sobre vendas totais`;
+                                                } else {
+                                                    return `Taxa: ${this.vatRate || 23}% sobre margem`;
+                                                }
+                                            }.bind(this)
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '€' + value.toLocaleString('pt-PT');
+                                            }
+                                        },
+                                        grid: {
+                                            borderDash: [2, 2]
+                                        }
+                                    },
+                                    y: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                },
+                                animation: {
+                                    duration: 1500,
+                                    easing: 'easeInOutQuart'
+                                }
+                            }
+                        });
                     }
+                    
+                    // Advanced charts removed - aligned with PDF output
                     } catch (error) {
                         console.error('Error drawing charts:', error);
                         // Don't let chart errors break the page

@@ -1,8 +1,0 @@
-Nome do fornecedor;NIF do fornecedor;Pais do fornecedor;Tipo de documento;Número do documento;Data do documento;Base tributável ou Valor Líquido;Taxa de IVA;IVA suportado;Valor Total;NIF do adquirente;Nome do adquirente;País do adquirente
-Hotel Barcelona Plaza;ES-B12345678;Espanha;FA;2024/1234;2024-11-10;350.00;21%;73.50;423.50;;;
-Transportes Lisboa Lda;PT501234567;Portugal;FT;FT 2024/456;2024-11-18;180.00;23%;41.40;221.40;;;
-Vueling Airlines;ES-A98765432;Espanha;INV;INV-2024-789;2024-11-22;520.00;10%;52.00;572.00;;;
-Restaurante O Fado;PT509876543;Portugal;FR;FR 2024/123;2024-11-26;285.00;13%;37.05;322.05;;;
-Hotel Costa del Sol;ES-B87654321;Espanha;FA;2024/5678;2024-12-02;680.00;21%;142.80;822.80;;;
-Rent-a-Car Europa;PT512345678;Portugal;FT;FT 2024/890;2024-12-04;150.00;23%;34.50;184.50;;;
-Guia Turístico Premium;PT521234567;Portugal;RG;RG 2024/111;2024-12-06;75.00;23%;17.25;92.25;;;

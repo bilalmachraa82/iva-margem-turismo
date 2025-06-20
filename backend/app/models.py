@@ -118,3 +118,12 @@ class AIMatchResult(BaseModel):
     sale: str
     confidence: float
     reason: str
+
+
+class PeriodCalculateRequest(BaseModel):
+    """Request model for period-based VAT calculation"""
+    session_id: str
+    start_date: str  # YYYY-MM-DD format
+    end_date: str    # YYYY-MM-DD format
+    region: str = "continental"  # continental, madeira, azores
+    previous_negative_margin: float = 0.0

@@ -23,7 +23,8 @@
       "Bash(pip3 list:*)",
       "Bash(pip install:*)",
       "Bash(python test:*)",
-      "Bash(backend/venv/bin/pip install aiohttp)"
+      "Bash(backend/venv/bin/pip install aiohttp)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

@@ -20,7 +20,7 @@ from contextlib import asynccontextmanager
 from .models import (
     Sale, Cost, Association, CalculationRequest, 
     AIMatchRequest, UnlinkRequest, UploadResponse,
-    CalculationResult, AIMatchResult
+    CalculationResult, AIMatchResult, PeriodCalculateRequest
 )
 from .saft_parser import SAFTParser
 from .efatura_parser import EFaturaParser
@@ -28,6 +28,7 @@ from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
 from .pdf_export_professional import generate_pdf_report
+from .period_calculator import PeriodVATCalculator
 
 # Configure logging
 logging.basicConfig(
@@ -261,8 +262,8 @@ async def upload_saft(file: UploadFile = File(...)):
         # Prepare response
         response = UploadResponse(
             session_id=session_id,
-            sales=data["sales"][:50],  # Limit to first 50 for response
-            costs=data["costs"][:50],  # Limit to first 50 for response
+            sales=data["sales"],
+            costs=data["costs"],
             metadata=data["metadata"],
             summary={
                 "total_sales": len(data["sales"]),
@@ -296,6 +297,9 @@ async def upload_efatura_files(
     vendas: UploadFile = File(..., description="Ficheiro CSV de vendas do e-Fatura"),
     compras: UploadFile = File(..., description="Ficheiro CSV de compras do e-Fatura")
 ):
+    # Limpa sessões anteriores para evitar duplicação de dados em novos uploads
+    sessions.clear()
+    logger.info("Sessões anteriores limpas antes de novo upload.")
     """
     Upload e-Fatura CSV files (vendas and compras)
     
@@ -353,8 +357,8 @@ async def upload_efatura_files(
         # Prepare response
         response = UploadResponse(
             session_id=session_id,
-            sales=data["sales"][:50],  # Limit to first 50 for response
-            costs=data["costs"][:50],  # Limit to first 50 for response
+            sales=data["sales"],
+            costs=data["costs"],
             metadata=data["metadata"],
             summary={
                 "total_sales": len(data["sales"]),
@@ -391,6 +395,34 @@ async def associate_items(request: Association):
         raise HTTPException(404, "Session not found")
         
     session_data = sessions[request.session_id]["data"]
+    
+    # Validate for mass associations
+    warnings = []
+    if len(request.sale_ids) > 10 and len(request.cost_ids) > 10:
+        total_associations = len(request.sale_ids) * len(request.cost_ids)
+        if total_associations > 100:
+            logger.warning(f"Large association request: {len(request.sale_ids)} sales × {len(request.cost_ids)} costs = {total_associations} associations")
+            warnings.append({
+                "type": "mass_association",
+                "message": f"Criando {total_associations} associações. Considere associar custos a vendas específicas relacionadas.",
+                "severity": "high"
+            })
+    
+    # Check for over-linked costs
+    for cost_id in request.cost_ids:
+        cost = next((c for c in session_data["costs"] if c["id"] == cost_id), None)
+        if cost:
+            existing_links = len(cost.get("linked_sales", []))
+            new_total = existing_links + len(request.sale_ids)
+            if new_total > 10:
+                warnings.append({
+                    "type": "over_linked_cost",
+                    "cost_id": cost_id,
+                    "supplier": cost.get("supplier", "Unknown"),
+                    "total_links": new_total,
+                    "message": f"Custo '{cost.get('supplier', 'Unknown')}' ficará ligado a {new_total} vendas"
+                })
+    
     associations_made = 0
     
     # Update sales with linked costs
@@ -407,13 +439,18 @@ async def associate_items(request: Association):
             # Add new sale IDs, avoiding duplicates
             cost["linked_sales"] = list(set(cost.get("linked_sales", []) + request.sale_ids))
             
-    return {
-        "status": "success",
+    response = {
+        "status": "success" if not warnings else "warning",
         "message": f"Created {associations_made} new associations",
         "associations_made": associations_made,
         "sales_updated": len(request.sale_ids),
         "costs_updated": len(request.cost_ids)
     }
+    
+    if warnings:
+        response["warnings"] = warnings
+        
+    return response
 
 
 # Auto-match configuration
@@ -431,6 +468,8 @@ AUTO_MATCH_CONFIG = {
         (15, 30, 20),  # 15-30 days: max 20 points
     ],
     "min_keyword_length": 3,  # Minimum length for keyword to be considered
+    "max_matches_per_cost": 5,  # Maximum number of sales to match per cost
+    "category_match_bonus": 20,  # Bonus points for category matching
 }
 
 @app.post("/api/auto-match")
@@ -546,21 +585,34 @@ async def auto_match(request: AIMatchRequest):
                     "reasons": reason_parts
                 })
                 
-        # Sort by score and take best match
+        # Sort by score and take best matches (limited by max_matches_per_cost)
         if best_matches:
             best_matches.sort(key=lambda x: x["score"], reverse=True)
-            best = best_matches[0]
             
-            # Create association
-            cost["linked_sales"] = [best["sale"]["id"]]
-            best["sale"]["linked_costs"] = best["sale"].get("linked_costs", []) + [cost["id"]]
+            # Take only top N matches per cost
+            matches_to_add = best_matches[:config["max_matches_per_cost"]]
             
-            matches.append(AIMatchResult(
-                cost=f"{cost['supplier']} - {cost['description'][:50]}",
-                sale=f"{best['sale']['number']} - {best['sale']['client']}",
-                confidence=best["score"],
-                reason="; ".join(best["reasons"])
-            ))
+            # Create associations
+            sale_ids = []
+            for match in matches_to_add:
+                sale = match["sale"]
+                sale_ids.append(sale["id"])
+                
+                # Add cost to sale's linked costs
+                if "linked_costs" not in sale:
+                    sale["linked_costs"] = []
+                if cost["id"] not in sale["linked_costs"]:
+                    sale["linked_costs"].append(cost["id"])
+                
+                matches.append(AIMatchResult(
+                    cost=f"{cost['supplier']} - {cost.get('description', '')[:50]}",
+                    sale=f"{sale['number']} - {sale['client']}",
+                    confidence=match["score"],
+                    reason="; ".join(match["reasons"])
+                ))
+            
+            # Update cost with all linked sales
+            cost["linked_sales"] = sale_ids
             
             if len(matches) >= request.max_matches:
                 break
@@ -763,6 +815,42 @@ async def delete_session(session_id: str):
     return {
         "status": "success",
         "message": "Session deleted"
+    }
+
+
+@app.post("/api/clear-associations")
+async def clear_associations(request: dict):
+    """Clear all associations for a session"""
+    
+    if "session_id" not in request:
+        raise HTTPException(400, "Session ID required")
+    
+    session_id = request["session_id"]
+    if session_id not in sessions:
+        raise HTTPException(404, "Session not found")
+    
+    session_data = sessions[session_id]["data"]
+    
+    # Clear all associations
+    associations_cleared = 0
+    
+    # Clear linked costs from sales
+    for sale in session_data["sales"]:
+        if "linked_costs" in sale and sale["linked_costs"]:
+            associations_cleared += len(sale["linked_costs"])
+            sale["linked_costs"] = []
+    
+    # Clear linked sales from costs
+    for cost in session_data["costs"]:
+        if "linked_sales" in cost and cost["linked_sales"]:
+            cost["linked_sales"] = []
+    
+    logger.info(f"Cleared {associations_cleared} associations for session {session_id}")
+    
+    return {
+        "status": "success",
+        "message": f"Cleared {associations_cleared} associations",
+        "associations_cleared": associations_cleared
     }
 
 
@@ -1013,6 +1101,129 @@ async def get_mock_data():
         "sales": mock_data["sales"],
         "costs": mock_data["costs"]
     }
+
+
+@app.post("/api/calculate-period")
+async def calculate_period_vat(request: PeriodCalculateRequest):
+    """
+    Calculate VAT for a specific period with margin compensation
+    Implements Portuguese VAT law requirements for travel agencies
+    """
+    from datetime import datetime
+    from decimal import Decimal
+    
+    # Validate session
+    if request.session_id not in sessions:
+        raise HTTPException(404, "Session not found")
+    
+    session_data = sessions[request.session_id]["data"]
+    
+    try:
+        # Parse dates
+        start_date = datetime.strptime(request.start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(request.end_date, '%Y-%m-%d').date()
+        
+        # Initialize period calculator
+        period_calc = PeriodVATCalculator(region=request.region)
+        
+        # Get associations from session data
+        associations = []
+        for sale in session_data["sales"]:
+            for cost_id in sale.get("linked_costs", []):
+                associations.append({
+                    "sale_id": sale["id"],
+                    "cost_id": cost_id
+                })
+        
+        # Calculate period VAT
+        result = period_calc.calculate_period_vat(
+            sales=session_data["sales"],
+            costs=session_data["costs"],
+            associations=associations,
+            start_date=start_date,
+            end_date=end_date,
+            previous_negative_margin=Decimal(str(request.previous_negative_margin))
+        )
+        
+        # Add session info
+        result['session_id'] = request.session_id
+        result['calculation_type'] = 'period_based'
+        
+        # Log calculation
+        logger.info(f"Period VAT calculation: {start_date} to {end_date}")
+        logger.info(f"Gross margin: €{result['totals']['gross_margin']:.2f}")
+        logger.info(f"VAT amount: €{result['totals']['vat_amount']:.2f}")
+        logger.info(f"Carry forward: €{result['totals']['carry_forward']:.2f}")
+        
+        return result
+        
+    except ValueError as e:
+        raise HTTPException(400, f"Invalid date format: {str(e)}")
+    except Exception as e:
+        logger.error(f"Period calculation error: {str(e)}")
+        raise HTTPException(500, f"Calculation error: {str(e)}")
+
+
+@app.post("/api/calculate-quarterly")
+async def calculate_quarterly_vat(request: dict):
+    """
+    Calculate VAT for a specific quarter
+    Convenience endpoint for quarterly calculations
+    """
+    # Validate request
+    required_fields = ['session_id', 'year', 'quarter']
+    for field in required_fields:
+        if field not in request:
+            raise HTTPException(400, f"Missing required field: {field}")
+    
+    session_id = request['session_id']
+    year = request['year']
+    quarter = request['quarter']
+    region = request.get('region', 'continental')
+    previous_negative = request.get('previous_negative_margin', 0.0)
+    
+    # Validate session
+    if session_id not in sessions:
+        raise HTTPException(404, "Session not found")
+    
+    # Validate quarter
+    if quarter not in [1, 2, 3, 4]:
+        raise HTTPException(400, "Quarter must be 1, 2, 3, or 4")
+    
+    session_data = sessions[session_id]["data"]
+    
+    try:
+        # Initialize period calculator
+        period_calc = PeriodVATCalculator(region=region)
+        
+        # Get associations
+        associations = []
+        for sale in session_data["sales"]:
+            for cost_id in sale.get("linked_costs", []):
+                associations.append({
+                    "sale_id": sale["id"],
+                    "cost_id": cost_id
+                })
+        
+        # Calculate quarterly VAT
+        result = period_calc.calculate_quarterly_vat(
+            year=year,
+            quarter=quarter,
+            sales=session_data["sales"],
+            costs=session_data["costs"],
+            associations=associations,
+            previous_negative=Decimal(str(previous_negative))
+        )
+        
+        # Generate Anexo O data
+        anexo_o = period_calc.generate_anexo_o_data(result)
+        result['anexo_o'] = anexo_o
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Quarterly calculation error: {str(e)}")
+        raise HTTPException(500, f"Calculation error: {str(e)}")
 
 
 # For Railway deployment
