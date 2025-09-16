@@ -24,7 +24,14 @@
       "Bash(pip install:*)",
       "Bash(python test:*)",
       "Bash(backend/venv/bin/pip install aiohttp)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "mcp__flow-nexus__swarm_init",
+      "mcp__flow-nexus__auth_init",
+      "mcp__claude-flow__swarm_init",
+      "mcp__claude-flow__swarm_status",
+      "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/backend/**)",
+      "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/frontend/**)",
+      "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/**)"
     ],
     "deny": []
   }

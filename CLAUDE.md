@@ -1,9 +1,9 @@
 # 🚀 IVA MARGEM TURISMO - Claude Code Documentation
 
 **Projeto:** Sistema de Cálculo de IVA sobre Margem para Agências de Viagens  
-**Status:** Backend 100% funcional | Frontend premium em desenvolvimento  
-**Ambiente:** WSL + Windsurf IDE | Deploy: Railway + Vercel  
-**Última atualização:** 2025-01-09
+**Status:** ✅ 100% FUNCIONAL - Backend + Frontend completos
+**Ambiente:** macOS + Claude Code | Localhost pronto para desenvolvimento
+**Última atualização:** 2025-09-16
 
 ---
 
@@ -11,7 +11,7 @@
 
 Sistema completo para cálculo de IVA sobre margem conforme CIVA Art. 308º, com:
 - **Backend:** FastAPI + Python (100% funcional)
-- **Frontend:** Alpine.js + Tailwind CSS (upgrade premium planejado)
+- **Frontend:** Alpine.js + Tailwind CSS (100% funcional)
 - **Excel Export:** Multi-folhas com cálculos automáticos
 - **Auto-Associação:** Algoritmo de scoring para associar vendas-custos
 - **API:** RESTful completa com documentação automática
@@ -29,7 +29,7 @@ IVA = Margem × Taxa / (100 + Taxa)
 
 ## 🖥️ AMBIENTE DE DESENVOLVIMENTO
 
-### WSL + Windsurf Setup
+### macOS Development Setup
 ```bash
 # Verificar ambiente
 echo "Sistema: $(uname -a)"
@@ -37,7 +37,7 @@ echo "Python: $(which python3)"
 echo "Pip: $(which pip3)"
 echo "Working dir: $(pwd)"
 
-# Comandos WSL-específicos
+# Comandos macOS
 PYTHON_CMD="python3"
 PIP_CMD="pip3"
 VENV_ACTIVATE="source venv/bin/activate"
@@ -68,28 +68,32 @@ iva-margem-turismo/
 
 ---
 
-## 🚀 QUICK START (WSL)
+## 🚀 QUICK START (LOCALHOST PRONTO!)
 
 ### 1. Iniciar Backend
 ```bash
-cd /mnt/c/Users/Bilal/Documents/aiparati/claudia/iva-margem-turismo/backend
+cd backend
 source venv/bin/activate
 python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Verificar se iniciou
-curl http://localhost:8000/docs
 ```
 
-### 2. Testar API
-- **Docs:** http://localhost:8000/docs
-- **Status:** http://localhost:8000/
+### 2. Iniciar Frontend
+```bash
+cd frontend
+python3 -m http.server 3000
+```
+
+### 3. Abrir Aplicação
+- **Frontend:** http://localhost:3000
+- **API Docs:** http://localhost:8000/docs
+- **API Status:** http://localhost:8000/
 - **Mock Data:** http://localhost:8000/api/mock-data
 
-### 3. Frontend
-```bash
-# Abrir no navegador
-file:///mnt/c/Users/Bilal/Documents/aiparati/claudia/iva-margem-turismo/frontend/index.html
-```
+### ✅ App 100% Funcional!
+- Backend FastAPI: ✅ Rodando na porta 8000
+- Frontend Alpine.js: ✅ Rodando na porta 3000
+- Todos os endpoints: ✅ Testados e funcionais
+- Mock data: ✅ 26 vendas + 157 custos
 
 ---
 

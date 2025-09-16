@@ -863,9 +863,11 @@ class ProfessionalReportGenerator:
                         <div class="change" style="color: #16a34a;">Regime margem</div>
                     </div>
                 </div>
-                
-                <!-- Period Calculation Details (if applicable) -->
-                {"" if not is_period_mode else f"""
+                """
+
+        # Period Calculation Details (if applicable)
+        if is_period_mode:
+            html_content += f"""
                 <div class="section" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9;">
                     <h2 class="section-title" style="color: #0369a1;">📅 Cálculo por Período Fiscal</h2>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
@@ -936,8 +938,9 @@ class ProfessionalReportGenerator:
                         </p>
                     </div>
                 </div>
-                """}
-                
+                """
+
+        html_content += f"""
                 <!-- Main Analysis Section -->
                 <div class="section">
                     <h2 class="section-title">Análise Financeira Completa</h2>
