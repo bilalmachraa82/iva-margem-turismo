@@ -31,7 +31,16 @@
       "mcp__claude-flow__swarm_status",
       "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/backend/**)",
       "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/frontend/**)",
-      "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/**)"
+      "Read(//Users/bilal/Programaçao/Claudia/iva-margem-turismo-1/**)",
+      "WebSearch",
+      "Bash(echo:*)",
+      "WebFetch(domain:www.advantage.pt)",
+      "mcp__ruv-swarm__swarm_status",
+      "mcp__claude-flow__agent_spawn",
+      "mcp__claude-flow__agent_list",
+      "mcp__claude-flow__task_orchestrate",
+      "mcp__claude-flow__task_status",
+      "mcp__claude-flow__swarm_monitor"
     ],
     "deny": []
   }

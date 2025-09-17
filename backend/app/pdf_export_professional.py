@@ -4,9 +4,12 @@ Expert-level data visualization with 30 years of experience
 """
 import io
 import math
-from datetime import datetime
-from typing import Dict, List, Any
+import hashlib
+import json
 import logging
+import os
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,90 @@ class ProfessionalReportGenerator:
             'gray': '#6b7280',         # Gray
             'light': '#f3f4f6',        # Light gray
             'dark': '#1f2937'          # Dark gray
+        }
+        self._font_cache: Optional[str] = None
+
+    # ---------------------------------------------------------------------
+    # Utility helpers
+    # ---------------------------------------------------------------------
+    def _font_face_block(self) -> str:
+        """Return optional @font-face block when REPORT_FONT_BASE64 is set."""
+        if self._font_cache is not None:
+            return self._font_cache
+
+        base64_font = os.getenv("REPORT_FONT_BASE64", "").strip()
+        if not base64_font:
+            self._font_cache = ""
+        else:
+            self._font_cache = f"""
+            @font-face {{
+                font-family: 'ReportPrimary';
+                src: url(data:font/ttf;base64,{base64_font}) format('truetype');
+                font-weight: 400;
+                font-style: normal;
+            }}
+
+            @font-face {{
+                font-family: 'ReportPrimary';
+                src: url(data:font/ttf;base64,{base64_font}) format('truetype');
+                font-weight: 600;
+                font-style: normal;
+            }}
+            """
+        return self._font_cache
+
+    def _format_currency(self, value: Optional[float]) -> str:
+        value = value or 0.0
+        return f"€{value:,.2f}"
+
+    def _format_percentage(self, numerator: float, denominator: float) -> str:
+        if denominator == 0:
+            return "0.0%"
+        return f"{(numerator / denominator) * 100:.1f}%"
+
+    def _normalize_company_info(self, session_data: Dict[str, Any], company_info: Optional[Dict[str, Any]]) -> Dict[str, str]:
+        """Merge company info from session metadata and request payload."""
+        metadata = session_data.get('metadata', {}) if session_data else {}
+        session_company = metadata.get('company_info', {}) if isinstance(metadata, dict) else {}
+        payload_company = company_info or {}
+
+        def pick(key: str, default: str = "") -> str:
+            return str(payload_company.get(key) or session_company.get(key) or metadata.get(key) or default)
+
+        name = pick('name', metadata.get('company_name', 'Empresa de Turismo Lda.'))
+        return {
+            'name': name,
+            'nif': pick('nif', metadata.get('company_nif', 'NIF não definido')),
+            'address': pick('address', metadata.get('company_address', 'Morada não definida')),
+            'city': pick('city', metadata.get('company_city', '')),
+            'postal_code': pick('postal_code', metadata.get('company_postal_code', '')),
+            'phone': pick('phone', metadata.get('company_phone', '')),
+            'email': pick('email', metadata.get('company_email', '')),
+        }
+
+    def _compute_report_hash(self, session_data: Dict[str, Any], final_results: Dict[str, Any], vat_rate: float) -> str:
+        payload = {
+            'vat_rate': vat_rate,
+            'final_results': final_results,
+            'metadata': session_data.get('metadata', {}),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+        }
+        payload_bytes = json.dumps(payload, default=str, sort_keys=True).encode('utf-8')
+        return hashlib.sha256(payload_bytes).hexdigest()[:16]
+
+    def _summarize_data_quality(self, session_data: Dict[str, Any], calculation_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        sales = session_data.get('sales', []) if session_data else []
+        costs = session_data.get('costs', []) if session_data else []
+        unlinked_costs = [cost for cost in costs if not cost.get('linked_sales')]
+        unmatched_sales = [sale for sale in sales if not sale.get('linked_costs')]
+
+        return {
+            'sales_count': len(sales),
+            'cost_count': len(costs),
+            'calculation_count': len(calculation_results),
+            'unlinked_costs_count': len(unlinked_costs),
+            'unlinked_sales_count': len(unmatched_sales),
+            'unlinked_costs_total': sum(cost.get('amount', 0) or 0 for cost in unlinked_costs),
         }
     
     def generate_advanced_bar_chart(self, data: Dict[str, float], title: str = "Análise Financeira Completa") -> str:
@@ -529,477 +616,664 @@ class ProfessionalReportGenerator:
         
         return svg
     
-    def generate_report(self, session_data: Dict[str, Any], calculation_results: List[Dict], 
-                       vat_rate: float, final_results: Dict[str, float]) -> bytes:
-        """Generate professional PDF report with multiple visualizations"""
-        
-        # Check if period calculation mode
+
+    def generate_html_report(
+        self,
+        session_data: Dict[str, Any],
+        calculation_results: List[Dict],
+        vat_rate: float,
+        final_results: Dict[str, Any],
+        company_info: Optional[Dict[str, Any]] = None,
+    ) -> str:
+        """Build premium HTML report that serves as preview and PDF template."""
+        final_results = final_results or {}
+
+        if company_info and not isinstance(company_info, dict):
+            if hasattr(company_info, "model_dump"):
+                company_info = company_info.model_dump()
+            elif hasattr(company_info, "dict"):
+                company_info = company_info.dict()
+            else:
+                company_info = {}
+
+        company = self._normalize_company_info(session_data, company_info)
+        report_title = f"Relatório IVA sobre Margem - {company['name']}"
+
         is_period_mode = final_results.get('calculationType') == 'period'
-        
-        # Adjust chart data for period mode
         chart_data = final_results.copy()
         if is_period_mode:
-            # For period mode, show compensated margin in charts
             chart_data['grossMargin'] = final_results.get('compensatedMargin', final_results.get('grossMargin', 0))
             chart_data['calculationType'] = 'period'
-        
-        # Generate all charts
+
         bar_chart = self.generate_advanced_bar_chart(chart_data)
         pie_chart = self.generate_pie_chart(chart_data)
         comparison_chart = self.generate_comparison_chart(chart_data, vat_rate)
-        # trend_chart = self.generate_trend_chart(calculation_results)  # Removido conforme solicitado
-        
-        # Calculate key metrics
-        total_documents = len(session_data.get('sales', []))
-        total_costs_docs = len(session_data.get('costs', []))
-        margin_percentage = (final_results.get('grossMargin', 0) / final_results.get('totalSales', 1) * 100) if final_results.get('totalSales', 0) > 0 else 0
-        
+
+        total_sales = final_results.get('totalSales', 0.0) or 0.0
+        total_costs = final_results.get('totalCosts', 0.0) or 0.0
+        gross_margin = final_results.get('grossMargin', 0.0) or 0.0
+        net_margin = final_results.get('netMargin', gross_margin - (gross_margin * (vat_rate / 100))) or 0.0
+        total_vat = final_results.get('totalVAT', max(gross_margin, 0) * vat_rate / 100)
+        normal_vat = total_sales * vat_rate / 100
+        vat_savings = normal_vat - total_vat
+        margin_percentage = (gross_margin / total_sales * 100) if total_sales else 0.0
+
+        period_info = final_results.get('period', {}) if is_period_mode else {}
+        compensated_margin = final_results.get('compensatedMargin', gross_margin) if is_period_mode else gross_margin
+        previous_negative = final_results.get('previousNegative', 0.0)
+        carry_forward = final_results.get('carryForward', 0.0)
+
+        data_quality = self._summarize_data_quality(session_data, calculation_results)
+
+        timestamp_local = datetime.now().strftime('%d/%m/%Y %H:%M')
+        timestamp_utc = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+        report_hash = self._compute_report_hash(session_data, final_results, vat_rate)
+
+        summary_metrics = [
+            {
+                'label': 'Volume Total de Vendas',
+                'value': self._format_currency(total_sales),
+                'icon': '💶',
+                'tone': '#dbeafe',
+                'description': 'Total de receitas sujeitas ao regime de margem',
+            },
+            {
+                'label': 'Custos Diretos Afetos',
+                'value': self._format_currency(total_costs),
+                'icon': '💼',
+                'tone': '#fee2e2',
+                'description': 'Custos diretos afetos às vendas analisadas',
+            },
+            {
+                'label': 'Margem Bruta',
+                'value': self._format_currency(gross_margin),
+                'icon': '📊',
+                'tone': '#ede9fe',
+                'description': 'Vendas menos custos diretos afetos',
+            },
+            {
+                'label': f'IVA sobre Margem ({vat_rate:.0f}%)',
+                'value': self._format_currency(total_vat),
+                'icon': '🧾',
+                'tone': '#dcfce7',
+                'description': 'Imposto devido segundo o regime especial',
+            },
+            {
+                'label': 'Margem Líquida',
+                'value': self._format_currency(net_margin),
+                'icon': '🏦',
+                'tone': '#fef3c7',
+                'description': 'Resultado após liquidação de IVA sobre a margem',
+            },
+            {
+                'label': 'Margem / Vendas',
+                'value': f"{margin_percentage:.1f}%",
+                'icon': '📈',
+                'tone': '#cffafe',
+                'description': 'Indicador de performance comercial',
+            },
+        ]
+
+        summary_cards = ''.join(
+            f"""
+            <div class="metric-card" style="border-top: 4px solid {self.colors['primary']};">
+                <div class="icon" style="background:{metric['tone']};">{metric['icon']}</div>
+                <div class="value">{metric['value']}</div>
+                <div class="label">{metric['label']}</div>
+                <div class="description">{metric['description']}</div>
+            </div>
+            """
+            for metric in summary_metrics
+        )
+
+        detailed_rows = []
+        max_rows = min(30, len(calculation_results))
+        for index, result in enumerate(calculation_results[:max_rows]):
+            sale_amount = result.get('sale_amount', 0.0) or 0.0
+            gross_margin_item = result.get('gross_margin', 0.0) or 0.0
+            margin_pct = (gross_margin_item / sale_amount * 100) if sale_amount else 0.0
+            badge_class = 'badge-success' if margin_pct > 20 else 'badge-warning' if margin_pct > 10 else 'badge-info'
+            row_class = 'row-alt' if index % 2 else ''
+            detailed_rows.append(
+                f"""
+                <tr class="{row_class}">
+                    <td><strong>{result.get('invoice_number', '')}</strong></td>
+                    <td>{result.get('date', '')}</td>
+                    <td>{(result.get('client', '') or '')[:35]}{'...' if len(result.get('client', '') or '') > 35 else ''}</td>
+                    <td class="value">{self._format_currency(sale_amount)}</td>
+                    <td class="value">{self._format_currency(result.get('total_allocated_costs', 0.0))}</td>
+                    <td class="value" style="color: {'#16a34a' if gross_margin_item > 0 else '#dc2626'};">{self._format_currency(gross_margin_item)}</td>
+                    <td class="value">{self._format_currency(result.get('vat_amount', 0.0))}</td>
+                    <td class="value"><span class="badge {badge_class}">{margin_pct:.1f}%</span></td>
+                </tr>
+                """
+            )
+
+        detailed_rows_html = "\n".join(detailed_rows) or (
+            '<tr><td colspan="8" class="value">Sem documentos processados.</td></tr>'
+        )
+
+        if is_period_mode:
+            period_section = f"""
+            <section class="section highlighted" id="period-summary">
+                <h2 class="section-title">📅 Síntese do Período Fiscal</h2>
+                <div class="period-grid">
+                    <div class="period-card">
+                        <span class="label">Período de análise</span>
+                        <span class="value">{period_info.get('start', '') or 'Sem data'} a {period_info.get('end', '') or 'Sem data'}</span>
+                        <span class="caption">Quarter {period_info.get('quarter', '') or '-'} / {period_info.get('year', '') or '-'}</span>
+                    </div>
+                    <div class="period-card">
+                        <span class="label">Margem bruta do período</span>
+                        <span class="value">{self._format_currency(gross_margin)}</span>
+                        <span class="caption">Antes de compensações</span>
+                    </div>
+                    <div class="period-card">
+                        <span class="label">(-) Margem negativa anterior</span>
+                        <span class="value negative">{self._format_currency(previous_negative)}</span>
+                        <span class="caption">Transporte de períodos anteriores</span>
+                    </div>
+                    <div class="period-card">
+                        <span class="label">(=) Margem compensada</span>
+                        <span class="value">{self._format_currency(compensated_margin)}</span>
+                        <span class="caption">Base tributável após compensação</span>
+                    </div>
+                    <div class="period-card">
+                        <span class="label">IVA a pagar ({vat_rate:.0f}%)</span>
+                        <span class="value">{self._format_currency(total_vat)}</span>
+                        <span class="caption">Valor devido no período</span>
+                    </div>
+                    <div class="period-card">
+                        <span class="label">Margem a transportar</span>
+                        <span class="value">{self._format_currency(carry_forward)}</span>
+                        <span class="caption">Saldo para período seguinte</span>
+                    </div>
+                </div>
+                <div class="compliance-box">
+                    <strong>⚖️ Conformidade legal:</strong>
+                    Cálculo efetuado segundo o Art.º 308.º do Código do IVA e orientações da Autoridade Tributária para o regime de margem.
+                </div>
+            </section>
+            """
+        else:
+            period_section = ""
+
+        data_quality_cards = f"""
+        <div class="quality-grid">
+            <div class="quality-card">
+                <span class="label">Documentos de venda</span>
+                <span class="value">{data_quality['sales_count']}</span>
+            </div>
+            <div class="quality-card">
+                <span class="label">Documentos de custo</span>
+                <span class="value">{data_quality['cost_count']}</span>
+            </div>
+            <div class="quality-card">
+                <span class="label">Cálculos gerados</span>
+                <span class="value">{data_quality['calculation_count']}</span>
+            </div>
+            <div class="quality-card">
+                <span class="label">Custos sem associação</span>
+                <span class="value">{data_quality['unlinked_costs_count']}</span>
+                <span class="caption">{self._format_currency(data_quality['unlinked_costs_total'])}</span>
+            </div>
+            <div class="quality-card">
+                <span class="label">Vendas sem custos atribuídos</span>
+                <span class="value">{data_quality['unlinked_sales_count']}</span>
+            </div>
+        </div>
+        """
+
+        savings_percentage = (vat_savings / normal_vat * 100) if normal_vat else 0.0
+        currency_formatter = self._format_currency
+        keywords = ", ".join(
+            [value for value in [
+                "IVA",
+                "Margem",
+                "Regime Especial",
+                company.get('name'),
+                str(company.get('nif')) if company.get('nif') else None,
+            ] if value]
+        )
+
         html_content = f"""
         <!DOCTYPE html>
         <html lang="pt-PT">
         <head>
-            <meta charset="UTF-8">
-            <title>Relatório Profissional - IVA sobre Margem</title>
+            <meta charset="UTF-8" />
+            <meta name="author" content="{company['name']}" />
+            <meta name="description" content="Relatório premium gerado em {timestamp_local} sobre o regime especial de IVA na margem." />
+            <meta name="created" content="{timestamp_utc}" />
+            <meta name="keywords" content="{keywords}" />
+            <title>{report_title}</title>
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-                
+                {self._font_face_block()}
+
+                :root {{
+                    --color-primary: {self.colors['primary']};
+                    --color-accent: {self.colors['info']};
+                    --color-success: {self.colors['success']};
+                    --color-danger: {self.colors['danger']};
+                    --color-muted: {self.colors['gray']};
+                    --font-family: 'ReportPrimary', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+                }}
+
                 * {{
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
                 }}
-                
+
                 body {{
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    font-family: var(--font-family);
                     line-height: 1.6;
                     color: #1f2937;
                     background-color: #ffffff;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }}
-                
-                .container {{
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }}
-                
-                @media print {{
-                    .container {{
-                        max-width: 100%;
-                        padding: 10px;
-                    }}
-                    .no-print {{
-                        display: none !important;
-                    }}
-                    .page-break {{
-                        page-break-after: always;
-                    }}
-                    body {{
-                        font-size: 11pt;
-                    }}
-                }}
-                
-                /* Header Styles */
-                .header {{
-                    text-align: center;
-                    padding: 40px 0;
-                    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+
+                .print-btn {{
+                    position: fixed;
+                    bottom: 32px;
+                    right: 32px;
+                    background: var(--color-primary);
                     color: white;
-                    border-radius: 12px;
-                    margin-bottom: 40px;
-                }}
-                
-                .header h1 {{
-                    font-size: 2.5em;
-                    font-weight: 700;
-                    margin-bottom: 10px;
-                    letter-spacing: -0.02em;
-                }}
-                
-                .header .subtitle {{
-                    font-size: 1.1em;
-                    opacity: 0.9;
-                    font-weight: 300;
-                }}
-                
-                /* Key Metrics Dashboard */
-                .metrics-dashboard {{
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 20px;
-                    margin-bottom: 40px;
-                }}
-                
-                .metric-card {{
-                    background: white;
-                    border: 1px solid #e5e7eb;
-                    border-radius: 12px;
-                    padding: 24px;
-                    text-align: center;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s ease;
-                }}
-                
-                .metric-card:hover {{
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                }}
-                
-                .metric-card .icon {{
-                    width: 48px;
-                    height: 48px;
-                    margin: 0 auto 12px;
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 24px;
-                }}
-                
-                .metric-card .value {{
-                    font-size: 2em;
-                    font-weight: 700;
-                    margin-bottom: 4px;
-                    letter-spacing: -0.02em;
-                }}
-                
-                .metric-card .label {{
-                    font-size: 0.9em;
-                    color: #6b7280;
-                    font-weight: 500;
-                }}
-                
-                .metric-card .change {{
-                    font-size: 0.85em;
-                    margin-top: 8px;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 9999px;
+                    font-size: 0.95rem;
                     font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 10px 25px rgba(30, 64, 175, 0.25);
+                    z-index: 10;
                 }}
-                
-                /* Section Styles */
+
+                .print-btn:hover {{
+                    background: #1d4ed8;
+                }}
+
+                .cover {{
+                    background: linear-gradient(140deg, #0f172a 0%, var(--color-primary) 50%, #3b82f6 100%);
+                    color: white;
+                    padding: 64px 72px;
+                    border-radius: 0 0 24px 24px;
+                    margin-bottom: 48px;
+                }}
+
+                .cover h1 {{
+                    font-size: 2.8rem;
+                    margin-bottom: 16px;
+                    letter-spacing: -0.02em;
+                }}
+
+                .cover .company {{
+                    margin-top: 24px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    font-size: 0.95rem;
+                    opacity: 0.9;
+                }}
+
+                .cover .meta {{
+                    margin-top: 32px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 16px;
+                    font-size: 0.9rem;
+                    opacity: 0.85;
+                }}
+
+                .container {{
+                    max-width: 1160px;
+                    margin: 0 auto;
+                    padding: 0 40px 60px 40px;
+                }}
+
                 .section {{
                     background: white;
-                    border-radius: 12px;
+                    border-radius: 16px;
                     padding: 32px;
                     margin-bottom: 32px;
-                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
                 }}
-                
+
+                .section.highlighted {{
+                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                    border: 1px solid #bae6fd;
+                }}
+
                 .section-title {{
-                    font-size: 1.75em;
+                    font-size: 1.6rem;
                     font-weight: 700;
                     margin-bottom: 24px;
-                    color: #1f2937;
+                    color: var(--color-primary);
                     display: flex;
                     align-items: center;
                     gap: 12px;
                 }}
-                
+
                 .section-title::before {{
                     content: '';
                     width: 4px;
                     height: 24px;
-                    background: #3b82f6;
-                    border-radius: 2px;
+                    background: var(--color-accent);
+                    border-radius: 999px;
                 }}
-                
-                /* Chart Containers */
-                .chart-container {{
-                    background: #f9fafb;
-                    border-radius: 12px;
-                    padding: 24px;
-                    margin-bottom: 24px;
-                    text-align: center;
-                }}
-                
-                .chart-grid {{
+
+                .metrics-dashboard {{
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
                     gap: 24px;
                 }}
-                
-                /* Tables */
-                .data-table {{
-                    width: 100%;
-                    border-collapse: separate;
-                    border-spacing: 0;
-                    margin-top: 20px;
-                    font-size: 0.9em;
+
+                .metric-card {{
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+                    text-align: center;
+                    transition: transform 0.2s ease;
                 }}
-                
-                .data-table th {{
-                    background: #f3f4f6;
+
+                .metric-card .icon {{
+                    width: 52px;
+                    height: 52px;
+                    border-radius: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 26px;
+                    margin: 0 auto 12px;
+                }}
+
+                .metric-card .value {{
+                    font-size: 1.9rem;
+                    font-weight: 700;
+                    letter-spacing: -0.02em;
+                }}
+
+                .metric-card .label {{
+                    margin-top: 6px;
+                    font-weight: 600;
+                    color: #334155;
+                }}
+
+                .metric-card .description {{
+                    font-size: 0.85rem;
+                    margin-top: 8px;
+                    color: var(--color-muted);
+                }}
+
+                .period-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                    gap: 20px;
+                    margin-bottom: 24px;
+                }}
+
+                .period-card {{
+                    background: rgba(255, 255, 255, 0.9);
+                    border-radius: 14px;
+                    padding: 20px;
+                    box-shadow: 0 6px 24px rgba(14, 165, 233, 0.18);
+                }}
+
+                .period-card .label {{
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    color: var(--color-muted);
+                    letter-spacing: 0.08em;
+                }}
+
+                .period-card .value {{
+                    display: block;
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    margin-top: 8px;
+                }}
+
+                .period-card .value.negative {{
+                    color: var(--color-danger);
+                }}
+
+                .period-card .caption {{
+                    font-size: 0.8rem;
+                    margin-top: 8px;
+                    color: #0f172a;
+                }}
+
+                .compliance-box {{
+                    padding: 18px 22px;
+                    border-radius: 12px;
+                    background: rgba(14, 165, 233, 0.12);
+                    color: #075985;
+                    font-size: 0.95rem;
+                    line-height: 1.5;
+                }}
+
+                .chart-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                    gap: 24px;
+                }}
+
+                .chart-card {{
+                    background: #f8fafc;
+                    padding: 20px;
+                    border-radius: 16px;
+                    box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.15);
+                }}
+
+                .comparison-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 20px;
+                    margin-top: 24px;
+                }}
+
+                .comparison-card {{
+                    background: #f8fafc;
+                    border-radius: 12px;
+                    padding: 18px;
+                    border: 1px solid #e2e8f0;
+                }}
+
+                .comparison-card strong {{
+                    display: block;
+                    font-size: 1.1rem;
+                    margin-top: 8px;
+                }}
+
+                .comparison-card span {{
+                    font-size: 0.9rem;
+                    color: var(--color-muted);
+                }}
+
+                table.data-table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                    font-size: 0.88rem;
+                }}
+
+                table.data-table th {{
+                    background: #0f172a;
+                    color: white;
                     padding: 12px 16px;
                     text-align: left;
-                    font-weight: 600;
-                    color: #374151;
-                    border-bottom: 2px solid #e5e7eb;
                 }}
-                
-                .data-table td {{
+
+                table.data-table td {{
                     padding: 12px 16px;
-                    border-bottom: 1px solid #f3f4f6;
+                    border-bottom: 1px solid #e2e8f0;
                 }}
-                
-                .data-table tr:hover {{
-                    background: #f9fafb;
+
+                table.data-table tr.row-alt {{
+                    background: #f8fafc;
                 }}
-                
-                .data-table .value {{
+
+                table.data-table td.value {{
                     text-align: right;
-                    font-weight: 500;
+                    font-variant-numeric: tabular-nums;
                 }}
-                
-                /* Highlights */
-                .highlight-box {{
-                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-                    border: 1px solid #86efac;
-                    border-radius: 12px;
-                    padding: 24px;
-                    margin: 24px 0;
-                }}
-                
-                .highlight-box h3 {{
-                    color: #16a34a;
-                    margin-bottom: 12px;
-                    font-size: 1.3em;
-                }}
-                
-                /* Print Button */
-                .print-btn {{
-                    position: fixed;
-                    bottom: 30px;
-                    right: 30px;
-                    background: #3b82f6;
-                    color: white;
-                    border: none;
-                    padding: 12px 24px;
-                    border-radius: 8px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-                    transition: all 0.2s ease;
-                    z-index: 1000;
-                }}
-                
-                .print-btn:hover {{
-                    background: #2563eb;
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-                }}
-                
-                /* Professional touches */
+
                 .badge {{
                     display: inline-block;
-                    padding: 4px 12px;
+                    padding: 4px 10px;
                     border-radius: 20px;
-                    font-size: 0.85em;
+                    font-size: 0.75rem;
                     font-weight: 600;
                 }}
-                
+
                 .badge-success {{
                     background: #dcfce7;
-                    color: #16a34a;
+                    color: #166534;
                 }}
-                
-                .badge-info {{
-                    background: #dbeafe;
-                    color: #2563eb;
-                }}
-                
+
                 .badge-warning {{
                     background: #fef3c7;
-                    color: #d97706;
+                    color: #c2410c;
+                }}
+
+                .badge-info {{
+                    background: #dbeafe;
+                    color: #1d4ed8;
+                }}
+
+                .quality-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 16px;
+                    margin-top: 16px;
+                }}
+
+                .quality-card {{
+                    background: #f8fafc;
+                    border-radius: 12px;
+                    padding: 16px;
+                    border: 1px solid #e2e8f0;
+                }}
+
+                .quality-card .label {{
+                    font-size: 0.8rem;
+                    color: var(--color-muted);
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                }}
+
+                .quality-card .value {{
+                    display: block;
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    margin-top: 6px;
+                }}
+
+                .quality-card .caption {{
+                    font-size: 0.8rem;
+                    color: var(--color-muted);
+                }}
+
+                .footer {{
+                    padding: 32px 40px 60px 40px;
+                    text-align: center;
+                    color: var(--color-muted);
+                    font-size: 0.85rem;
+                }}
+
+                .footer .hash {{
+                    margin-top: 12px;
+                    font-family: 'Roboto Mono', 'Courier New', monospace;
+                    color: #94a3b8;
+                }}
+
+                @media print {{
+                    .print-btn {{
+                        display: none;
+                    }}
+
+                    .cover {{
+                        border-radius: 0;
+                        margin-bottom: 24px;
+                    }}
+
+                    .section {{
+                        box-shadow: none;
+                        padding: 24px;
+                        page-break-inside: avoid;
+                    }}
+
+                    .page-break {{
+                        page-break-after: always;
+                    }}
                 }}
             </style>
         </head>
         <body>
-            <button class="print-btn no-print" onclick="window.print()">
-                🖨️ Imprimir / Guardar PDF
-            </button>
-            
+            <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+            <section class="cover">
+                <h1>{report_title}</h1>
+                <p>Relatório premium preparado para equipas de contabilidade e consultoria financeira.</p>
+                <div class="company">
+                    <span><strong>Entidade:</strong> {company['name']}</span>
+                    <span><strong>NIF:</strong> {company['nif']}</span>
+                    <span><strong>Sede:</strong> {company['address']} {company['postal_code']} {company['city']}</span>
+                    <span><strong>Contacto:</strong> {company['phone']} · {company['email']}</span>
+                </div>
+                <div class="meta">
+                    <span>Gerado em {timestamp_local} ({timestamp_utc})</span>
+                    <span>Taxa de IVA considerada: {vat_rate:.2f}%</span>
+                    <span>Identificador do relatório: {report_hash}</span>
+                </div>
+            </section>
             <div class="container">
-                <!-- Header -->
-                <div class="header">
-                    <h1>Relatório IVA sobre Margem</h1>
-                    <p class="subtitle">Regime Especial - Artigo 308º do CIVA</p>
-                    <p class="subtitle">{datetime.now().strftime('%d de %B de %Y às %H:%M')}</p>
-                </div>
-                
-                <!-- Key Metrics Dashboard -->
-                <div class="metrics-dashboard">
-                    <div class="metric-card">
-                        <div class="icon" style="background: #dcfce7;">📄</div>
-                        <div class="value">{total_documents}</div>
-                        <div class="label">Documentos de Venda</div>
-                        <div class="change" style="color: #16a34a;">Processados</div>
+                <section class="section" id="executive-summary">
+                    <h2 class="section-title">Resumo Executivo</h2>
+                    <p>Este relatório consolida a análise de margem e IVA de acordo com o regime especial das agências de viagens (Art.º 308.º do CIVA). Os indicadores seguintes apresentam a fotografia global do período avaliado.</p>
+                    <div class="metrics-dashboard">
+                        {summary_cards}
                     </div>
-                    
-                    <div class="metric-card">
-                        <div class="icon" style="background: #fee2e2;">📋</div>
-                        <div class="value">{total_costs_docs}</div>
-                        <div class="label">Documentos de Custo</div>
-                        <div class="change" style="color: #dc2626;">Importados</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="icon" style="background: #dbeafe;">💰</div>
-                        <div class="value">€{final_results.get('totalSales', 0):,.2f}</div>
-                        <div class="label">Volume Total de Vendas</div>
-                        <div class="change" style="color: #2563eb;">+IVA incluído</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="icon" style="background: #e9d5ff;">📊</div>
-                        <div class="value">{margin_percentage:.1f}%</div>
-                        <div class="label">Margem sobre Vendas</div>
-                        <div class="change" style="color: #7c3aed;">Taxa de lucro</div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="icon" style="background: #dcfce7;">💶</div>
-                        <div class="value">€{final_results.get('totalVAT', 0):,.2f}</div>
-                        <div class="label">IVA a Pagar</div>
-                        <div class="change" style="color: #16a34a;">Regime margem</div>
-                    </div>
-                </div>
-                """
-
-        # Period Calculation Details (if applicable)
-        if is_period_mode:
-            html_content += f"""
-                <div class="section" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9;">
-                    <h2 class="section-title" style="color: #0369a1;">📅 Cálculo por Período Fiscal</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Período de Análise</div>
-                            <div style="font-size: 1.3em; font-weight: 700; color: #0369a1;">
-                                {final_results.get('period', {}).get('start', '')} a {final_results.get('period', {}).get('end', '')}
-                            </div>
-                            {"<div style='font-size: 0.85em; color: #0891b2; margin-top: 4px;'>Trimestre " + str(final_results.get('period', {}).get('quarter', '')) + "/" + str(final_results.get('period', {}).get('year', '')) + "</div>" if final_results.get('period', {}).get('quarter') else ""}
+                </section>
+                {period_section}
+                <section class="section" id="charts">
+                    <h2 class="section-title">Visualização Analítica</h2>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <h3>Distribuição Financeira</h3>
+                            {bar_chart}
                         </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Margem Bruta do Período</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: {'#16a34a' if final_results.get('grossMargin', 0) >= 0 else '#dc2626'};">
-                                €{final_results.get('grossMargin', 0):,.2f}
-                            </div>
-                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
-                                Vendas - Custos
-                            </div>
+                        <div class="chart-card">
+                            <h3>Composição da Margem</h3>
+                            {pie_chart or '<p style="color:#64748b;">Sem dados suficientes para o gráfico.</p>'}
                         </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">(-) Margem Negativa Anterior</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #dc2626;">
-                                €{final_results.get('previousNegative', 0):,.2f}
-                            </div>
-                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
-                                Compensação períodos anteriores
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">(=) Margem Compensada</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: {'#16a34a' if final_results.get('compensatedMargin', 0) >= 0 else '#dc2626'};">
-                                €{final_results.get('compensatedMargin', 0):,.2f}
-                            </div>
-                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
-                                Base tributável após compensação
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">IVA a Pagar ({vat_rate}%)</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #7c3aed;">
-                                €{final_results.get('totalVAT', 0):,.2f}
-                            </div>
-                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
-                                Sobre margem {"positiva" if final_results.get('compensatedMargin', 0) > 0 else "zero (negativa)"}
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 0.9em; color: #6b7280; margin-bottom: 8px;">Margem a Transportar</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: {'#dc2626' if final_results.get('carryForward', 0) < 0 else '#16a34a'};">
-                                €{abs(final_results.get('carryForward', 0)):,.2f}
-                            </div>
-                            <div style="font-size: 0.85em; color: #6b7280; margin-top: 4px;">
-                                Para próximo período
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 24px; padding: 16px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                        <h4 style="margin: 0 0 8px 0; color: #92400e;">⚖️ Conformidade Legal</h4>
-                        <p style="margin: 0; color: #78350f; font-size: 0.9em;">
-                            Cálculo realizado conforme <strong>Artigo 308º do CIVA</strong> - Regime especial de tributação da margem.<br>
-                            A compensação de margens negativas entre períodos está em conformidade com as orientações da AT.
-                        </p>
-                    </div>
-                </div>
-                """
-
-        html_content += f"""
-                <!-- Main Analysis Section -->
-                <div class="section">
-                    <h2 class="section-title">Análise Financeira Completa</h2>
-                    <div class="chart-container">
-                        {bar_chart}
-                    </div>
-                </div>
-                
-                <!-- Comparison and Distribution -->
-                <div class="chart-grid">
-                    <div class="section">
-                        <h2 class="section-title">Comparação de Regimes</h2>
-                        <div class="chart-container">
+                        <div class="chart-card">
+                            <h3>Comparativo Regime Margem vs. Regime Normal</h3>
                             {comparison_chart}
                         </div>
                     </div>
-                    
-                    <div class="section">
-                        <h2 class="section-title">Distribuição de Valores</h2>
-                        <div class="chart-container">
-                            {pie_chart}
+                    <div class="comparison-grid">
+                        <div class="comparison-card">
+                            <span>IVA estimado no regime normal</span>
+                            <strong>{currency_formatter(normal_vat)}</strong>
+                        </div>
+                        <div class="comparison-card">
+                            <span>IVA devido no regime de margem</span>
+                            <strong>{currency_formatter(total_vat)}</strong>
+                        </div>
+                        <div class="comparison-card">
+                            <span>Poupança fiscal estimada</span>
+                            <strong style="color: var(--color-success);">{currency_formatter(vat_savings)}</strong>
+                        </div>
+                        <div class="comparison-card">
+                            <span>Poupança percentual</span>
+                            <strong>{savings_percentage:.1f}%</strong>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Savings Highlight -->
-                <div class="highlight-box">
-                    <h3>💰 Análise de Poupança Fiscal</h3>
-                    <p style="font-size: 1.1em; margin-bottom: 12px;">
-                        Ao utilizar o <strong>Regime de IVA sobre Margem</strong>, a sua empresa obtém uma poupança significativa:
-                    </p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
-                        <div>
-                            <div style="font-size: 0.9em; color: #6b7280;">IVA no Regime Normal</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #dc2626;">€{(final_results.get('totalSales', 0) * vat_rate / 100):,.2f}</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.9em; color: #6b7280;">IVA no Regime Margem</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">€{final_results.get('totalVAT', 0):,.2f}</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.9em; color: #6b7280;">Poupança Total</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">€{((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)):,.2f}</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.9em; color: #6b7280;">Redução Percentual</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">{(((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)) / (final_results.get('totalSales', 0) * vat_rate / 100) * 100):.1f}%</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Detailed Results Table -->
-                <div class="section page-break">
+                </section>
+                <section class="section page-break" id="detail">
                     <h2 class="section-title">Análise Detalhada por Documento</h2>
-                    <p style="color: #6b7280; margin-bottom: 20px;">
-                        Apresentamos os primeiros {min(30, len(calculation_results))} documentos de um total de {len(calculation_results)} processados.
-                        Para a lista completa, consulte o ficheiro Excel exportado.
-                    </p>
-                    
+                    <p>Apresentamos os primeiros {max_rows} registos de um total de {len(calculation_results)} documentos com margem apurada. Consulte a exportação Excel para o detalhe completo.</p>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -1014,73 +1288,49 @@ class ProfessionalReportGenerator:
                             </tr>
                         </thead>
                         <tbody>
-        """
-        
-        # Add detailed results (limit to 30)
-        for i, result in enumerate(calculation_results[:min(30, len(calculation_results))]):
-            margin_pct = (result.get('gross_margin', 0) / result.get('sale_amount', 1) * 100) if result.get('sale_amount', 0) > 0 else 0
-            row_class = 'style="background: #f9fafb;"' if i % 2 == 0 else ''
-            
-            html_content += f"""
-                <tr {row_class}>
-                    <td><strong>{result.get('invoice_number', '')}</strong></td>
-                    <td>{result.get('date', '')}</td>
-                    <td>{result.get('client', '')[:35]}{'...' if len(result.get('client', '')) > 35 else ''}</td>
-                    <td class="value">{result.get('sale_amount', 0):,.2f}</td>
-                    <td class="value">{result.get('total_allocated_costs', 0):,.2f}</td>
-                    <td class="value" style="color: {'#16a34a' if result.get('gross_margin', 0) > 0 else '#dc2626'};">
-                        {result.get('gross_margin', 0):,.2f}
-                    </td>
-                    <td class="value">{result.get('vat_amount', 0):,.2f}</td>
-                    <td class="value">
-                        <span class="badge {'badge-success' if margin_pct > 20 else 'badge-warning' if margin_pct > 10 else 'badge-info'}">
-                            {margin_pct:.1f}%
-                        </span>
-                    </td>
-                </tr>
-            """
-        
-        html_content += """
+                            {detailed_rows_html}
                         </tbody>
                     </table>
-                </div>
-                
-                <!-- Footer -->
-                <div style="text-align: center; margin-top: 60px; padding: 40px; background: #f9fafb; border-radius: 12px;">
-                    <h3 style="margin-bottom: 12px; color: #1f2937;">Accounting Advantage</h3>
-                    <p style="color: #6b7280; max-width: 600px; margin: 0 auto;">
-                        Sistema Profissional de Cálculo de IVA sobre Margem<br>
-                        Este relatório foi gerado automaticamente e não substitui aconselhamento fiscal profissional.<br>
-                        <strong>Consulte sempre o seu contabilista certificado.</strong>
-                    </p>
-                </div>
+                </section>
+                <section class="section" id="data-quality">
+                    <h2 class="section-title">Integridade & Observações</h2>
+                    <p>Monitorizamos a integridade dos dados importados para suportar auditorias futuras e garantir rastreabilidade das decisões fiscais.</p>
+                    {data_quality_cards}
+                    <div class="compliance-box" style="margin-top: 24px; background: rgba(34, 197, 94, 0.12); color: #14532d;">
+                        <strong>Nota profissional:</strong> Recomenda-se validar manualmente documentos sem custos afetos ou com margens negativas para assegurar correta imputação antes da submissão da declaração periódica de IVA.
+                    </div>
+                </section>
             </div>
-            
+            <footer class="footer">
+                <p>Relatório gerado automaticamente pelo motor IVA Margem Premium. Não dispensa a análise de um contabilista certificado.</p>
+                <p>Art.º 308.º do Código do IVA · Regime especial das agências de viagens · Documento preparado para utilização profissional.</p>
+                <div class="hash">Trace ID: {report_hash}</div>
+            </footer>
             <script>
-                // Auto print dialog
-                if (window.location.search.includes('autoprint=true')) {
+                if (window.location.search.includes('autoprint=true')) {{
                     window.print();
-                }
-                
-                // Smooth scroll
-                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                    anchor.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        document.querySelector(this.getAttribute('href')).scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    });
-                });
+                }}
             </script>
         </body>
         </html>
         """
-        
-        return html_content.encode('utf-8')
+        return html_content
+
+    def generate_report(
+        self,
+        session_data: Dict[str, Any],
+        calculation_results: List[Dict],
+        vat_rate: float,
+        final_results: Dict[str, Any],
+        company_info: Optional[Dict[str, Any]] = None,
+    ) -> bytes:
+        html = self.generate_html_report(session_data, calculation_results, vat_rate, final_results, company_info)
+        return html.encode('utf-8')
 
 
 def generate_pdf_report(session_data: Dict[str, Any], calculation_results: List[Dict], 
-                       vat_rate: float, final_results: Dict[str, float]) -> bytes:
+                       vat_rate: float, final_results: Dict[str, Any],
+                       company_info: Optional[Dict[str, Any]] = None) -> bytes:
     """Generate professional PDF report with expert-level visualizations"""
     generator = ProfessionalReportGenerator()
-    return generator.generate_report(session_data, calculation_results, vat_rate, final_results)
+    return generator.generate_report(session_data, calculation_results, vat_rate, final_results, company_info)

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IVA Margem Turismo — Início</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <style>body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}</style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-white min-h-screen">
+  <!-- Header -->
+  <header class="border-b border-slate-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
+          <i class="fas fa-globe-europe"></i>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-900 leading-tight">IVA Margem Turismo</p>
+          <p class="text-xs text-slate-500 -mt-0.5">Regime Especial — Art. 308.º CIVA</p>
+        </div>
+      </div>
+      <a href="/index.html" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition">
+        <i class="fas fa-play mr-2"></i> Abrir Aplicação
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 py-16 lg:py-20 grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Cálculo de IVA sobre Margem para Agências de Viagens</h1>
+        <p class="mt-4 text-slate-600 leading-relaxed">Automatize o ciclo de trabalho: importar dados, associar custos, calcular a margem e gerar relatórios profissionais (Excel e PDF) prontos para contabilidade e auditoria.</p>
+        <ul class="mt-6 space-y-2 text-slate-700">
+          <li class="flex items-start"><i class="fas fa-check text-green-600 mt-1 mr-3"></i> Conformidade com CIVA Art. 308.º (método por transação e por período)</li>
+          <li class="flex items-start"><i class="fas fa-check text-green-600 mt-1 mr-3"></i> Exportações profissionais com reconciliação e mapa de exceções</li>
+          <li class="flex items-start"><i class="fas fa-check text-green-600 mt-1 mr-3"></i> IA para auto‑associação e validações de integridade</li>
+        </ul>
+        <div class="mt-8">
+          <a href="/index.html" class="inline-flex items-center px-5 py-3 rounded-md bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition">
+            <i class="fas fa-rocket mr-2"></i> Começar Agora
+          </a>
+        </div>
+      </div>
+      <!-- Interactive Demo Preview -->
+      <div class="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+        <div class="grid gap-4">
+          <div class="flex items-center justify-between">
+            <div class="h-6 w-40 bg-gradient-to-r from-blue-500 to-blue-600 rounded text-white text-xs px-2 py-1 flex items-center font-medium">
+              📊 Dashboard IVA
+            </div>
+            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          </div>
+
+          <div class="h-8 w-full bg-gradient-to-r from-slate-100 to-slate-200 rounded-lg relative overflow-hidden">
+            <div class="h-full w-3/4 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-lg flex items-center px-3">
+              <span class="text-xs text-white font-medium">157 documentos processados</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg p-3 flex flex-col justify-between">
+              <span class="text-xs text-blue-700 font-medium">Vendas</span>
+              <span class="text-lg font-bold text-blue-800">€34.9K</span>
+            </div>
+            <div class="h-24 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-lg p-3 flex flex-col justify-between">
+              <span class="text-xs text-emerald-700 font-medium">Margem</span>
+              <span class="text-lg font-bold text-emerald-800">14.5%</span>
+            </div>
+            <div class="h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg p-3 flex flex-col justify-between">
+              <span class="text-xs text-purple-700 font-medium">IVA</span>
+              <span class="text-lg font-bold text-purple-800">€2.3K</span>
+            </div>
+          </div>
+
+          <!-- Animated Chart -->
+          <div class="h-48 bg-gradient-to-br from-slate-50 to-white rounded-lg flex items-end p-4 relative overflow-hidden">
+            <div class="absolute top-2 left-4 text-xs text-slate-600 font-medium">Tendência Mensal</div>
+            <div class="flex items-end gap-2 w-full">
+              <div class="w-1/5 bg-gradient-to-t from-blue-400 to-blue-300 rounded-t transform hover:scale-110 transition-transform duration-200" style="height: 32px;"></div>
+              <div class="w-1/5 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transform hover:scale-110 transition-transform duration-200" style="height: 64px;"></div>
+              <div class="w-1/5 bg-gradient-to-t from-blue-600 to-blue-500 rounded-t transform hover:scale-110 transition-transform duration-200" style="height: 48px;"></div>
+              <div class="w-1/5 bg-gradient-to-t from-blue-700 to-blue-600 rounded-t transform hover:scale-110 transition-transform duration-200" style="height: 96px;"></div>
+              <div class="w-1/5 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transform hover:scale-110 transition-transform duration-200" style="height: 40px;"></div>
+            </div>
+
+            <!-- Glassmorphism overlay -->
+            <div class="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <span class="text-slate-700 font-medium">Preview Interativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Como Funciona -->
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <h2 class="text-2xl font-bold text-slate-900">Como funciona</h2>
+    <div class="mt-6 grid md:grid-cols-4 gap-5">
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center mb-3"><i class="fas fa-file-upload"></i></div>
+        <p class="font-semibold">1. Importar</p>
+        <p class="text-sm text-slate-600">SAF‑T XML ou e‑Fatura (vendas e compras)</p>
+      </div>
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-3"><i class="fas fa-link"></i></div>
+        <p class="font-semibold">2. Associar</p>
+        <p class="text-sm text-slate-600">Manual ou IA (com validações)</p>
+      </div>
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center mb-3"><i class="fas fa-calculator"></i></div>
+        <p class="font-semibold">3. Calcular</p>
+        <p class="text-sm text-slate-600">Por transação ou por período</p>
+      </div>
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-rose-600 text-white flex items-center justify-center mb-3"><i class="fas fa-file-alt"></i></div>
+        <p class="font-semibold">4. Exportar</p>
+        <p class="text-sm text-slate-600">Excel + PDF prontos para contabilidade</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefícios -->
+  <section class="max-w-7xl mx-auto px-6 pb-16">
+    <h2 class="text-2xl font-bold text-slate-900">Benefícios</h2>
+    <div class="mt-6 grid md:grid-cols-3 gap-5">
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <p class="font-semibold mb-1"><i class="fas fa-bolt text-yellow-500 mr-2"></i>Mais rápido</p>
+        <p class="text-sm text-slate-600">Reduz tempo e erros no apuramento do IVA.</p>
+      </div>
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <p class="font-semibold mb-1"><i class="fas fa-shield-alt text-emerald-600 mr-2"></i>Conformidade</p>
+        <p class="text-sm text-slate-600">Base legal explicitada e reconciliação incluída.</p>
+      </div>
+      <div class="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <p class="font-semibold mb-1"><i class="fas fa-hand-sparkles text-sky-600 mr-2"></i>UX para contabilidade</p>
+        <p class="text-sm text-slate-600">Relatórios claros, com exceções e anexos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="max-w-7xl mx-auto px-6 py-6 text-sm text-slate-600 flex items-center justify-between">
+      <p>© 2025 IVA Margem Turismo</p>
+      <div class="space-x-4">
+        <a href="/index.html" class="hover:text-slate-900">Abrir App</a>
+        <a href="/docs" class="hover:text-slate-900">API Docs</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

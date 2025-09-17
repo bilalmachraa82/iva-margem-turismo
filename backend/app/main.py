@@ -2,33 +2,41 @@
 Main FastAPI application for IVA Margem Turismo
 API for VAT margin calculation for travel agencies
 """
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 import os
 import uuid
 import json
 import shutil
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional
+from typing import Any, Dict, List, Optional
 import logging
 from contextlib import asynccontextmanager
+import io
+from pathlib import Path
 
 # Import app modules
 from .models import (
-    Sale, Cost, Association, CalculationRequest, 
+    Sale, Cost, Association, CalculationRequest,
     AIMatchRequest, UnlinkRequest, UploadResponse,
-    CalculationResult, AIMatchResult, PeriodCalculateRequest
+    CalculationResult, AIMatchResult, PeriodCalculateRequest,
+    CompanyInfo, PDFExportRequest, ErrorDetail, ErrorResponse
 )
 from .saft_parser import SAFTParser
 from .efatura_parser import EFaturaParser
 from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
-from .pdf_export_professional import generate_pdf_report
+from .pdf_export_professional import generate_pdf_report as generate_professional_pdf_report
+# from .pdf_export_enhanced import generate_enhanced_pdf_report  # Temporarily disabled due to syntax error
+from .pdf_pipeline import render_pdf_from_html, resolve_company_payload, sanitize_company_name
 from .period_calculator import PeriodVATCalculator
+from .kv_store import kv
 
 # Configure logging
 logging.basicConfig(
@@ -37,8 +45,43 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Session storage (in-memory for simplicity)
+# Runtime environment
+IS_VERCEL = bool(os.getenv("VERCEL"))
+
+# Directories (use /tmp on Vercel)
+TEMP_DIR = Path('/tmp') if IS_VERCEL else Path('temp')
+UPLOAD_DIR = TEMP_DIR / 'uploads'
+
+# Session storage (in-memory fallback; KV used on Vercel when configured)
 sessions = {}
+
+SESSION_TTL_SECONDS = 24 * 3600
+
+async def set_session_store(session_id: str, value: Dict) -> None:
+    if IS_VERCEL and kv.enabled:
+        await kv.set_json(f"session:{session_id}", value, ttl=SESSION_TTL_SECONDS)
+    else:
+        sessions[session_id] = value
+
+async def get_session_store(session_id: str) -> Optional[Dict]:
+    if IS_VERCEL and kv.enabled:
+        return await kv.get_json(f"session:{session_id}")
+    return sessions.get(session_id)
+
+async def has_session_store(session_id: str) -> bool:
+    rec = await get_session_store(session_id)
+    return rec is not None
+
+async def delete_session_store(session_id: str) -> None:
+    if IS_VERCEL and kv.enabled:
+        await kv.delete(f"session:{session_id}")
+    else:
+        sessions.pop(session_id, None)
+
+async def clear_sessions_store() -> None:
+    # Avoid global clears on KV to prevent cross-user data loss; no-op on Vercel
+    if not (IS_VERCEL and kv.enabled):
+        sessions.clear()
 
 # Global reference to cleanup task
 cleanup_task = None
@@ -68,15 +111,16 @@ async def lifespan(app: FastAPI):
     logger.info("Starting IVA Margem Turismo API...")
     
     # Ensure required directories exist
-    os.makedirs("temp", exist_ok=True)
-    os.makedirs("uploads", exist_ok=True)
+    TEMP_DIR.mkdir(parents=True, exist_ok=True)
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     
     # Clean old temp files
     clean_old_files()
     
-    # Start periodic cleanup task
-    cleanup_task = asyncio.create_task(periodic_cleanup())
-    logger.info("Started periodic cleanup task")
+    # Start periodic cleanup task (skip on Vercel serverless)
+    if not IS_VERCEL:
+        cleanup_task = asyncio.create_task(periodic_cleanup())
+        logger.info("Started periodic cleanup task")
     
     yield
     
@@ -100,14 +144,138 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS - Allow all origins in development
+# Serve frontend statically in development to avoid CORS during local testing
+try:
+    FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
+    if FRONTEND_DIR.exists():
+        app.mount("/frontend", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+        logger.info(f"Mounted frontend at /frontend from {FRONTEND_DIR}")
+        # Dev convenience: redirect root to frontend index
+        @app.get("/")
+        async def root_index_redirect():
+            return RedirectResponse(url="/frontend/index.html")
+except Exception as _e:
+    logger.warning(f"Could not mount frontend static dir: {_e}")
+
+# Configure CORS with environment-based settings
+def get_cors_origins():
+    """Get allowed CORS origins from environment or defaults"""
+    env_origins = os.getenv('CORS_ORIGINS', '')
+    if env_origins:
+        return env_origins.split(',')
+
+    # Development defaults
+    return [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://0.0.0.0:3000",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "*",  # dev fallback
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=get_cors_origins(),
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With"
+    ],
+    expose_headers=["Content-Disposition"],  # For file downloads
+    max_age=600,  # Cache preflight for 10 minutes
 )
+
+
+# Enhanced error handling
+def create_error_response(code: str, message: str, details: dict = None, request_id: str = None):
+    """Create standardized error response"""
+    return JSONResponse(
+        status_code=400,
+        content=ErrorResponse(
+            error=ErrorDetail(code=code, message=message, details=details),
+            request_id=request_id
+        ).dict()
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle validation errors with detailed information"""
+    request_id = str(uuid.uuid4())[:8]
+    logger.warning(f"Validation error [{request_id}]: {exc.errors()}")
+
+    details = {
+        "errors": exc.errors(),
+        "body": str(exc.body) if hasattr(exc, 'body') else None
+    }
+
+    return JSONResponse(
+        status_code=422,
+        content=ErrorResponse(
+            error=ErrorDetail(
+                code="VALIDATION_ERROR",
+                message="Invalid request data",
+                details=details
+            ),
+            request_id=request_id
+        ).dict()
+    )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Handle HTTP exceptions with standardized format"""
+    request_id = str(uuid.uuid4())[:8]
+
+    # Map status codes to error codes
+    error_codes = {
+        400: "BAD_REQUEST",
+        401: "UNAUTHORIZED",
+        403: "FORBIDDEN",
+        404: "NOT_FOUND",
+        413: "FILE_TOO_LARGE",
+        422: "VALIDATION_ERROR",
+        500: "INTERNAL_ERROR"
+    }
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorResponse(
+            error=ErrorDetail(
+                code=error_codes.get(exc.status_code, "HTTP_ERROR"),
+                message=str(exc.detail),
+                details={"status_code": exc.status_code}
+            ),
+            request_id=request_id
+        ).dict()
+    )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle unexpected exceptions"""
+    request_id = str(uuid.uuid4())[:8]
+    logger.error(f"Unexpected error [{request_id}]: {str(exc)}", exc_info=True)
+
+    return JSONResponse(
+        status_code=500,
+        content=ErrorResponse(
+            error=ErrorDetail(
+                code="INTERNAL_ERROR",
+                message="An unexpected error occurred",
+                details={"request_id": request_id}
+            ),
+            request_id=request_id
+        ).dict()
+    )
 
 
 def clean_old_files():
@@ -117,36 +285,37 @@ def clean_old_files():
         
         # Clean old files
         cleaned_files = 0
-        for folder in ['temp', 'uploads']:
-            if os.path.exists(folder):
+        for folder in [TEMP_DIR, UPLOAD_DIR]:
+            if folder.exists():
                 for filename in os.listdir(folder):
-                    filepath = os.path.join(folder, filename)
-                    if os.path.isfile(filepath):
-                        file_time = datetime.fromtimestamp(os.path.getctime(filepath))
+                    filepath = folder / filename
+                    if filepath.is_file():
+                        file_time = datetime.fromtimestamp(filepath.stat().st_ctime)
                         if now - file_time > timedelta(hours=24):
-                            os.remove(filepath)
-                            cleaned_files += 1
-                            logger.debug(f"Removed old file: {filepath}")
+                            try:
+                                filepath.unlink()
+                                cleaned_files += 1
+                                logger.debug(f"Removed old file: {filepath}")
+                            except Exception:
+                                pass
         
-        # Clean old sessions
+        # Skip session cleanup on Vercel; rely on KV TTL. Local: cleanup in-memory sessions
         cleaned_sessions = 0
-        sessions_to_remove = []
-        for session_id, session_data in sessions.items():
-            created_at_str = session_data.get("created_at", "")
-            if created_at_str:
-                try:
-                    created_at = datetime.fromisoformat(created_at_str)
-                    if now - created_at > timedelta(hours=24):
+        if not (IS_VERCEL and kv.enabled):
+            sessions_to_remove = []
+            for session_id, session_data in sessions.items():
+                created_at_str = session_data.get("created_at", "")
+                if created_at_str:
+                    try:
+                        created_at = datetime.fromisoformat(created_at_str)
+                        if now - created_at > timedelta(hours=24):
+                            sessions_to_remove.append(session_id)
+                    except Exception:
                         sessions_to_remove.append(session_id)
-                except:
-                    # If can't parse date, mark for removal
-                    sessions_to_remove.append(session_id)
-        
-        # Remove old sessions
-        for session_id in sessions_to_remove:
-            del sessions[session_id]
-            cleaned_sessions += 1
-            
+            for session_id in sessions_to_remove:
+                sessions.pop(session_id, None)
+                cleaned_sessions += 1
+
         if cleaned_files > 0 or cleaned_sessions > 0:
             logger.info(f"Cleanup completed: {cleaned_files} files, {cleaned_sessions} sessions removed")
             
@@ -165,6 +334,7 @@ async def root():
             "upload_efatura": "/api/upload-efatura",
             "associate": "/api/associate",
             "calculate": "/api/calculate",
+            "diagnostics": "/api/diagnostics/{session_id}",
             "docs": "/docs"
         }
     }
@@ -173,11 +343,95 @@ async def root():
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint"""
+    temp_files_count = 0
+    try:
+        temp_files_count = len(list(TEMP_DIR.iterdir())) if TEMP_DIR.exists() else 0
+    except Exception:
+        temp_files_count = 0
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "sessions_active": len(sessions),
-        "temp_files": len(os.listdir("temp")) if os.path.exists("temp") else 0
+        "sessions_active": None if (IS_VERCEL and kv.enabled) else len(sessions),
+        "temp_files": temp_files_count
+    }
+
+
+@app.get("/api/diagnostics/{session_id}")
+async def diagnostics(session_id: str, vat_rate: float = 23.0):
+    """Run integrity checks and reconciliations for a session.
+
+    - Verifies that sum of allocated costs across sales ~= total costs
+    - Compares aggregate gross margin from per-sale calc vs (total sales - total costs)
+    - Reports orphan costs / sales and association density
+    """
+    if not await has_session_store(session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(session_id)
+    data = session["data"]
+
+    sales = data.get("sales", [])
+    costs = data.get("costs", [])
+
+    total_sales = sum(float(s.get("amount", 0) or 0) for s in sales if s.get("amount") is not None)
+    total_costs = sum(float(c.get("amount", 0) or 0) for c in costs if c.get("amount") is not None)
+
+    # Calculate using existing calculator
+    calc = VATCalculator(vat_rate=vat_rate)
+    calcs = calc.calculate_all(sales, costs)
+    allocated_sum = sum(float(r.get("total_allocated_costs", 0) or 0) for r in calcs)
+    gross_margin_sum = sum(float(r.get("gross_margin", 0) or 0) for r in calcs)
+
+    expected_gross = total_sales - total_costs
+
+    # Association stats
+    sales_with_costs = [s for s in sales if len(s.get("linked_costs", [])) > 0]
+    costs_with_sales = [c for c in costs if len(c.get("linked_sales", [])) > 0]
+    orphan_sales = len(sales) - len(sales_with_costs)
+    orphan_costs = len(costs) - len(costs_with_sales)
+    total_links = sum(len(s.get("linked_costs", [])) for s in sales)
+    avg_costs_per_sale = total_links / len(sales) if sales else 0
+    avg_sales_per_cost = (sum(len(c.get("linked_sales", [])) for c in costs) / len(costs)) if costs else 0
+
+    warnings = []
+    if abs(allocated_sum - total_costs) > 0.01:
+        warnings.append({
+            "type": "allocation_mismatch",
+            "message": f"Soma de custos alocados (€{allocated_sum:.2f}) difere do total de custos (€{total_costs:.2f})"
+        })
+    if orphan_costs > 0:
+        warnings.append({"type": "orphan_costs", "count": orphan_costs})
+    if orphan_sales > 0:
+        warnings.append({"type": "sales_without_costs", "count": orphan_sales})
+    if avg_costs_per_sale > 20 or avg_sales_per_cost > 20:
+        warnings.append({
+            "type": "mass_association",
+            "message": "Densidade de associações muito elevada; verifique se não associou tudo com tudo"
+        })
+
+    return {
+        "totals": {
+            "sales": round(total_sales, 2),
+            "costs": round(total_costs, 2),
+            "expected_gross_margin": round(expected_gross, 2)
+        },
+        "calc": {
+            "documents": len(calcs),
+            "allocated_costs_sum": round(allocated_sum, 2),
+            "gross_margin_sum": round(gross_margin_sum, 2)
+        },
+        "reconciliation": {
+            "gross_margin_delta": round(gross_margin_sum - expected_gross, 2),
+            "allocated_vs_costs_delta": round(allocated_sum - total_costs, 2)
+        },
+        "associations": {
+            "sales_count": len(sales),
+            "costs_count": len(costs),
+            "orphan_sales": orphan_sales,
+            "orphan_costs": orphan_costs,
+            "avg_costs_per_sale": round(avg_costs_per_sale, 2),
+            "avg_sales_per_cost": round(avg_sales_per_cost, 2)
+        },
+        "warnings": warnings
     }
 
 
@@ -211,7 +465,7 @@ async def upload_saft(file: UploadFile = File(...)):
     
     # Generate session ID
     session_id = str(uuid.uuid4())[:8]
-    temp_path = f"uploads/{session_id}_{file.filename}"
+    temp_path = str(UPLOAD_DIR / f"{session_id}_{safe_filename}")
     
     try:
         # Save uploaded file
@@ -236,12 +490,12 @@ async def upload_saft(file: UploadFile = File(...)):
         # Clean up upload file
         os.remove(temp_path)
         
-        # Store in session
-        sessions[session_id] = {
+        # Store in session (KV on Vercel or in-memory locally)
+        await set_session_store(session_id, {
             "created_at": datetime.now().isoformat(),
             "data": data,
             "filename": file.filename
-        }
+        })
         
         # Validate parsed data
         validation_result = DataValidator.validate_margin_regime_data(
@@ -297,9 +551,9 @@ async def upload_efatura_files(
     vendas: UploadFile = File(..., description="Ficheiro CSV de vendas do e-Fatura"),
     compras: UploadFile = File(..., description="Ficheiro CSV de compras do e-Fatura")
 ):
-    # Limpa sessões anteriores para evitar duplicação de dados em novos uploads
-    sessions.clear()
-    logger.info("Sessões anteriores limpas antes de novo upload.")
+    # Limpa sessões anteriores (no-op em Vercel para evitar impacto cross-user)
+    await clear_sessions_store()
+    logger.info("Sessões anteriores limpas (ou ignoradas em Vercel) antes de novo upload.")
     """
     Upload e-Fatura CSV files (vendas and compras)
     
@@ -328,15 +582,15 @@ async def upload_efatura_files(
         parser = EFaturaParser()
         data = parser.parse(vendas_content, compras_content)
         
-        # Store in session
-        sessions[session_id] = {
+        # Store in session (KV on Vercel or in-memory locally)
+        await set_session_store(session_id, {
             "created_at": datetime.now().isoformat(),
             "data": data,
             "filenames": {
                 "vendas": vendas.filename,
                 "compras": compras.filename
             }
-        }
+        })
         
         # Validate parsed data
         validation_result = DataValidator.validate_margin_regime_data(
@@ -391,10 +645,10 @@ async def associate_items(request: Association):
     Multiple sales can be linked to multiple costs and vice versa
     """
     # Validate session
-    if request.session_id not in sessions:
+    if not await has_session_store(request.session_id):
         raise HTTPException(404, "Session not found")
-        
-    session_data = sessions[request.session_id]["data"]
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
     
     # Validate for mass associations
     warnings = []
@@ -480,10 +734,10 @@ async def auto_match(request: AIMatchRequest):
     Uses date proximity, value compatibility and description matching
     """
     # Validate session
-    if request.session_id not in sessions:
+    if not await has_session_store(request.session_id):
         raise HTTPException(404, "Session not found")
-        
-    session_data = sessions[request.session_id]["data"]
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
     sales = session_data["sales"]
     costs = session_data["costs"]
     
@@ -633,10 +887,10 @@ async def calculate_vat(request: CalculationRequest):
     Returns Excel file with complete calculations
     """
     # Validate session
-    if request.session_id not in sessions:
+    if not await has_session_store(request.session_id):
         raise HTTPException(404, "Session not found")
-        
-    session_data = sessions[request.session_id]["data"]
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
     
     try:
         # First, validate associations integrity
@@ -654,14 +908,24 @@ async def calculate_vat(request: CalculationRequest):
                 elif error["type"] == "warning":
                     logger.warning(f"Integrity warning: {error['message']}")
         
-        # Initialize calculator
+        # Initialize calculator with enhanced error handling
         calculator = VATCalculator(vat_rate=request.vat_rate)
-        
+
+        # Pre-validate data before calculation
+        if not session_data.get("sales"):
+            raise HTTPException(400, "No sales data found in session")
+        if not session_data.get("costs"):
+            logger.warning("No costs data found - calculating with zero costs")
+
         # Calculate VAT for all sales
         calculations = calculator.calculate_all(
-            session_data["sales"], 
-            session_data["costs"]
+            session_data["sales"],
+            session_data.get("costs", [])
         )
+
+        # Validate calculation results
+        if not calculations:
+            raise HTTPException(400, "No valid calculations generated")
         
         # Add metadata
         metadata = session_data.get("metadata", {})
@@ -670,7 +934,7 @@ async def calculate_vat(request: CalculationRequest):
         
         # Generate Excel report
         exporter = ExcelExporter()
-        excel_path = exporter.generate(calculations, session_data, metadata)
+        excel_path = exporter.generate(calculations, session_data, metadata, base_dir=TEMP_DIR)
         
         # Return file
         return FileResponse(
@@ -689,9 +953,9 @@ async def calculate_vat(request: CalculationRequest):
 
 @app.post("/api/export-pdf")
 @app.options("/api/export-pdf")
-async def export_pdf(request: Dict = None):
+async def export_pdf(request: PDFExportRequest = None):
     """
-    Generate PDF report with calculation results
+    Generate enhanced PDF report with calculation results and company info
     """
     # Handle OPTIONS request
     if request is None:
@@ -699,9 +963,11 @@ async def export_pdf(request: Dict = None):
         
     try:
         # Validate request
-        session_id = request.get("session_id")
-        vat_rate = request.get("vat_rate", 23)
-        final_results = request.get("results", {})
+        session_id = request.session_id if request else None
+        vat_rate = request.vat_rate if request else 23
+        final_results = request.results if request else {}
+        company_info = request.company_info if request else None
+        out_format = (request.format or 'html') if request else 'html'
         
         if not session_id:
             # Create test session for PDF preview
@@ -711,10 +977,11 @@ async def export_pdf(request: Dict = None):
                 "metadata": {}
             }
             calculations = []
-        elif session_id not in sessions:
+        elif not await has_session_store(session_id):
             raise HTTPException(404, "Session not found")
         else:
-            session_data = sessions[session_id]["data"]
+            session = await get_session_store(session_id)
+            session_data = session["data"]
             
             # Initialize calculator
             calculator = VATCalculator(vat_rate=vat_rate)
@@ -725,24 +992,51 @@ async def export_pdf(request: Dict = None):
                 session_data["costs"]
             )
         
-        # Generate PDF
+        # Generate PDF / HTML content
         logger.info(f"Generating PDF with {len(calculations)} calculations")
         logger.info(f"Session has {len(session_data.get('sales', []))} sales and {len(session_data.get('costs', []))} costs")
         logger.info(f"Final results: {final_results}")
-        
-        pdf_bytes = generate_pdf_report(
+
+        # Resolve company metadata
+        company_payload = resolve_company_payload(company_info, session_data)
+        company_name = (
+            company_payload.get('name')
+            or session_data.get('metadata', {}).get('company_name')
+            or 'Empresa'
+        )
+        safe_company = sanitize_company_name(company_name)
+        filename = f"Relatório IVA sobre Margem - {safe_company}.pdf"
+
+        pdf_html_bytes = generate_professional_pdf_report(
             session_data=session_data,
             calculation_results=calculations,
             vat_rate=vat_rate,
-            final_results=final_results
+            final_results=final_results or {},
+            company_info=company_payload,
         )
-        
-        # Return HTML that can be printed to PDF
-        from fastapi.responses import HTMLResponse
+        html_content = pdf_html_bytes.decode('utf-8')
+
+        if out_format.lower() == 'pdf':
+            pdf_bin, renderer_name = render_pdf_from_html(
+                html_content=html_content,
+                session_data=session_data,
+                calculations=calculations,
+                vat_rate=vat_rate,
+                final_results=final_results or {},
+                company_payload=company_payload,
+                safe_company=safe_company,
+            )
+            headers = {
+                "Content-Disposition": f"attachment; filename=\"{filename}\"",
+                "X-Report-Renderer": renderer_name,
+            }
+            return StreamingResponse(io.BytesIO(pdf_bin), media_type='application/pdf', headers=headers)
+
         return HTMLResponse(
-            content=pdf_bytes.decode('utf-8'),
+            content=html_content,
             headers={
-                "Content-Type": "text/html; charset=utf-8"
+                "Content-Type": "text/html; charset=utf-8",
+                "Content-Disposition": f"inline; filename=\"{filename}\""
             }
         )
         
@@ -756,10 +1050,10 @@ async def unlink_items(request: UnlinkRequest):
     """Remove association between a sale and a cost"""
     
     # Validate session
-    if request.session_id not in sessions:
+    if not await has_session_store(request.session_id):
         raise HTTPException(404, "Session not found")
-        
-    session_data = sessions[request.session_id]["data"]
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
     
     # Find and update sale
     sale = next((s for s in session_data["sales"] if s["id"] == request.sale_id), None)
@@ -781,10 +1075,9 @@ async def unlink_items(request: UnlinkRequest):
 async def get_session(session_id: str):
     """Get session data"""
     
-    if session_id not in sessions:
+    if not await has_session_store(session_id):
         raise HTTPException(404, "Session not found")
-        
-    session = sessions[session_id]
+    session = await get_session_store(session_id)
     data = session["data"]
     
     return {
@@ -807,10 +1100,9 @@ async def get_session(session_id: str):
 async def delete_session(session_id: str):
     """Delete a session and its data"""
     
-    if session_id not in sessions:
+    if not await has_session_store(session_id):
         raise HTTPException(404, "Session not found")
-        
-    del sessions[session_id]
+    await delete_session_store(session_id)
     
     return {
         "status": "success",
@@ -826,10 +1118,10 @@ async def clear_associations(request: dict):
         raise HTTPException(400, "Session ID required")
     
     session_id = request["session_id"]
-    if session_id not in sessions:
+    if not await has_session_store(session_id):
         raise HTTPException(404, "Session not found")
-    
-    session_data = sessions[session_id]["data"]
+    session = await get_session_store(session_id)
+    session_data = session["data"]
     
     # Clear all associations
     associations_cleared = 0
@@ -862,10 +1154,11 @@ async def validate_data(request: dict):
         raise HTTPException(400, "Session ID required")
     
     session_id = request["session_id"]
-    if session_id not in sessions:
+    if not await has_session_store(session_id):
         raise HTTPException(404, "Session not found")
     
-    session_data = sessions[session_id]["data"]
+    session = await get_session_store(session_id)
+    session_data = session["data"]
     
     # Validate data
     validation = DataValidator.validate_margin_regime_data(
@@ -882,6 +1175,11 @@ async def validate_data(request: dict):
 
 @app.get("/api/mock-data")
 async def get_mock_data():
+    """Get mock data for testing without SAF-T file"""
+    return await load_mock_data()
+
+@app.post("/api/mock-data")
+async def load_mock_data():
     """Get mock data for testing without SAF-T file"""
     
     # Create mock session
@@ -1093,6 +1391,13 @@ async def get_mock_data():
         "filename": "demo_data.xml"
     }
     
+    # Store in session store for consistency with other endpoints
+    await set_session_store(session_id, {
+        "created_at": datetime.now().isoformat(),
+        "data": mock_data,
+        "filename": "demo_data.csv"
+    })
+
     return {
         "session_id": session_id,
         "message": "Mock data loaded successfully",
@@ -1113,10 +1418,11 @@ async def calculate_period_vat(request: PeriodCalculateRequest):
     from decimal import Decimal
     
     # Validate session
-    if request.session_id not in sessions:
+    if not await has_session_store(request.session_id):
         raise HTTPException(404, "Session not found")
     
-    session_data = sessions[request.session_id]["data"]
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
     
     try:
         # Parse dates
@@ -1164,6 +1470,47 @@ async def calculate_period_vat(request: PeriodCalculateRequest):
         raise HTTPException(500, f"Calculation error: {str(e)}")
 
 
+@app.post("/api/calculate-enhanced-period")
+async def calculate_enhanced_period(request: PeriodCalculateRequest):
+    """
+    Calculate VAT on margin for enhanced period with new calculator
+    Uses the improved calculator with better validation
+    """
+    # Validate session
+    if not await has_session_store(request.session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
+
+    try:
+        # Initialize enhanced calculator
+        calculator = VATCalculator(vat_rate=request.vat_rate)
+
+        # Use new period calculation method
+        period_result = calculator.calculate_by_period(
+            session_data.get("sales", []),
+            session_data.get("costs", []),
+            request.period_start,
+            request.period_end
+        )
+
+        # Add company info if available
+        company_info = session_data.get("metadata", {}).get("company_info", {})
+        period_result["company_info"] = company_info
+
+        return {
+            "success": True,
+            "session_id": request.session_id,
+            "period_result": period_result,
+            "calculation_mode": "enhanced_period",
+            "compliance": "CIVA Art. 308º - Regime Especial Agências Viagens"
+        }
+
+    except Exception as e:
+        logger.error(f"Enhanced period calculation error: {str(e)}")
+        raise HTTPException(500, f"Calculation failed: {str(e)}")
+
+
 @app.post("/api/calculate-quarterly")
 async def calculate_quarterly_vat(request: dict):
     """
@@ -1183,14 +1530,15 @@ async def calculate_quarterly_vat(request: dict):
     previous_negative = request.get('previous_negative_margin', 0.0)
     
     # Validate session
-    if session_id not in sessions:
+    if not await has_session_store(session_id):
         raise HTTPException(404, "Session not found")
     
     # Validate quarter
     if quarter not in [1, 2, 3, 4]:
         raise HTTPException(400, "Quarter must be 1, 2, 3, or 4")
     
-    session_data = sessions[session_id]["data"]
+    session = await get_session_store(session_id)
+    session_data = session["data"]
     
     try:
         # Initialize period calculator

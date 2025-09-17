@@ -22,14 +22,17 @@ class VATCalculator:
     IVA = Margem × Taxa de IVA / 100
     """
     
-    def __init__(self, vat_rate: float = 23.0):
+    def __init__(self, vat_rate: float = 23.0, fiscal_year: Optional[int] = None):
         """
         Initialize calculator with VAT rate
-        
+
         Args:
             vat_rate: VAT percentage rate (default 23% for Portugal)
+            fiscal_year: Fiscal year for calculations (optional)
         """
         self.vat_rate = vat_rate
+        self.fiscal_year = fiscal_year
+        self.validation_errors = []
         
     def calculate_all(self, sales: List[Dict], costs: List[Dict]) -> List[Dict]:
         """
@@ -162,12 +165,10 @@ class VATCalculator:
         # Calculate margin
         gross_margin = sale_amount - total_allocated_costs
         
-        # Calculate VAT on margin
-        # Formula para IVA sobre margem (Portugal - CIVA Art. 308º):
-        # IVA = Margem × Taxa_IVA / 100
-        # A margem é tributável pelo IVA normal, não incluído
+        # Calculate VAT on margin (CIVA Art. 308º - regime especial agências viagens)
+        # IVA sobre margem = Margem × Taxa_IVA / 100
         if gross_margin > 0:
-            vat_on_margin = gross_margin * self.vat_rate / 100
+            vat_on_margin = gross_margin * (self.vat_rate / 100)
         else:
             # No VAT on negative margins
             vat_on_margin = 0
@@ -327,3 +328,52 @@ class VATCalculator:
             List of validation errors and warnings
         """
         return getattr(self, 'validation_errors', [])
+
+    def calculate_by_period(self, sales: List[Dict], costs: List[Dict],
+                          period_start: str, period_end: str) -> Dict:
+        """
+        Calculate VAT on margin for a specific fiscal period
+
+        Args:
+            sales: List of sales documents
+            costs: List of cost documents
+            period_start: Start date (YYYY-MM-DD)
+            period_end: End date (YYYY-MM-DD)
+
+        Returns:
+            Period calculation with cumulative margin compensation
+        """
+        from datetime import datetime
+
+        start_date = datetime.strptime(period_start, "%Y-%m-%d")
+        end_date = datetime.strptime(period_end, "%Y-%m-%d")
+
+        # Filter documents by period
+        period_sales = []
+        period_costs = []
+
+        for sale in sales:
+            sale_date = datetime.strptime(sale["date"], "%Y-%m-%d")
+            if start_date <= sale_date <= end_date:
+                period_sales.append(sale)
+
+        for cost in costs:
+            cost_date = datetime.strptime(cost["date"], "%Y-%m-%d")
+            if start_date <= cost_date <= end_date:
+                period_costs.append(cost)
+
+        # Calculate for period
+        period_calculations = self.calculate_all(period_sales, period_costs)
+        period_summary = self.calculate_summary(period_calculations)
+
+        # Add period-specific data
+        period_summary["period_start"] = period_start
+        period_summary["period_end"] = period_end
+        period_summary["calculation_mode"] = "period_based"
+        period_summary["compliance"] = "CIVA Art. 308º - Regime Especial Agências Viagens"
+
+        return {
+            "summary": period_summary,
+            "calculations": period_calculations,
+            "validation_errors": self.validation_errors
+        }

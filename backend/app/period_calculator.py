@@ -105,7 +105,8 @@ class PeriodVATCalculator:
         
         # VAT is only due on positive margins
         vat_base = max(Decimal('0'), compensated_margin)
-        vat_amount = vat_base * self.vat_rate / 100
+        # Inclusive method: VAT = base * rate / (100 + rate)
+        vat_amount = vat_base * self.vat_rate / (Decimal('100') + self.vat_rate)
         
         # Carry forward negative margin if any
         carry_forward = min(Decimal('0'), compensated_margin)

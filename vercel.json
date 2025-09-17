@@ -22,6 +22,14 @@
     {
       "source": "/openapi.json",
       "destination": "/api/index"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/home.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
     }
   ]
 }

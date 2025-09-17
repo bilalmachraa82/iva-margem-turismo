@@ -1,16 +1,25 @@
 """
 Excel export module for IVA Margem calculations
-Generates professional multi-sheet Excel reports
+Generates professional multi-sheet Excel reports with PT locale formatting
 """
 import pandas as pd
 from datetime import datetime
 import os
+import locale
 from typing import List, Dict, Optional
 from openpyxl import load_workbook
-from openpyxl.styles import Font, Fill, PatternFill, Alignment, Border, Side
+from openpyxl.styles import Font, Fill, PatternFill, Alignment, Border, Side, NamedStyle
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
+# Custom number formats (openpyxl constants may vary by version)
+try:
+    from openpyxl.styles.numbers import FORMAT_CURRENCY_EUR, FORMAT_PERCENTAGE
+except ImportError:
+    # Fallback definitions
+    FORMAT_CURRENCY_EUR = '#,##0.00" €"'
+    FORMAT_PERCENTAGE = '0.00%'
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -19,16 +28,25 @@ class ExcelExporter:
     """Professional Excel report generator"""
     
     def __init__(self):
+        # Setup Portuguese locale for number formatting
+        try:
+            locale.setlocale(locale.LC_ALL, 'pt_PT.UTF-8')
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_ALL, 'Portuguese_Portugal')
+            except locale.Error:
+                logger.warning("Portuguese locale not available, using default")
+
         # Define styles
         self.header_fill = PatternFill(start_color="667eea", end_color="667eea", fill_type="solid")
         self.header_font = Font(bold=True, color="FFFFFF", size=12)
         self.title_font = Font(bold=True, size=14)
         self.subtitle_font = Font(bold=True, size=11, color="666666")
-        
+
         # Alternating row colors
         self.row_fill_1 = PatternFill(start_color="F8F9FA", end_color="F8F9FA", fill_type="solid")
         self.row_fill_2 = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
-        
+
         # Borders
         self.thin_border = Border(
             left=Side(style='thin', color='DDDDDD'),
@@ -36,15 +54,21 @@ class ExcelExporter:
             top=Side(style='thin', color='DDDDDD'),
             bottom=Side(style='thin', color='DDDDDD')
         )
-        
+
         self.thick_border = Border(
             left=Side(style='medium'),
             right=Side(style='medium'),
             top=Side(style='medium'),
             bottom=Side(style='medium')
         )
+
+        # PT locale number formats
+        self.pt_currency_format = '#,##0.00€;[RED]-#,##0.00€'
+        self.pt_number_format = '#,##0.00;[RED]-#,##0.00'
+        self.pt_percentage_format = '0.00%;[RED]-0.00%'
+        self.pt_date_format = 'dd/mm/yyyy'
         
-    def generate(self, calculations: List[Dict], raw_data: Dict, metadata: Dict) -> str:
+    def generate(self, calculations: List[Dict], raw_data: Dict, metadata: Dict, base_dir: Optional[Path] = None) -> str:
         """
         Generate complete Excel report
         
@@ -56,11 +80,13 @@ class ExcelExporter:
         Returns:
             Path to generated Excel file
         """
+        # Decide base temp directory (supports Vercel serverless using /tmp)
+        if base_dir is None:
+            base_dir = Path('/tmp') if os.getenv('VERCEL') else Path('temp')
+        base_dir.mkdir(parents=True, exist_ok=True)
+
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"temp/iva_margem_{timestamp}.xlsx"
-        
-        # Ensure temp directory exists
-        os.makedirs("temp", exist_ok=True)
+        filename = str(base_dir / f"iva_margem_{timestamp}.xlsx")
         
         try:
             # Create Excel writer
@@ -79,6 +105,12 @@ class ExcelExporter:
                 
                 # 5. Totals and statistics sheet
                 self._create_totals_sheet(writer, calculations, metadata)
+
+                # 6. Reconciliation sheet
+                self._create_reconciliation_sheet(writer, calculations, raw_data)
+
+                # 7. Warnings & Validations sheet
+                self._create_warnings_sheet(writer, calculations, raw_data)
                 
             # Apply formatting
             self._apply_formatting(filename)
@@ -256,7 +288,7 @@ class ExcelExporter:
             ws = wb[sheet_name]
             
             # Format headers (skip sheets without headers)
-            if sheet_name != 'Totais e Estatísticas':
+            if sheet_name not in ['Totais e Estatísticas']:
                 # Find header row (usually row 4 for summary, row 3 for others)
                 header_row = 4 if sheet_name == 'Resumo IVA Margem' else 3
                 
@@ -276,12 +308,47 @@ class ExcelExporter:
                             cell.fill = fill
                             cell.border = self.thin_border
                             
-                            # Format numbers
+                            # Format values with Portuguese locale
+                            header_val = str(ws.cell(header_row, cell.column).value or "").lower()
+
                             if isinstance(cell.value, (int, float)) and cell.column > 1:
-                                if '€' in str(ws.cell(header_row, cell.column).value):
-                                    cell.number_format = '#,##0.00 €'
-                                elif '%' in str(ws.cell(header_row, cell.column).value):
-                                    cell.number_format = '0.00%'
+                                if any(currency in header_val for currency in ['€', 'euro', 'valor', 'montante', 'iva']):
+                                    # Portuguese currency format (1.234,56€)
+                                    cell.number_format = self.pt_currency_format
+                                elif any(pct in header_val for pct in ['%', 'margem', 'percentagem', 'taxa']):
+                                    # Portuguese percentage format
+                                    try:
+                                        if float(cell.value) > 1:
+                                            cell.value = float(cell.value) / 100.0
+                                    except Exception:
+                                        pass
+                                    cell.number_format = self.pt_percentage_format
+                                else:
+                                    # Standard Portuguese number format (1.234,56)
+                                    cell.number_format = self.pt_number_format
+
+                                # Center align numbers
+                                cell.alignment = Alignment(horizontal='center', vertical='center')
+
+                            elif isinstance(cell.value, str) and any(date_indicator in header_val for date_indicator in ['data', 'date']):
+                                # Format date strings as Portuguese date format
+                                try:
+                                    from datetime import datetime
+                                    # Try to parse common date formats and convert to Portuguese
+                                    date_obj = None
+                                    for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%Y/%m/%d']:
+                                        try:
+                                            date_obj = datetime.strptime(cell.value, fmt)
+                                            break
+                                        except ValueError:
+                                            continue
+
+                                    if date_obj:
+                                        cell.value = date_obj
+                                        cell.number_format = self.pt_date_format
+                                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                                except Exception:
+                                    pass  # Keep original string value
                                     
                 # Add autofilter
                 if ws.max_row > header_row:
@@ -316,3 +383,47 @@ class ExcelExporter:
             
         # Save formatted workbook
         wb.save(filename)
+
+    def _create_reconciliation_sheet(self, writer, calculations: List[Dict], raw_data: Dict):
+        """Create reconciliation sheet comparing aggregates vs per-document sums"""
+        total_sales = sum(float(s.get('amount', 0) or 0) for s in raw_data.get('sales', []))
+        total_costs = sum(float(c.get('amount', 0) or 0) for c in raw_data.get('costs', []))
+        expected_gross = total_sales - total_costs
+        allocated_sum = sum(float(c.get('total_allocated_costs', 0) or 0) for c in calculations)
+        gross_sum = sum(float(c.get('gross_margin', 0) or 0) for c in calculations)
+
+        df = pd.DataFrame([
+            {'Métrica': 'Total Vendas (origem)', 'Valor': total_sales},
+            {'Métrica': 'Total Custos (origem)', 'Valor': total_costs},
+            {'Métrica': 'Margem Esperada (Vendas - Custos)', 'Valor': expected_gross},
+            {'Métrica': 'Soma Custos Alocados (por documento)', 'Valor': allocated_sum},
+            {'Métrica': 'Soma Margens (por documento)', 'Valor': gross_sum},
+            {'Métrica': 'Delta Margem (Doc - Esperada)', 'Valor': gross_sum - expected_gross},
+            {'Métrica': 'Delta Alocados (Doc - Custos)', 'Valor': allocated_sum - total_costs},
+        ])
+        df.to_excel(writer, sheet_name='Reconciliação', index=False, startrow=2)
+        ws = writer.sheets['Reconciliação']
+        ws['A1'] = 'Reconciliação de Totais'
+        ws['A1'].font = self.title_font
+
+    def _create_warnings_sheet(self, writer, calculations: List[Dict], raw_data: Dict):
+        """Create warnings & validations sheet from calculator and raw data"""
+        from .calculator import VATCalculator
+        issues = VATCalculator().validate_calculations(calculations)
+
+        sales = raw_data.get('sales', [])
+        costs = raw_data.get('costs', [])
+        orphan_sales = [s for s in sales if not s.get('linked_costs')]
+        orphan_costs = [c for c in costs if not c.get('linked_sales')]
+
+        rows = []
+        rows.append({'Tipo': 'Info', 'Mensagem': f"Vendas sem custos: {len(orphan_sales)}"})
+        rows.append({'Tipo': 'Info', 'Mensagem': f"Custos sem vendas: {len(orphan_costs)}"})
+        for it in issues:
+            rows.append({'Tipo': it.get('type', 'info').upper(), 'Mensagem': it.get('message', '')})
+
+        df = pd.DataFrame(rows)
+        df.to_excel(writer, sheet_name='Avisos & Validações', index=False, startrow=2)
+        ws = writer.sheets['Avisos & Validações']
+        ws['A1'] = 'Avisos & Validações'
+        ws['A1'].font = self.title_font

@@ -91,54 +91,286 @@
             width: 4px;
             background: #10B981;
         }
+
+        /* 2025 Ultra Modern Design - Advantage.pt Corporate Identity */
+
+        /* Advantage Brand System */
+        :root {
+            --advantage-navy: #0b0c1e;
+            --advantage-blue: #1e3a8a;
+            --advantage-light: #f8fafc;
+            --advantage-gray: #64748b;
+            --advantage-accent: #3b82f6;
+            --advantage-success: #10b981;
+            --advantage-warning: #f59e0b;
+            --advantage-danger: #ef4444;
+            --advantage-border: #e2e8f0;
+        }
+
+        /* Modern Corporate Cards */
+        .modern-card {
+            background: white;
+            border: 1px solid var(--advantage-border);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modern-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--advantage-accent), var(--advantage-success));
+            border-radius: 12px 12px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modern-card:hover {
+            border-color: var(--advantage-accent);
+            box-shadow: 0 4px 12px 0 rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .modern-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Corporate Navy Sections */
+        .navy-header {
+            background: linear-gradient(135deg, var(--advantage-navy) 0%, var(--advantage-blue) 100%);
+            color: white;
+        }
+
+        .navy-accent {
+            background: var(--advantage-navy);
+            color: white;
+        }
+
+        /* Professional Typography */
+        .heading-corporate {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            color: var(--advantage-navy);
+            letter-spacing: -0.025em;
+        }
+
+        .text-corporate {
+            font-family: 'Poppins', sans-serif;
+            color: var(--advantage-gray);
+            line-height: 1.6;
+        }
+
+        /* Chart Container Corporate */
+        .chart-container {
+            background: white;
+            border: 1px solid var(--advantage-border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chart-container:hover {
+            border-color: var(--advantage-accent);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Data Visualization Professional */
+        .data-point {
+            background: white;
+            border: 1px solid var(--advantage-border);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .data-point:hover {
+            border-color: var(--advantage-accent);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Interactive Elements Corporate */
+        .interactive-element {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .interactive-element:hover {
+            transform: translateY(-1px);
+        }
+
+        .interactive-element:active {
+            transform: scale(0.98);
+        }
+
+        /* Button System Modern */
+        .btn-primary-corporate {
+            background: var(--advantage-navy);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 500;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-corporate:hover {
+            background: var(--advantage-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 12, 30, 0.25);
+        }
+
+        .btn-secondary-corporate {
+            background: white;
+            border: 1px solid var(--advantage-navy);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 500;
+            color: var(--advantage-navy);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-corporate:hover {
+            background: var(--advantage-navy);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Status Indicators Professional */
+        .status-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #065f46;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #92400e;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #991b1b;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Progress Indicators Modern */
+        .progress-modern {
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .progress-modern .progress-bar {
+            background: linear-gradient(90deg, var(--advantage-accent), var(--advantage-success));
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.8s ease;
+        }
+
+        /* Corporate Gradient Text */
+        .gradient-corporate {
+            background: linear-gradient(135deg, var(--advantage-navy) 0%, var(--advantage-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Subtle Micro-interactions */
+        .micro-feedback {
+            animation: subtle-scale 0.2s ease;
+        }
+
+        @keyframes subtle-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Loading States */
+        .loading-corporate {
+            background: linear-gradient(90deg, #f8fafc 25%, #e2e8f0 50%, #f8fafc 75%);
+            background-size: 200% 100%;
+            animation: shimmer-corporate 1.5s infinite;
+        }
+
+        @keyframes shimmer-corporate {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
     </style>
 </head>
 <body class="bg-gray-50" x-data="ivaApp()">
-    <!-- Clean Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+    <!-- Corporate Header -->
+    <header class="navy-header shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-20">
                 <div class="flex items-center">
-                    <i class="fas fa-calculator text-blue-600 text-2xl mr-3"></i>
-                    <div>
-                        <h1 class="text-xl font-semibold text-gray-900">IVA Margem Turismo</h1>
-                        <p class="text-xs text-gray-500">Cálculo automático para agências de viagens</p>
+                    <div class="w-12 h-12 rounded-xl bg-white bg-opacity-20 flex items-center justify-center mr-4">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
-                    <div class="hidden lg:block ml-8 pl-8 border-l border-gray-300">
-                        <p class="text-xs text-gray-500">Powered by</p>
-                        <p class="text-sm font-semibold text-gray-900">Accounting Advantage</p>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white heading-corporate">IVA Margem Turismo</h1>
+                        <p class="text-sm text-blue-100">Regime Especial CIVA Art. 308º — Solução Profissional</p>
+                    </div>
+                    <div class="hidden lg:block ml-10 pl-10 border-l border-blue-300 border-opacity-50">
+                        <p class="text-xs text-blue-200 uppercase tracking-wider font-medium">Powered by</p>
+                        <p class="text-lg font-bold text-white">Accounting Advantage</p>
                     </div>
                 </div>
                 
-                <!-- Progress Indicator -->
-                <div class="hidden md:flex items-center space-x-8">
+                <!-- Corporate Progress Indicator -->
+                <div class="hidden md:flex items-center space-x-6">
                     <div class="flex items-center">
-                        <div class="flex items-center" :class="currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'">
-                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
-                                  :class="currentStep >= 1 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+                        <div class="flex items-center" :class="currentStep >= 1 ? 'text-white' : 'text-blue-300'">
+                            <span class="w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all"
+                                  :class="currentStep >= 1 ? 'border-white bg-white text-navy-800' : 'border-blue-300'">
                                 1
                             </span>
-                            <span class="ml-2 text-sm">Upload</span>
+                            <span class="ml-3 text-sm font-medium">Upload</span>
                         </div>
-                        
-                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'"></div>
-                        
-                        <div class="flex items-center" :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'">
-                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
-                                  :class="currentStep >= 2 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+
+                        <div class="w-12 h-1 mx-4 rounded-full transition-all" :class="currentStep >= 2 ? 'bg-white' : 'bg-blue-300 bg-opacity-50'"></div>
+
+                        <div class="flex items-center" :class="currentStep >= 2 ? 'text-white' : 'text-blue-300'">
+                            <span class="w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all"
+                                  :class="currentStep >= 2 ? 'border-white bg-white text-navy-800' : 'border-blue-300'">
                                 2
                             </span>
-                            <span class="ml-2 text-sm">Associar</span>
+                            <span class="ml-3 text-sm font-medium">Associar</span>
                         </div>
-                        
-                        <div class="w-16 h-0.5 mx-3" :class="currentStep >= 3 ? 'bg-blue-600' : 'bg-gray-300'"></div>
-                        
-                        <div class="flex items-center" :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-400'">
-                            <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-medium"
-                                  :class="currentStep >= 3 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'">
+
+                        <div class="w-12 h-1 mx-4 rounded-full transition-all" :class="currentStep >= 3 ? 'bg-white' : 'bg-blue-300 bg-opacity-50'"></div>
+
+                        <div class="flex items-center" :class="currentStep >= 3 ? 'text-white' : 'text-blue-300'">
+                            <span class="w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-semibold transition-all"
+                                  :class="currentStep >= 3 ? 'border-white bg-white text-navy-800' : 'border-blue-300'">
                                 3
                             </span>
-                            <span class="ml-2 text-sm">Resultado</span>
+                            <span class="ml-3 text-sm font-medium">Resultado</span>
                         </div>
                     </div>
                 </div>
@@ -148,62 +380,70 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
         <!-- Reset Button -->
-        <div x-show="currentStep > 1" class="flex justify-end mb-4">
-            <button @click="resetSession()" 
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center">
-                <i class="fas fa-trash-alt mr-2"></i>
-                <span>Reset Dados</span>
+        <div x-show="currentStep > 1" class="flex justify-end mb-6">
+            <button @click="resetSession()"
+                    class="btn-secondary-corporate interactive-element flex items-center">
+                <i class="fas fa-refresh mr-2"></i>
+                <span>Nova Sessão</span>
             </button>
         </div>
+
         <!-- Step 1: Upload -->
-        <div x-show="currentStep === 1" class="animate-slide-up">
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div x-show="currentStep === 1" class="animate-slide-up" id="etapa1">
+            <div class="modern-card p-8">
                 <div class="max-w-2xl mx-auto">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-2">Começar Análise</h2>
-                    <p class="text-gray-600 mb-8">Escolha o tipo de ficheiro para importar ou use dados de demonstração</p>
+                    <h2 class="text-3xl font-bold heading-corporate mb-3">Iniciar Cálculo IVA</h2>
+                    <p class="text-corporate mb-8 text-lg">Importe ficheiros SAF-T ou e-Fatura, ou utilize dados de demonstração para teste</p>
                     
-                    <!-- Upload Type Tabs -->
-                    <div class="mb-6">
-                        <div class="flex border-b border-gray-200">
+                    <!-- Upload Type Tabs Corporate -->
+                    <div class="mb-8">
+                        <div class="flex bg-gray-100 rounded-lg p-1">
                             <button @click="uploadType = 'saft'"
-                                    class="px-6 py-3 text-sm font-medium transition-colors"
-                                    :class="uploadType === 'saft' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'">
+                                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-md transition-all interactive-element"
+                                    :class="uploadType === 'saft' ? 'bg-white text-navy-800 shadow-sm' : 'text-gray-600 hover:text-gray-800'">
                                 <i class="fas fa-file-code mr-2"></i>
-                                Ficheiro SAF-T (XML)
+                                SAF-T (XML)
                             </button>
                             <button @click="uploadType = 'efatura'"
-                                    class="px-6 py-3 text-sm font-medium transition-colors"
-                                    :class="uploadType === 'efatura' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'">
+                                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-md transition-all interactive-element"
+                                    :class="uploadType === 'efatura' ? 'bg-white text-navy-800 shadow-sm' : 'text-gray-600 hover:text-gray-800'">
                                 <i class="fas fa-file-csv mr-2"></i>
-                                Ficheiros e-Fatura (CSV)
+                                e-Fatura (CSV)
                             </button>
                         </div>
                     </div>
                     
-                    <!-- Upload Area for SAF-T -->
-                    <div x-show="uploadType === 'saft'" class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors"
-                         :class="dragOver ? 'border-blue-400 bg-blue-50' : ''"
+                    <!-- Upload Area for SAF-T Corporate -->
+                    <div x-show="uploadType === 'saft'" class="border-2 border-dashed rounded-xl p-12 text-center transition-all"
+                         :class="dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-400'"
                          @dragover.prevent="dragOver = true"
                          @dragleave.prevent="dragOver = false"
                          @drop.prevent="handleDrop($event)">
-                        
-                        <i class="fas fa-cloud-upload-alt text-4xl mb-4" 
-                           :class="dragOver ? 'text-blue-600' : 'text-gray-400'"></i>
-                        
-                        <p class="text-lg font-medium text-gray-700 mb-2">
-                            Arraste o ficheiro SAF-T aqui
-                        </p>
-                        <p class="text-sm text-gray-500 mb-4">ou</p>
-                        
+
+                        <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-2xl"
+                               :class="dragOver ? 'text-blue-600' : 'text-blue-500'"></i>
+                        </div>
+
+                        <h3 class="text-xl font-semibold heading-corporate mb-2">
+                            Carregar Ficheiro SAF-T
+                        </h3>
+                        <p class="text-corporate mb-6">Arraste o ficheiro XML aqui ou clique para selecionar</p>
+
                         <input type="file" id="fileInput" class="hidden" accept=".xml" @change="handleFileSelect">
-                        
+
                         <button onclick="document.getElementById('fileInput').click()"
-                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                class="btn-primary-corporate interactive-element">
+                            <i class="fas fa-folder-open mr-2"></i>
                             Selecionar Ficheiro
                         </button>
-                        
-                        <p class="text-xs text-gray-500 mt-4">Formato XML • Máximo 50MB</p>
+
+                        <p class="text-sm text-gray-500 mt-6">
+                            <i class="fas fa-check-circle text-green-500 mr-1"></i>
+                            Formato XML • Máximo 50MB • Processamento seguro
+                        </p>
                     </div>
                     
                     <!-- Upload Area for e-Fatura -->
@@ -233,7 +473,7 @@
                                 <i class="fas fa-file-csv text-2xl text-green-600"></i>
                             </div>
                             <input type="file" id="vendasInput" class="hidden" accept=".csv" @change="handleVendasSelect">
-                            <button onclick="document.getElementById('vendasInput').click()"
+                            <button type="button" onclick="document.getElementById('vendasInput').click()"
                                     class="w-full py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                     :class="efaturaFiles.vendas ? 'bg-green-50 border-green-300' : ''">
                                 <i class="fas fa-upload mr-2"></i>
@@ -251,7 +491,7 @@
                                 <i class="fas fa-file-csv text-2xl text-red-600"></i>
                             </div>
                             <input type="file" id="comprasInput" class="hidden" accept=".csv" @change="handleComprasSelect">
-                            <button onclick="document.getElementById('comprasInput').click()"
+                            <button type="button" onclick="document.getElementById('comprasInput').click()"
                                     class="w-full py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                     :class="efaturaFiles.compras ? 'bg-green-50 border-green-300' : ''">
                                 <i class="fas fa-upload mr-2"></i>
@@ -260,7 +500,7 @@
                         </div>
                         
                         <!-- Upload Button -->
-                        <button @click="uploadEfaturaFiles"
+                        <button type="button" @click="uploadEfaturaFiles"
                                 :disabled="!efaturaFiles.vendas || !efaturaFiles.compras"
                                 class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
                             <i class="fas fa-upload mr-2"></i>
@@ -278,12 +518,52 @@
                         </div>
                     </div>
                     
-                    <button @click="loadMockData" 
+                    <button type="button" @click="loadMockData"
                             class="w-full py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
                         <i class="fas fa-database mr-2"></i>
                         Usar Dados de Demonstração
                         <span class="ml-2 text-xs text-gray-500">(26 vendas • 157 custos)</span>
                     </button>
+
+                    <!-- Debug Panel -->
+                    <div x-data="{ showDebug: false }" class="mt-4">
+                        <button @click="showDebug = !showDebug"
+                                class="text-xs text-gray-500 hover:text-gray-700 flex items-center">
+                            <i class="fas fa-bug mr-1"></i>
+                            Debug Info
+                        </button>
+
+                        <div x-show="showDebug" x-transition class="mt-2 p-3 bg-gray-50 rounded-lg text-xs">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <strong>API URL:</strong><br>
+                                    <span x-text="apiUrl" class="font-mono"></span>
+                                </div>
+                                <div>
+                                    <strong>Session:</strong><br>
+                                    <span x-text="sessionId || 'None'" class="font-mono"></span>
+                                </div>
+                                <div>
+                                    <strong>Step:</strong><br>
+                                    <span x-text="currentStep" class="font-mono"></span>
+                                </div>
+                                <div>
+                                    <strong>Loading:</strong><br>
+                                    <span x-text="loading ? 'Yes' : 'No'" class="font-mono"></span>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button @click="testApiConnection()"
+                                        class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                    Test API
+                                </button>
+                                <button @click="clearSession()"
+                                        class="ml-2 px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+                                    Clear Session
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- VAT Rate Selection -->
                     <div class="mt-8 p-4 bg-blue-50 rounded-lg">
@@ -398,8 +678,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <button @click="autoMatch" 
-                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                    <button @click="autoMatch"
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="loading">
                         <div class="flex items-center justify-between">
                             <div>
@@ -410,9 +690,9 @@
                         </div>
                     </button>
                     
-                    <button @click="associateSelected" 
-                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
-                            :disabled="selectedSales.length === 0 || selectedCosts.length === 0">
+                    <button @click="associateSelected"
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift disabled:opacity-50 disabled:cursor-not-allowed"
+                            :disabled="loading || selectedSales.length === 0 || selectedCosts.length === 0">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="font-medium text-gray-900">Associar Selecionados</h4>
@@ -425,8 +705,8 @@
                         </div>
                     </button>
                     
-                    <button @click="clearAllAssociations" 
-                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift"
+                    <button @click="clearAllAssociations"
+                            class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left hover-lift disabled:opacity-50 disabled:cursor-not-allowed"
                             :disabled="!hasAssociations || loading"
                             x-show="hasAssociations">
                         <div class="flex items-center justify-between">
@@ -438,8 +718,9 @@
                         </div>
                     </button>
                     
-                    <button @click="calculateAndExport" 
-                            class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left hover-lift">
+                    <button @click="calculateAndExport"
+                            :disabled="loading"
+                            class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-left hover-lift disabled:opacity-50 disabled:cursor-not-allowed">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="font-medium">Calcular e Exportar</h4>
@@ -488,6 +769,9 @@
                                            @click.stop
                                            @change="toggleSale(sale.id)"
                                            class="mt-1 mr-3">
+                                    <div class="w-8 h-8 rounded-md bg-slate-100 flex items-center justify-center mr-3">
+                                        <i :class="[getSaleIcon(sale), getSaleIconColor(sale)]"></i>
+                                    </div>
                                     <div class="flex-1">
                                         <div class="flex items-start justify-between">
                                             <div>
@@ -553,7 +837,12 @@
                                         <div class="flex items-start justify-between">
                                             <div>
                                                 <div class="flex items-center">
-                                                    <i :class="[getSupplierIcon(cost.supplier), getSupplierIconColor(cost.supplier), 'mr-2']"></i>
+                                                    <template x-if="cost.icon">
+                                                        <span class="mr-2 text-lg" x-text="cost.icon"></span>
+                                                    </template>
+                                                    <template x-if="!cost.icon">
+                                                        <i :class="[getSupplierIcon(cost.supplier), getSupplierIconColor(cost.supplier), 'mr-2']"></i>
+                                                    </template>
                                                     <p class="font-medium text-gray-900" x-text="cost.supplier"></p>
                                                 </div>
                                                 <p class="text-sm text-gray-600 ml-6" x-text="cost.description"></p>
@@ -685,32 +974,70 @@
                     </div>
                 </div>
                 
-                <!-- Results Summary -->
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-sm text-gray-600">Total Vendas</p>
-                        <p class="text-xl font-semibold text-green-600" x-text="'€' + (finalResults.totalSales || 0).toLocaleString('pt-PT')"></p>
+                <!-- Results Summary Corporate -->
+                <!-- Professional KPI Dashboard - Advantage Style -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
+                    <div class="modern-card interactive-element data-point text-center p-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
+                            <i class="fas fa-euro-sign text-green-600 text-lg"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-corporate mb-2">Total Vendas</p>
+                        <p class="text-2xl font-bold gradient-corporate"
+                           x-text="'€' + (finalResults.totalSales || 0).toLocaleString('pt-PT')"></p>
+                        <div class="mt-3 progress-modern">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
                     </div>
-                    
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-sm text-gray-600">Total Custos</p>
-                        <p class="text-xl font-semibold text-red-600" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT')"></p>
+
+                    <div class="modern-card interactive-element data-point text-center p-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-red-100 flex items-center justify-center">
+                            <i class="fas fa-receipt text-red-600 text-lg"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-corporate mb-2">Total Custos</p>
+                        <p class="text-2xl font-bold text-red-600"
+                           x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT')"></p>
+                        <div class="mt-3 progress-modern">
+                            <div class="progress-bar bg-red-500" style="width: 75%"></div>
+                        </div>
                     </div>
-                    
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-sm text-gray-600" x-text="calculationMode === 'period' ? 'Margem Compensada' : 'Margem Bruta'"></p>
-                        <p class="text-xl font-semibold text-blue-600" 
+
+                    <div class="modern-card interactive-element data-point text-center p-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i :class="calculationMode === 'period' ? 'fas fa-balance-scale' : 'fas fa-chart-bar'" class="text-blue-600 text-lg"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-corporate mb-2" x-text="calculationMode === 'period' ? 'Margem Compensada' : 'Margem Bruta'"></p>
+                        <p class="text-2xl font-bold text-blue-600"
                            x-text="'€' + ((calculationMode === 'period' ? finalResults.compensatedMargin : finalResults.grossMargin) || 0).toLocaleString('pt-PT')"></p>
+                        <div class="mt-3 progress-modern">
+                            <div class="progress-bar bg-blue-500" style="width: 85%"></div>
+                        </div>
                     </div>
-                    
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <p class="text-sm text-gray-600">IVA (<span x-text="vatRate"></span>%)</p>
-                        <p class="text-xl font-semibold text-purple-600" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT')"></p>
+
+                    <div class="modern-card interactive-element data-point text-center p-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
+                            <i class="fas fa-university text-purple-600 text-lg"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-corporate mb-2">IVA (<span x-text="vatRate"></span>%)</p>
+                        <p class="text-2xl font-bold text-purple-600"
+                           x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT')"></p>
+                        <div class="mt-3 progress-modern">
+                            <div class="progress-bar bg-purple-500" style="width: 65%"></div>
+                        </div>
                     </div>
-                    
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <p class="text-sm text-gray-600 font-medium">Margem Líquida</p>
-                        <p class="text-xl font-bold text-blue-600" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT')"></p>
+
+                    <div class="modern-card interactive-element data-point text-center p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-cyan-100 flex items-center justify-center">
+                            <i class="fas fa-trophy text-cyan-600 text-lg"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-corporate mb-2">Margem Líquida</p>
+                        <p class="text-2xl font-bold gradient-corporate"
+                           x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT')"></p>
+                        <div class="mt-3 progress-modern">
+                            <div class="progress-bar bg-gradient-to-r from-cyan-500 to-blue-500" style="width: 90%"></div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="status-success text-xs">Resultado Final</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -739,29 +1066,29 @@
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span>Margem Bruta do Período:</span>
-                            <span class="font-semibold" x-text="periodResults ? '€' + periodResults.totals.gross_margin.toFixed(2) : ''"></span>
+                            <span class="font-semibold" x-text="periodResults && periodResults.totals ? '€' + Number(periodResults.totals.gross_margin || 0).toFixed(2) : ''"></span>
                         </div>
-                        <div class="flex justify-between" x-show="periodResults && periodResults.totals.previous_negative > 0">
+                        <div class="flex justify-between" x-show="periodResults && periodResults.totals && periodResults.totals.previous_negative > 0">
                             <span>(-) Margem Negativa Anterior:</span>
-                            <span class="font-semibold text-red-600" x-text="periodResults ? '€' + periodResults.totals.previous_negative.toFixed(2) : ''"></span>
+                            <span class="font-semibold text-red-600" x-text="periodResults && periodResults.totals ? '€' + Number(periodResults.totals.previous_negative || 0).toFixed(2) : ''"></span>
                         </div>
                         <div class="flex justify-between border-t pt-2">
                             <span>Margem Compensada:</span>
-                            <span class="font-bold" x-text="periodResults ? '€' + periodResults.totals.compensated_margin.toFixed(2) : ''"></span>
+                            <span class="font-bold" x-text="periodResults && periodResults.totals ? '€' + Number(periodResults.totals.compensated_margin || 0).toFixed(2) : ''"></span>
                         </div>
                         <div class="flex justify-between">
                             <span>Base Tributável:</span>
-                            <span class="font-semibold" x-text="periodResults ? '€' + periodResults.totals.vat_base.toFixed(2) : ''"></span>
+                            <span class="font-semibold" x-text="periodResults && periodResults.totals ? '€' + Number(periodResults.totals.vat_base || 0).toFixed(2) : ''"></span>
                         </div>
                         <div class="flex justify-between text-lg font-bold border-t pt-2">
                             <span>IVA a Pagar:</span>
-                            <span class="text-green-600" x-text="periodResults ? '€' + periodResults.totals.vat_amount.toFixed(2) : ''"></span>
+                            <span class="text-green-600" x-text="periodResults && periodResults.totals ? '€' + Number(periodResults.totals.vat_amount || 0).toFixed(2) : ''"></span>
                         </div>
-                        <div x-show="periodResults && periodResults.totals.carry_forward < 0" class="mt-4 p-3 bg-orange-100 rounded">
+                        <div x-show="periodResults && periodResults.totals && periodResults.totals.carry_forward < 0" class="mt-4 p-3 bg-orange-100 rounded">
                             <p class="text-sm text-orange-800">
                                 <i class="fas fa-exclamation-triangle mr-1"></i>
                                 Margem negativa a compensar no próximo período: 
-                                <span class="font-bold">€<span x-text="Math.abs(periodResults.totals.carry_forward).toFixed(2)"></span></span>
+                                <span class="font-bold">€<span x-text="periodResults && periodResults.totals ? Math.abs(Number(periodResults.totals.carry_forward || 0)).toFixed(2) : '0.00'"></span></span>
                             </p>
                         </div>
                     </div>
@@ -770,49 +1097,49 @@
                 <!-- Main Charts Section - Aligned with PDF -->
                 <div class="space-y-8 mb-8">
                     <!-- Bar Chart - Financial Analysis -->
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h3 class="text-xl font-semibold text-gray-900 mb-4">
-                            <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
-                            Análise Financeira Completa
+                    <div class="chart-container interactive-element float-animation">
+                        <h3 class="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 flex items-center">
+                            <i class="fas fa-chart-bar mr-3 text-blue-600 pulse-subtle"></i>
+                            💰 Análise Financeira Completa
                         </h3>
-                        <div style="position: relative; height: 400px;">
-                            <canvas id="marginChart"></canvas>
+                        <div class="relative h-96 data-point">
+                            <canvas id="marginChart" class="relative z-10"></canvas>
                         </div>
                     </div>
                     
                     <!-- Distribution and Comparison Charts -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Pie Chart - Value Distribution -->
-                        <div class="bg-white rounded-lg shadow-md p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                                <i class="fas fa-chart-pie mr-2 text-green-600"></i>
+                        <div class="chart-container interactive-element">
+                            <h3 class="text-lg font-bold heading-corporate mb-4 flex items-center">
+                                <i class="fas fa-chart-pie mr-3 text-blue-600"></i>
                                 Distribuição de Valores
                             </h3>
-                            <div style="position: relative; height: 250px;">
-                                <canvas id="marginPieChart"></canvas>
+                            <div class="relative h-64 data-point">
+                                <canvas id="marginPieChart" class="relative z-10"></canvas>
                             </div>
-                            <!-- Custom Legend -->
-                            <div class="mt-4 space-y-2" id="pieLegend">
-                                <div class="flex items-center justify-between text-sm">
+                            <!-- Custom Legend - Modernized -->
+                            <div class="mt-6 space-y-3" id="pieLegend">
+                                <div class="flex items-center justify-between text-sm interactive-element p-2 rounded-lg hover:bg-white hover:bg-opacity-50 transition-all duration-300">
                                     <div class="flex items-center">
-                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(59, 130, 246, 0.8)"></span>
-                                        <span>Margem Líquida</span>
+                                        <span class="w-5 h-5 rounded-full mr-3 shadow-lg" style="background: linear-gradient(135deg, rgba(6, 182, 212, 1) 0%, rgba(34, 211, 238, 0.8) 100%)"></span>
+                                        <span class="font-medium text-gray-700">✨ Margem Líquida</span>
                                     </div>
-                                    <span class="font-semibold" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                    <span class="font-bold text-cyan-600" x-text="'€' + (finalResults.netMargin || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
                                 </div>
-                                <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center justify-between text-sm interactive-element p-2 rounded-lg hover:bg-white hover:bg-opacity-50 transition-all duration-300">
                                     <div class="flex items-center">
-                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(147, 51, 234, 0.8)"></span>
-                                        <span>IVA</span>
+                                        <span class="w-5 h-5 rounded-full mr-3 shadow-lg" style="background: linear-gradient(135deg, rgba(147, 51, 234, 1) 0%, rgba(168, 85, 247, 0.8) 100%)"></span>
+                                        <span class="font-medium text-gray-700">🏛️ IVA</span>
                                     </div>
-                                    <span class="font-semibold" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                    <span class="font-bold text-purple-600" x-text="'€' + (finalResults.totalVAT || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
                                 </div>
-                                <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center justify-between text-sm interactive-element p-2 rounded-lg hover:bg-white hover:bg-opacity-50 transition-all duration-300">
                                     <div class="flex items-center">
-                                        <span class="w-4 h-4 rounded mr-2" style="background-color: rgba(239, 68, 68, 0.8)"></span>
-                                        <span>Custos</span>
+                                        <span class="w-5 h-5 rounded-full mr-3 shadow-lg" style="background: linear-gradient(135deg, rgba(239, 68, 68, 1) 0%, rgba(248, 113, 113, 0.8) 100%)"></span>
+                                        <span class="font-medium text-gray-700">📋 Custos</span>
                                     </div>
-                                    <span class="font-semibold" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
+                                    <span class="font-bold text-red-600" x-text="'€' + (finalResults.totalCosts || 0).toLocaleString('pt-PT', {minimumFractionDigits: 2})"></span>
                                 </div>
                             </div>
                         </div>
@@ -838,20 +1165,26 @@
                         Voltar
                     </button>
                     
-                    <button @click="downloadExcel()" 
-                            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <button @click="downloadExcel()"
+                            class="btn-primary-corporate interactive-element flex items-center">
                         <i class="fas fa-file-excel mr-2"></i>
-                        Descarregar Excel
+                        Exportar Excel
                     </button>
-                    
-                    <button @click="downloadPDF()" 
-                            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+
+                    <button @click="previewPDF()"
+                            class="btn-secondary-corporate interactive-element flex items-center">
+                        <i class="fas fa-eye mr-2"></i>
+                        Pré-visualizar PDF
+                    </button>
+
+                    <button @click="downloadPDF()"
+                            class="btn-secondary-corporate interactive-element flex items-center">
                         <i class="fas fa-file-pdf mr-2"></i>
-                        Descarregar PDF
+                        Exportar PDF
                     </button>
-                    
-                    <button @click="startNew()" 
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+
+                    <button @click="startNew()"
+                            class="btn-secondary-corporate interactive-element flex items-center">
                         <i class="fas fa-plus mr-2"></i>
                         Nova Análise
                     </button>
@@ -915,21 +1248,31 @@
         </template>
     </div>
 
-    <!-- Chart.js -->
+    <!-- Modern Chart Libraries 2025 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient@0.6.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+
+    <!-- Framer Motion for micro-animations -->
+    <!-- Removed framer-motion (React-only lib) to avoid runtime errors in plain HTML app -->
+
+    <!-- GSAP for premium animations -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+
     <script src="advanced_charts.js"></script>
     
     <!-- Alpine.js App -->
     <script>
         function ivaApp() {
             return {
-                // API Configuration - Fixed for file:// protocol
-                apiUrl: (window.location.hostname === 'localhost' || 
-                        window.location.hostname === '' || 
-                        window.location.protocol === 'file:') 
-                    ? 'http://localhost:8000' 
-                    : 'https://iva-margem-turismo-backend.up.railway.app',
+                // API Configuration: treat localhost/127.0.0.1/0.0.0.0 or port 3000 as dev
+                apiUrl: ((['localhost','127.0.0.1','0.0.0.0'].includes(window.location.hostname))
+                        || window.location.port === '3000'
+                        || window.location.protocol === 'file:')
+                    ? 'http://localhost:8000'
+                    : '/api',
                 
                 // App State
                 currentStep: 1,
@@ -1065,6 +1408,60 @@
                     }
                 },
                 
+                // Enhanced fetch with timeout, retries and detailed error handling
+                async apiFetch(url, options = {}, timeoutMs = 30000, retries = 1) {
+                    for (let attempt = 0; attempt <= retries; attempt++) {
+                        const controller = new AbortController();
+                        const t = setTimeout(() => controller.abort(), timeoutMs);
+
+                        try {
+                            console.log(`[API Call] ${options.method || 'GET'} ${url} (attempt ${attempt + 1})`);
+
+                            const res = await fetch(url, {
+                                ...options,
+                                signal: controller.signal,
+                                headers: {
+                                    ...options.headers
+                                }
+                            });
+
+                            clearTimeout(t);
+
+                            if (!res.ok) {
+                                console.error(`[API Error] ${res.status} ${res.statusText} for ${url}`);
+
+                                if (res.status === 405) {
+                                    throw new Error(`Método HTTP incorreto. Endpoint: ${url}, Método: ${options.method || 'GET'}`);
+                                }
+                                if (res.status >= 500 && attempt < retries) {
+                                    console.log(`Server error, retrying... (${attempt + 1}/${retries + 1})`);
+                                    await new Promise(resolve => setTimeout(resolve, 1000));
+                                    continue;
+                                }
+                            }
+
+                            console.log(`[API Success] ${res.status} for ${url}`);
+                            return res;
+
+                        } catch (error) {
+                            clearTimeout(t);
+
+                            if (error.name === 'AbortError') {
+                                console.error(`[API Timeout] Request to ${url} timed out after ${timeoutMs}ms`);
+                                throw new Error(`Request timeout (${timeoutMs/1000}s). Por favor tente novamente.`);
+                            }
+
+                            if (attempt === retries) {
+                                console.error(`[API Final Error] ${error.message} for ${url}`);
+                                throw error;
+                            }
+
+                            console.log(`Network error, retrying... (${attempt + 1}/${retries + 1})`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                    }
+                },
+                
                 // File Handling
                 handleDrop(event) {
                     this.dragOver = false;
@@ -1083,149 +1480,123 @@
                     }
                 },
                 
-                // e-Fatura file handlers
-                handleVendasSelect(event) {
+                // Unified CSV file handler with validation
+                handleCSVFile(event, type) {
                     const file = event.target.files[0];
-                    if (file && file.name.endsWith('.csv')) {
-                        this.efaturaFiles.vendas = file;
-                    } else {
+                    if (!file) return;
+
+                    // File type validation
+                    if (!file.name.endsWith('.csv')) {
                         this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
-                    }
-                },
-                
-                handleComprasSelect(event) {
-                    const file = event.target.files[0];
-                    if (file && file.name.endsWith('.csv')) {
-                        this.efaturaFiles.compras = file;
-                    } else {
-                        this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
-                    }
-                },
-                
-                async uploadEfaturaFiles() {
-                    if (!this.efaturaFiles.vendas || !this.efaturaFiles.compras) {
-                        this.showNotification('Aviso', 'Por favor selecione ambos os ficheiros (vendas e compras)', 'warning');
                         return;
                     }
-                    
+
+                    // File size validation (50MB limit)
+                    const maxSize = 50 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        this.showNotification('Erro', 'Ficheiro muito grande (máximo 50MB)', 'error');
+                        return;
+                    }
+
+                    // Store file based on type
+                    if (type === 'vendas') {
+                        this.efaturaFiles.vendas = file;
+                        console.log('[CSV] Vendas file selected:', file.name, `${(file.size/1024).toFixed(1)}KB`);
+                    } else if (type === 'compras') {
+                        this.efaturaFiles.compras = file;
+                        console.log('[CSV] Compras file selected:', file.name, `${(file.size/1024).toFixed(1)}KB`);
+                    }
+                },
+
+                // Legacy handlers (for backward compatibility)
+                handleVendasSelect(event) {
+                    this.handleCSVFile(event, 'vendas');
+                },
+                handleComprasSelect(event) {
+                    this.handleCSVFile(event, 'compras');
+                },
+                async uploadEfaturaFiles() {
+                    if (!this.efaturaFiles.vendas || !this.efaturaFiles.compras) {
+                        this.showNotification('Aviso', 'Selecione ambos os ficheiros (vendas e compras)', 'warning');
+                        return;
+                    }
+
+                    // Files already validated by handleCSVFile
+
                     this.loading = true;
-                    this.loadingMessage = 'A processar ficheiros e-Fatura...';
-                    
-                    const formData = new FormData();
-                    formData.append('vendas', this.efaturaFiles.vendas);
-                    formData.append('compras', this.efaturaFiles.compras);
-                    
+                    this.loadingMessage = 'A processar ficheiros e‑Fatura...';
+
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/upload-efatura`, {
+                        console.log('[e-Fatura] Starting file upload...');
+                        console.log(`[e-Fatura] Vendas: ${this.efaturaFiles.vendas.name} (${this.efaturaFiles.vendas.size} bytes)`);
+                        console.log(`[e-Fatura] Compras: ${this.efaturaFiles.compras.name} (${this.efaturaFiles.compras.size} bytes)`);
+
+                        const formData = new FormData();
+                        formData.append('vendas', this.efaturaFiles.vendas);
+                        formData.append('compras', this.efaturaFiles.compras);
+
+                        const response = await this.apiFetch(`${this.apiUrl}/api/upload-efatura`, {
                             method: 'POST',
                             body: formData
-                        });
-                        
+                        }, 60000); // 60 second timeout for large files
+
                         if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.detail || 'Erro no upload');
+                            let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                            try {
+                                const errorData = await response.json();
+                                errorMessage = errorData.detail || errorData.message || errorMessage;
+                            } catch (_) {
+                                // If response is not JSON, use status text
+                            }
+                            throw new Error(errorMessage);
                         }
-                        
+
                         const data = await response.json();
-                        
+
+                        if (!data.session_id) {
+                            throw new Error('Resposta inválida do servidor (missing session_id)');
+                        }
+
                         this.sessionId = data.session_id;
                         this.sales = data.sales || [];
                         this.costs = data.costs || [];
-                        
+
+                        console.log(`[e-Fatura] Successfully imported ${this.sales.length} sales and ${this.costs.length} costs`);
+
                         this.saveSession();
-                        
+
                         this.showNotification(
-                            'Sucesso!', 
-                            `Importados ${this.sales.length} vendas e ${this.costs.length} custos`,
+                            'Ficheiros Importados!',
+                            `${this.sales.length} vendas e ${this.costs.length} custos importados com sucesso`,
                             'success'
                         );
-                        
-                        if (data.warnings && data.warnings.length > 0) {
-                            data.warnings.forEach(warning => {
-                                this.showNotification('Aviso', warning, 'warning');
-                            });
-                        }
-                        
+
                         this.currentStep = 2;
-                        
+
                     } catch (error) {
-                        console.error('e-Fatura upload error:', error);
-                        this.showNotification('Erro', error.message || 'Erro ao carregar ficheiros', 'error');
+                        console.error('[e-Fatura Error]:', error);
+
+                        let userMessage = 'Erro ao processar ficheiros e-Fatura';
+
+                        if (error.message.includes('timeout')) {
+                            userMessage = 'Upload demorou muito tempo. Tente ficheiros menores ou verifique a conexão.';
+                        } else if (error.message.includes('400')) {
+                            userMessage = 'Formato de ficheiro inválido. Verifique se são ficheiros CSV válidos.';
+                        } else if (error.message.includes('413')) {
+                            userMessage = 'Ficheiros muito grandes. Tente ficheiros menores.';
+                        } else if (error.message.includes('500')) {
+                            userMessage = 'Erro interno do servidor. Tente novamente em alguns minutos.';
+                        } else if (error.message.includes('fetch')) {
+                            userMessage = 'Erro de conexão. Verifique se o backend está a funcionar.';
+                        }
+
+                        this.showNotification('Erro de Import', userMessage, 'error');
+
                     } finally {
                         this.loading = false;
+                        this.loadingMessage = '';
                     }
                 },
-                
-                handleComprasSelect(event) {
-                    const file = event.target.files[0];
-                    if (file && file.name.endsWith('.csv')) {
-                        this.efaturaFiles.compras = file;
-                    } else {
-                        this.showNotification('Erro', 'Por favor selecione um ficheiro CSV', 'error');
-                    }
-                },
-                
-                async uploadEfaturaFiles() {
-                    if (!this.efaturaFiles.vendas || !this.efaturaFiles.compras) {
-                        this.showNotification('Erro', 'Por favor selecione ambos os ficheiros', 'error');
-                        return;
-                    }
-                    
-                    this.loading = true;
-                    this.loadingMessage = 'A carregar ficheiros e-Fatura...';
-                    
-                    const formData = new FormData();
-                    formData.append('vendas', this.efaturaFiles.vendas);
-                    formData.append('compras', this.efaturaFiles.compras);
-                    
-                    try {
-                        const response = await fetch(`${this.apiUrl}/api/upload-efatura`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.detail || 'Erro no upload');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        this.sessionId = data.session_id;
-                        this.sales = data.sales;
-                        this.costs = data.costs;
-                        
-                        this.saveSession();
-                        
-                        // Show summary with warnings/errors if any
-                        let message = `Importados ${data.summary.total_sales} vendas e ${data.summary.total_costs} custos`;
-                        if (data.summary.total_warnings > 0) {
-                            message += ` (${data.summary.total_warnings} avisos)`;
-                        }
-                        
-                        this.showNotification('Sucesso!', message, 'success');
-                        
-                        // Show warnings if any
-                        if (data.summary.warnings && data.summary.warnings.length > 0) {
-                            setTimeout(() => {
-                                this.showNotification(
-                                    'Avisos encontrados',
-                                    data.summary.warnings[0],
-                                    'warning'
-                                );
-                            }, 2000);
-                        }
-                        
-                        this.currentStep = 2;
-                        
-                    } catch (error) {
-                        console.error('e-Fatura upload error:', error);
-                        this.showNotification('Erro', error.message || 'Erro ao carregar ficheiros', 'error');
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-                
                 async uploadFile(file) {
                     this.loading = true;
                     this.loadingMessage = 'A carregar ficheiro SAF-T...';
@@ -1234,7 +1605,7 @@
                     formData.append('file', file);
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/upload`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/upload`, {
                             method: 'POST',
                             body: formData
                         });
@@ -1267,36 +1638,60 @@
                     }
                 },
                 
-                // Mock Data
+                // Mock Data with enhanced error handling
                 async loadMockData() {
                     this.loading = true;
                     this.loadingMessage = 'A carregar dados de demonstração...';
-                    
+
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/mock-data`, {
+                        console.log('[Mock Data] Starting mock data load...');
+
+                        const response = await this.apiFetch(`${this.apiUrl}/api/mock-data`, {
                             method: 'GET'
                         });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
                         const data = await response.json();
-                        
+
+                        if (!data.session_id || !data.sales || !data.costs) {
+                            throw new Error('Dados de resposta inválidos do servidor');
+                        }
+
                         this.sessionId = data.session_id;
                         this.sales = data.sales;
                         this.costs = data.costs;
-                        
+
+                        console.log(`[Mock Data] Loaded ${this.sales.length} sales and ${this.costs.length} costs`);
+
                         this.saveSession();
-                        
+
                         this.showNotification(
                             'Dados Carregados',
-                            'Dados de demonstração carregados com sucesso',
+                            `${this.sales.length} vendas e ${this.costs.length} custos carregados`,
                             'success'
                         );
-                        
+
                         this.currentStep = 2;
-                        
+
                     } catch (error) {
-                        console.error('Error loading mock data:', error);
-                        this.showNotification('Erro', 'Erro ao carregar dados', 'error');
+                        console.error('[Mock Data Error]:', error);
+                        let errorMessage = 'Erro ao carregar dados de demonstração';
+
+                        if (error.message.includes('timeout')) {
+                            errorMessage = 'Timeout na conexão. Verifique se o backend está a funcionar.';
+                        } else if (error.message.includes('405')) {
+                            errorMessage = 'Erro de configuração do servidor (método HTTP incorreto)';
+                        } else if (error.message.includes('fetch')) {
+                            errorMessage = 'Erro de conexão. Verifique se o backend está a funcionar na porta 8000.';
+                        }
+
+                        this.showNotification('Erro de Dados Demo', errorMessage, 'error');
                     } finally {
                         this.loading = false;
+                        this.loadingMessage = '';
                     }
                 },
                 
@@ -1351,7 +1746,7 @@
                     this.loadingMessage = 'A criar associações...';
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/associate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/associate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1359,7 +1754,7 @@
                                 sale_ids: this.selectedSales,
                                 cost_ids: this.selectedCosts
                             })
-                        });
+                        }, 15000);
                         
                         const result = await response.json();
                         
@@ -1402,14 +1797,14 @@
                     this.loadingMessage = 'A analisar e associar documentos...';
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/auto-match`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/auto-match`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 session_id: this.sessionId,
                                 threshold: 60
                             })
-                        });
+                        }, 15000);
                         
                         const result = await response.json();
                         
@@ -1439,13 +1834,13 @@
                     this.loadingMessage = 'A limpar associações...';
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/clear-associations`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/clear-associations`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 session_id: this.sessionId
                             })
-                        });
+                        }, 10000);
                         
                         const result = await response.json();
                         
@@ -1485,7 +1880,7 @@
                     this.loadingMessage = 'A calcular IVA por período com compensação...';
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/calculate-period`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate-period`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1495,7 +1890,7 @@
                                 region: this.vatRegion,
                                 previous_negative_margin: this.previousNegativeMargin || 0
                             })
-                        });
+                        }, 20000);
                         
                         if (!response.ok) {
                             const error = await response.json();
@@ -1552,16 +1947,16 @@
                     
                     this.loading = true;
                     this.loadingMessage = 'A calcular IVA e gerar relatório...';
-                    
+
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/calculate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 session_id: this.sessionId,
                                 vat_rate: this.vatRate
                             })
-                        });
+                        }, 25000);
                         
                         if (!response.ok) {
                             throw new Error('Erro no cálculo');
@@ -1642,35 +2037,44 @@
                     try {
                         const ctx = document.getElementById('marginChart');
                         if (!ctx) return;
-                        
+
                         // Destroy existing chart if any
                         if (this.chart) {
                             this.chart.destroy();
                         }
-                    
-                    // Create gradient backgrounds
-                    const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-                    gradient1.addColorStop(0, 'rgba(34, 197, 94, 0.8)');
-                    gradient1.addColorStop(1, 'rgba(34, 197, 94, 0.3)');
-                    
-                    const gradient2 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-                    gradient2.addColorStop(0, 'rgba(239, 68, 68, 0.8)');
-                    gradient2.addColorStop(1, 'rgba(239, 68, 68, 0.3)');
-                    
-                    const gradient3 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-                    gradient3.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-                    gradient3.addColorStop(1, 'rgba(59, 130, 246, 0.3)');
-                    
-                    const gradient4 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-                    gradient4.addColorStop(0, 'rgba(147, 51, 234, 0.8)');
-                    gradient4.addColorStop(1, 'rgba(147, 51, 234, 0.3)');
+
+                    // Modern 3D Gradients for 2025 Trends
+                    const salesGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                    salesGradient.addColorStop(0, 'rgba(16, 185, 129, 1)');    // emerald-500
+                    salesGradient.addColorStop(0.5, 'rgba(34, 197, 94, 0.8)'); // emerald-400
+                    salesGradient.addColorStop(1, 'rgba(52, 211, 153, 0.2)');  // emerald-300
+
+                    const costsGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                    costsGradient.addColorStop(0, 'rgba(239, 68, 68, 1)');     // red-500
+                    costsGradient.addColorStop(0.5, 'rgba(248, 113, 113, 0.8)'); // red-400
+                    costsGradient.addColorStop(1, 'rgba(252, 165, 165, 0.2)'); // red-300
+
+                    const marginGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                    marginGradient.addColorStop(0, 'rgba(59, 130, 246, 1)');   // blue-500
+                    marginGradient.addColorStop(0.5, 'rgba(96, 165, 250, 0.8)'); // blue-400
+                    marginGradient.addColorStop(1, 'rgba(147, 197, 253, 0.2)'); // blue-300
+
+                    const vatGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                    vatGradient.addColorStop(0, 'rgba(147, 51, 234, 1)');      // purple-500
+                    vatGradient.addColorStop(0.5, 'rgba(168, 85, 247, 0.8)');  // purple-400
+                    vatGradient.addColorStop(1, 'rgba(196, 181, 253, 0.2)');   // purple-300
+
+                    const netGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                    netGradient.addColorStop(0, 'rgba(6, 182, 212, 1)');       // cyan-500
+                    netGradient.addColorStop(0.5, 'rgba(34, 211, 238, 0.8)');  // cyan-400
+                    netGradient.addColorStop(1, 'rgba(103, 232, 249, 0.2)');   // cyan-300
                     
                     this.chart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Vendas', 'Custos', 'Margem Bruta', 'IVA', 'Margem Líquida'],
+                            labels: ['💰 Vendas', '📋 Custos', '📊 Margem Bruta', '🏛️ IVA', '✨ Margem Líquida'],
                             datasets: [{
-                                label: 'Valores (€)',
+                                label: 'Valores Financeiros (€)',
                                 data: [
                                     this.finalResults.totalSales,
                                     this.finalResults.totalCosts,
@@ -1679,139 +2083,275 @@
                                     this.finalResults.netMargin
                                 ],
                                 backgroundColor: [
-                                    gradient1,
-                                    gradient2,
-                                    gradient3,
-                                    gradient4,
-                                    gradient3
+                                    salesGradient,
+                                    costsGradient,
+                                    marginGradient,
+                                    vatGradient,
+                                    netGradient
                                 ],
                                 borderColor: [
-                                    'rgba(34, 197, 94, 1)',
-                                    'rgba(239, 68, 68, 1)',
-                                    'rgba(59, 130, 246, 1)',
-                                    'rgba(147, 51, 234, 1)',
-                                    'rgba(59, 130, 246, 1)'
+                                    'rgba(16, 185, 129, 1)',   // emerald-500
+                                    'rgba(239, 68, 68, 1)',    // red-500
+                                    'rgba(59, 130, 246, 1)',   // blue-500
+                                    'rgba(147, 51, 234, 1)',   // purple-500
+                                    'rgba(6, 182, 212, 1)'     // cyan-500
                                 ],
-                                borderWidth: 2,
-                                borderRadius: 8,
+                                borderWidth: 3,
+                                borderRadius: {
+                                    topLeft: 12,
+                                    topRight: 12,
+                                    bottomLeft: 4,
+                                    bottomRight: 4
+                                },
                                 borderSkipped: false,
+                                shadowOffsetX: 0,
+                                shadowOffsetY: 4,
+                                shadowBlur: 8,
+                                shadowColor: 'rgba(0, 0, 0, 0.15)',
+                                hoverBorderWidth: 4,
+                                hoverBorderColor: 'rgba(255, 255, 255, 0.8)',
+                                hoverBackgroundColor: function(context) {
+                                    const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 400);
+                                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
+                                    return gradient;
+                                }
                             }]
                         },
-                        plugins: [{
-                            afterDatasetsDraw: function(chart) {
-                                const ctx = chart.ctx;
-                                chart.data.datasets.forEach((dataset, i) => {
-                                    const meta = chart.getDatasetMeta(i);
+                        plugins: [
+                            {
+                                id: 'modernDataLabels',
+                                afterDatasetsDraw: function(chart) {
+                                    const ctx = chart.ctx;
+                                    const dataset = chart.data.datasets[0];
+                                    const meta = chart.getDatasetMeta(0);
+
                                     meta.data.forEach((bar, index) => {
                                         const data = dataset.data[index];
                                         const value = Math.abs(data);
                                         const formattedValue = '€' + value.toLocaleString('pt-PT', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
                                         });
-                                        
-                                        ctx.fillStyle = dataset.borderColor[index];
-                                        ctx.font = 'bold 14px Arial';
+
+                                        // Modern gradient text effect
+                                        const gradient = ctx.createLinearGradient(0, bar.y - 30, 0, bar.y - 10);
+                                        gradient.addColorStop(0, dataset.borderColor[index]);
+                                        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.9)');
+
+                                        // Text shadow effect
+                                        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                                        ctx.shadowOffsetX = 1;
+                                        ctx.shadowOffsetY = 1;
+                                        ctx.shadowBlur = 2;
+
+                                        ctx.fillStyle = gradient;
+                                        ctx.font = 'bold 16px "Work Sans", sans-serif';
                                         ctx.textAlign = 'center';
                                         ctx.textBaseline = 'bottom';
-                                        ctx.fillText(formattedValue, bar.x, bar.y - 5);
+                                        ctx.fillText(formattedValue, bar.x, bar.y - 12);
+
+                                        // Reset shadow
+                                        ctx.shadowColor = 'transparent';
+
+                                        // Add percentage indicator for visual context
+                                        const totalSales = Math.abs(dataset.data[0]);
+                                        const percentage = ((value / totalSales) * 100).toFixed(1);
+
+                                        ctx.fillStyle = 'rgba(107, 114, 128, 0.8)'; // gray-500
+                                        ctx.font = '12px "Poppins", sans-serif';
+                                        ctx.fillText(`${percentage}%`, bar.x, bar.y - 35);
                                     });
-                                });
+                                }
+                            },
+                            {
+                                id: 'glassmorphismBackground',
+                                beforeDraw: function(chart) {
+                                    const ctx = chart.ctx;
+                                    const chartArea = chart.chartArea;
+
+                                    // Glassmorphism background effect
+                                    const gradient = ctx.createRadialGradient(
+                                        chartArea.left + chartArea.width / 2,
+                                        chartArea.top + chartArea.height / 2,
+                                        0,
+                                        chartArea.left + chartArea.width / 2,
+                                        chartArea.top + chartArea.height / 2,
+                                        Math.max(chartArea.width, chartArea.height) / 2
+                                    );
+                                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+                                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.02)');
+
+                                    ctx.fillStyle = gradient;
+                                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+                                }
                             }
-                        }],
+                        ],
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             layout: {
                                 padding: {
-                                    top: 40,
-                                    bottom: 30
+                                    top: 50,
+                                    bottom: 30,
+                                    left: 10,
+                                    right: 10
                                 }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
                             },
                             plugins: {
                                 legend: {
                                     display: false
                                 },
                                 title: {
-                                    display: false  // Title is now in the HTML
+                                    display: false
                                 },
                                 tooltip: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(17, 24, 39, 0.95)', // gray-900
+                                    titleColor: 'rgba(249, 250, 251, 1)', // gray-50
+                                    bodyColor: 'rgba(229, 231, 235, 1)', // gray-200
+                                    borderColor: 'rgba(75, 85, 99, 0.5)', // gray-600
+                                    borderWidth: 1,
+                                    cornerRadius: 12,
+                                    padding: 16,
+                                    displayColors: true,
+                                    titleFont: {
+                                        size: 16,
+                                        weight: 'bold',
+                                        family: '"Work Sans", sans-serif'
+                                    },
+                                    bodyFont: {
+                                        size: 14,
+                                        family: '"Poppins", sans-serif'
+                                    },
+                                    footerFont: {
+                                        size: 12,
+                                        style: 'italic'
+                                    },
+                                    animation: {
+                                        duration: 300,
+                                        easing: 'easeOutCubic'
+                                    },
                                     callbacks: {
+                                        title: function(tooltipItems) {
+                                            return tooltipItems[0].label.replace(/[📊💰📋🏛️✨]/g, '').trim();
+                                        },
                                         label: function(context) {
-                                            let label = context.dataset.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
                                             const value = Math.abs(context.parsed.y);
-                                            label += '€' + value.toLocaleString('pt-PT', {
+                                            const formattedValue = '€' + value.toLocaleString('pt-PT', {
                                                 minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2
                                             });
-                                            return label;
+
+                                            // Calculate percentage
+                                            const totalSales = Math.abs(context.chart.data.datasets[0].data[0]);
+                                            const percentage = ((value / totalSales) * 100).toFixed(1);
+
+                                            return `${formattedValue} (${percentage}% das vendas)`;
+                                        },
+                                        footer: function(tooltipItems) {
+                                            return 'Conforme CIVA Art. 308º';
                                         }
-                                    },
-                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                    titleFont: {
-                                        size: 14,
-                                        weight: 'bold'
-                                    },
-                                    bodyFont: {
-                                        size: 13
-                                    },
-                                    padding: 12,
-                                    cornerRadius: 8
+                                    }
                                 }
                             },
                             scales: {
                                 y: {
                                     beginAtZero: true,
+                                    grace: '5%',
+                                    border: {
+                                        display: false
+                                    },
                                     grid: {
-                                        color: 'rgba(0, 0, 0, 0.05)',
-                                        borderDash: [3, 3],
-                                        drawBorder: false
+                                        color: function(context) {
+                                            if (context.tick.value === 0) {
+                                                return 'rgba(0, 0, 0, 0.1)';
+                                            }
+                                            return 'rgba(156, 163, 175, 0.1)'; // gray-400
+                                        },
+                                        lineWidth: function(context) {
+                                            if (context.tick.value === 0) {
+                                                return 2;
+                                            }
+                                            return 1;
+                                        },
+                                        borderDash: [5, 5],
+                                        drawBorder: false,
+                                        z: 1
                                     },
                                     ticks: {
                                         callback: function(value) {
-                                            return '€' + Math.abs(value).toLocaleString('pt-PT');
+                                            if (value === 0) return '€0';
+                                            return '€' + Math.abs(value).toLocaleString('pt-PT', {
+                                                notation: 'compact',
+                                                compactDisplay: 'short'
+                                            });
                                         },
                                         font: {
-                                            size: 12
+                                            size: 13,
+                                            family: '"Poppins", sans-serif',
+                                            weight: '500'
                                         },
-                                        padding: 10
+                                        color: 'rgba(75, 85, 99, 0.8)', // gray-600
+                                        padding: 12,
+                                        maxTicksLimit: 8
                                     }
                                 },
                                 x: {
+                                    border: {
+                                        display: false
+                                    },
                                     grid: {
                                         display: false,
                                         drawBorder: false
                                     },
                                     ticks: {
                                         font: {
-                                            size: 12,
+                                            size: 14,
+                                            family: '"Work Sans", sans-serif',
                                             weight: '600'
                                         },
+                                        color: 'rgba(55, 65, 81, 0.9)', // gray-700
                                         autoSkip: false,
                                         maxRotation: 0,
-                                        padding: 5,
-                                        callback: function(value, index) {
-                                            const labels = ['Vendas', 'Custos', 'Margem Bruta', 'IVA', 'Margem Líquida'];
-                                            const values = [
-                                                this.chart.data.datasets[0].data[0],
-                                                Math.abs(this.chart.data.datasets[0].data[1]),
-                                                this.chart.data.datasets[0].data[2],
-                                                Math.abs(this.chart.data.datasets[0].data[3]),
-                                                this.chart.data.datasets[0].data[4]
-                                            ];
-                                            const totalSales = values[0];
-                                            const percentage = (values[index] / totalSales * 100).toFixed(1);
-                                            return [labels[index], `(${percentage}%)`];
-                                        }
+                                        padding: 8
                                     }
                                 }
                             },
                             animation: {
-                                duration: 1500,
-                                easing: 'easeInOutQuart'
+                                duration: 2000,
+                                easing: 'easeInOutCubic',
+                                delay: function(context) {
+                                    return context.dataIndex * 200; // Staggered animation
+                                },
+                                onComplete: function() {
+                                    // GSAP micro-animation on completion
+                                    if (typeof gsap !== 'undefined') {
+                                        gsap.from('#marginChart', {
+                                            scale: 0.98,
+                                            duration: 0.3,
+                                            ease: 'power2.out'
+                                        });
+                                    }
+                                }
+                            },
+                            transitions: {
+                                resize: {
+                                    animation: {
+                                        duration: 1000,
+                                        easing: 'easeInOutQuart'
+                                    }
+                                },
+                                show: {
+                                    animation: {
+                                        duration: 1500,
+                                        easing: 'easeInOutCubic'
+                                    }
+                                }
                             }
                         }
                     });
@@ -2122,7 +2662,7 @@
                     if (!this.sessionId) return;
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/session/${this.sessionId}`);
+                        const response = await this.apiFetch(`${this.apiUrl}/api/session/${this.sessionId}`, {}, 10000);
                         const data = await response.json();
                         
                         this.sales = data.sales;
@@ -2194,16 +2734,16 @@
                     
                     this.loading = true;
                     this.loadingMessage = 'A gerar ficheiro Excel...';
-                    
+
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/calculate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 session_id: this.sessionId,
                                 vat_rate: this.vatRate
                             })
-                        });
+                        }, 25000);
                         
                         if (!response.ok) {
                             throw new Error('Erro ao gerar Excel');
@@ -2252,7 +2792,7 @@
                     }
                 },
                 
-                // Download PDF function
+                // Download PDF function (binary)
                 async downloadPDF() {
                     if (!this.sessionId || !this.finalResults.totalSales) {
                         this.showNotification('Aviso', 'Por favor calcule primeiro os resultados', 'warning');
@@ -2263,37 +2803,67 @@
                     this.loadingMessage = 'A gerar relatório PDF...';
                     
                     try {
-                        const response = await fetch(`${this.apiUrl}/api/export-pdf`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/export-pdf`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 session_id: this.sessionId,
                                 vat_rate: this.vatRate,
-                                results: this.finalResults
+                                results: this.finalResults,
+                                format: 'pdf'
                             })
-                        });
+                        }, 30000);
                         
                         if (!response.ok) {
                             throw new Error('Erro ao gerar PDF');
                         }
-                        
-                        const html = await response.text();
-                        
-                        // Open in new window/tab for printing
-                        const printWindow = window.open('', '_blank');
-                        printWindow.document.write(html);
-                        printWindow.document.close();
-                        
-                        // Auto-trigger print dialog after a short delay
-                        setTimeout(() => {
-                            printWindow.print();
-                        }, 500);
-                        
-                        this.showNotification('Sucesso!', 'Relatório aberto numa nova janela. Use Ctrl+P para imprimir ou guardar como PDF', 'success');
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Relatorio_IVA_Margem_${this.sessionId}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                        this.showNotification('Sucesso!', 'Relatório PDF descarregado com sucesso', 'success');
                         
                     } catch (error) {
                         console.error('PDF generation error:', error);
                         this.showNotification('Erro', 'Erro ao gerar relatório PDF', 'error');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                // Preview PDF (HTML)
+                async previewPDF() {
+                    if (!this.sessionId || !this.finalResults.totalSales) {
+                        this.showNotification('Aviso', 'Por favor calcule primeiro os resultados', 'warning');
+                        return;
+                    }
+                    this.loading = true;
+                    this.loadingMessage = 'A gerar pré-visualização do relatório...';
+                    try {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/export-pdf`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                vat_rate: this.vatRate,
+                                results: this.finalResults,
+                                format: 'html'
+                            })
+                        }, 30000);
+                        if (!response.ok) throw new Error('Erro na pré-visualização');
+                        const html = await response.text();
+                        const w = window.open('', '_blank');
+                        w.document.write(html);
+                        w.document.close();
+                        this.showNotification('Sucesso!', 'Pré-visualização aberta numa nova aba', 'success');
+                    } catch (error) {
+                        console.error('Preview error:', error);
+                        this.showNotification('Erro', error.message || 'Erro ao gerar pré-visualização', 'error');
                     } finally {
                         this.loading = false;
                     }
@@ -2415,6 +2985,83 @@
                         case 'fas fa-receipt': return 'text-gray-500';
                         default: return 'text-gray-500';
                     }
+                },
+
+                // Get icon for sale/customer type
+                getSaleIcon(sale) {
+                    const n = (sale.number || '').toLowerCase();
+                    const c = (sale.client || '').toLowerCase();
+                    // Credit notes
+                    if (n.startsWith('nc') || c.includes('cancel')) return 'fas fa-undo-alt';
+                    // Invoice/receipt vs simplified
+                    if (n.startsWith('fr')) return 'fas fa-receipt';
+                    if (n.startsWith('fs') || n.includes('simplificada')) return 'fas fa-file-invoice';
+                    // International/flight keywords
+                    if (c.includes('international') || c.includes('premium') || c.includes('flight') || c.includes('voo')) return 'fas fa-plane-departure';
+                    // Cruise / package
+                    if (c.includes('cruzeiro') || c.includes('cruise')) return 'fas fa-ship';
+                    // City break / hotel
+                    if (c.includes('hotel') || c.includes('alojamento')) return 'fas fa-bed';
+                    // Default
+                    return 'fas fa-suitcase-rolling';
+                },
+                getSaleIconColor(sale) {
+                    const ic = this.getSaleIcon(sale);
+                    switch(ic){
+                        case 'fas fa-undo-alt': return 'text-rose-600';
+                        case 'fas fa-receipt': return 'text-emerald-600';
+                        case 'fas fa-file-invoice': return 'text-indigo-600';
+                        case 'fas fa-plane-departure': return 'text-sky-600';
+                        case 'fas fa-ship': return 'text-cyan-600';
+                        case 'fas fa-bed': return 'text-blue-600';
+                        default: return 'text-slate-600';
+                    }
+                },
+
+                // Debug Functions
+                async testApiConnection() {
+                    this.loading = true;
+                    this.loadingMessage = 'A testar conexão API...';
+
+                    try {
+                        console.log('[Debug] Testing API connection...');
+                        const response = await this.apiFetch(`${this.apiUrl}/`, {
+                            method: 'GET'
+                        }, 5000); // 5 second timeout
+
+                        if (response.ok) {
+                            const data = await response.text();
+                            console.log('[Debug] API Response:', data.substring(0, 100));
+                            this.showNotification('API Test', 'Conexão OK! Backend está a funcionar', 'success');
+                        } else {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+
+                    } catch (error) {
+                        console.error('[Debug] API Test failed:', error);
+                        this.showNotification('API Test', `Erro: ${error.message}`, 'error');
+                    } finally {
+                        this.loading = false;
+                        this.loadingMessage = '';
+                    }
+                },
+
+                clearSession() {
+                    if (confirm('Limpar todos os dados da sessão?')) {
+                        this.sessionId = null;
+                        this.sales = [];
+                        this.costs = [];
+                        this.selectedSales = [];
+                        this.selectedCosts = [];
+                        this.finalResults = {};
+                        this.currentStep = 1;
+                        this.efaturaFiles = { vendas: null, compras: null };
+
+                        localStorage.removeItem('ivaSession');
+
+                        console.log('[Debug] Session cleared');
+                        this.showNotification('Debug', 'Sessão limpa', 'info');
+                    }
                 }
             }
         }
@@ -2422,7 +3069,183 @@
     
     <!-- Alpine.js - Load after app definition -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
+    <!-- Modern Animation Initialization -->
+    <script>
+        // Wait for Alpine.js and GSAP to be ready
+        document.addEventListener('alpine:init', () => {
+            // Modern micro-animations initialization
+            initializeModernAnimations();
+        });
+
+        function initializeModernAnimations() {
+            // Only run if GSAP is available
+            if (typeof gsap === 'undefined') return;
+
+            // Set up intersection observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const animateOnScroll = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+
+                        // Animate modern corporate cards with elegant entrance
+                        if (element.classList.contains('modern-card')) {
+                            gsap.fromTo(element,
+                                {
+                                    y: 30,
+                                    opacity: 0,
+                                    scale: 0.95
+                                },
+                                {
+                                    y: 0,
+                                    opacity: 1,
+                                    scale: 1,
+                                    duration: 0.6,
+                                    ease: 'power2.out',
+                                    delay: Array.from(element.parentNode.children).indexOf(element) * 0.1
+                                }
+                            );
+                        }
+
+                        // Animate chart containers with smooth entrance
+                        if (element.classList.contains('chart-container')) {
+                            gsap.fromTo(element,
+                                {
+                                    opacity: 0,
+                                    y: 30,
+                                    rotationX: -15
+                                },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    rotationX: 0,
+                                    duration: 1,
+                                    ease: 'power2.out'
+                                }
+                            );
+                        }
+
+                        // Animate chart containers
+                        if (element.classList.contains('chart-container')) {
+                            gsap.fromTo(element,
+                                {
+                                    opacity: 0,
+                                    scale: 0.8,
+                                    y: 40
+                                },
+                                {
+                                    opacity: 1,
+                                    scale: 1,
+                                    y: 0,
+                                    duration: 1.2,
+                                    ease: 'power3.out'
+                                }
+                            );
+                        }
+
+                        // Unobserve after animation
+                        animateOnScroll.unobserve(element);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            setTimeout(() => {
+                document.querySelectorAll('.modern-card, .chart-container, .data-point').forEach(el => {
+                    animateOnScroll.observe(el);
+                });
+            }, 100);
+
+            // Add hover micro-animations
+            document.querySelectorAll('.interactive-element').forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    gsap.to(element, {
+                        scale: 1.02,
+                        y: -2,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
+                });
+
+                element.addEventListener('mouseleave', () => {
+                    gsap.to(element, {
+                        scale: 1,
+                        y: 0,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
+                });
+            });
+
+            // Animate progress bars with smooth fill
+            document.querySelectorAll('.h-1.bg-gradient-to-r').forEach(bar => {
+                gsap.fromTo(bar,
+                    { scaleX: 0, transformOrigin: 'left' },
+                    {
+                        scaleX: 1,
+                        duration: 1.5,
+                        ease: 'power2.out',
+                        delay: 0.5
+                    }
+                );
+            });
+
+            // Add floating animation to floating elements
+            document.querySelectorAll('.float-animation').forEach(element => {
+                gsap.to(element, {
+                    y: -8,
+                    duration: 3,
+                    ease: 'power1.inOut',
+                    yoyo: true,
+                    repeat: -1
+                });
+            });
+
+            // Pulse animation for special elements
+            document.querySelectorAll('.pulse-subtle').forEach(element => {
+                gsap.to(element, {
+                    scale: 1.1,
+                    duration: 2,
+                    ease: 'power1.inOut',
+                    yoyo: true,
+                    repeat: -1
+                });
+            });
+
+            // Success animations
+            document.querySelectorAll('.success-ping').forEach(element => {
+                gsap.to(element, {
+                    scale: 1.2,
+                    opacity: 0.7,
+                    duration: 1,
+                    ease: 'power2.out',
+                    yoyo: true,
+                    repeat: -1,
+                    repeatDelay: 2
+                });
+            });
+        }
+
+        // Re-initialize animations when content changes
+        document.addEventListener('DOMContentLoaded', () => {
+            // MutationObserver to watch for new elements
+            const observer = new MutationObserver(() => {
+                // Re-run animations for newly added elements
+                setTimeout(initializeModernAnimations, 100);
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    </script>
+
     <!-- Footer Accounting Advantage -->
     <footer class="bg-gray-900 text-gray-300 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

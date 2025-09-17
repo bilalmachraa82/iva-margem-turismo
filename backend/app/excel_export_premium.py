@@ -14,6 +14,7 @@ import pandas as pd
 import xlsxwriter
 from datetime import datetime
 import os
+from pathlib import Path
 from typing import List, Dict, Optional
 import logging
 
@@ -39,7 +40,7 @@ class PremiumExcelExporter:
             'base_300': '#e2e8f0'
         }
         
-    def generate_premium_report(self, calculations: List[Dict], raw_data: Dict, metadata: Dict) -> str:
+    def generate_premium_report(self, calculations: List[Dict], raw_data: Dict, metadata: Dict, base_dir: Optional[Path] = None) -> str:
         """
         Generate premium Excel report with advanced features
         
@@ -51,11 +52,13 @@ class PremiumExcelExporter:
         Returns:
             Path to generated Excel file
         """
+        # Decide base dir for temp files
+        if base_dir is None:
+            base_dir = Path('/tmp') if os.getenv('VERCEL') else Path('temp')
+        base_dir.mkdir(parents=True, exist_ok=True)
+
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"temp/iva_margem_premium_{timestamp}.xlsx"
-        
-        # Ensure temp directory exists
-        os.makedirs("temp", exist_ok=True)
+        filename = str(base_dir / f"iva_margem_premium_{timestamp}.xlsx")
         
         try:
             # Create workbook with xlsxwriter for advanced features

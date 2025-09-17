@@ -123,7 +123,57 @@ class AIMatchResult(BaseModel):
 class PeriodCalculateRequest(BaseModel):
     """Request model for period-based VAT calculation"""
     session_id: str
-    start_date: str  # YYYY-MM-DD format
-    end_date: str    # YYYY-MM-DD format
+    vat_rate: float = 23.0
+    period_start: str  # YYYY-MM-DD format
+    period_end: str    # YYYY-MM-DD format
+    start_date: str    # YYYY-MM-DD format - required for compatibility
+    end_date: str      # YYYY-MM-DD format - required for compatibility
     region: str = "continental"  # continental, madeira, azores
     previous_negative_margin: float = 0.0
+
+
+class CompanyInfo(BaseModel):
+    """Company information for PDF reports"""
+    name: Optional[str] = Field(default="Empresa de Turismo Lda.", description="Company name")
+    nif: Optional[str] = Field(default="123456789", description="Tax identification number")
+    address: Optional[str] = Field(default="Rua do Turismo, 123", description="Company address")
+    city: Optional[str] = Field(default="Lisboa", description="City")
+    postal_code: Optional[str] = Field(default="1000-001", description="Postal code")
+    phone: Optional[str] = Field(default="+351 21 123 4567", description="Phone number")
+    email: Optional[str] = Field(default="info@empresa.com", description="Email address")
+
+
+class PDFExportRequest(BaseModel):
+    """Enhanced request model for PDF export with company info"""
+    session_id: Optional[str] = None
+    vat_rate: float = Field(default=23.0, ge=0, le=100)
+    results: Optional[Dict[str, Any]] = None
+    company_info: Optional[CompanyInfo] = None
+    format: Optional[str] = Field(default='html', description="'html' (preview) or 'pdf' (binary)")
+
+
+class ErrorDetail(BaseModel):
+    """Standard error detail structure"""
+    code: str
+    message: str
+    details: Optional[Dict[str, Any]] = None
+    timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
+
+
+class ErrorResponse(BaseModel):
+    """Standard error response structure"""
+    error: ErrorDetail
+    request_id: Optional[str] = None
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": "Invalid session ID format",
+                    "details": {"field": "session_id", "value": "invalid-id"},
+                    "timestamp": "2025-01-09T12:00:00"
+                },
+                "request_id": "req_123456"
+            }
+        }
