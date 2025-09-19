@@ -1,31 +1,20 @@
 {
-  "build": {
-    "env": {
-      "PYTHON_VERSION": "3.11"
-    }
-  },
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.9",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "destination": "/api/index.py"
     },
     {
       "source": "/docs",
-      "destination": "/api/index"
+      "destination": "/api/index.py"
     },
     {
       "source": "/openapi.json",
-      "destination": "/api/index"
+      "destination": "/api/index.py"
     },
     {
       "source": "/",
-      "destination": "/frontend/home.html"
+      "destination": "/frontend/index.html"
     },
     {
       "source": "/(.*)",
