@@ -1810,7 +1810,7 @@
                         formData.append('vendas', this.efaturaFiles.vendas);
                         formData.append('compras', this.efaturaFiles.compras);
 
-                        const response = await this.apiFetch(`${this.apiUrl}/api/upload-efatura`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/upload-efatura`, {
                             method: 'POST',
                             body: formData
                         }, 60000); // 60 second timeout for large files
@@ -1880,7 +1880,7 @@
                     formData.append('file', file);
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/upload`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/upload`, {
                             method: 'POST',
                             body: formData
                         });
@@ -1921,7 +1921,7 @@
                     try {
                         console.log('[Mock Data] Starting mock data load...');
 
-                        const response = await this.apiFetch(`${this.apiUrl}/api/mock-data`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/mock-data`, {
                             method: 'GET'
                         });
 
@@ -2021,7 +2021,7 @@
                     this.loadingMessage = 'A criar associações...';
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/associate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/associate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2072,7 +2072,7 @@
                     this.loadingMessage = 'A analisar e associar documentos...';
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/auto-match`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/auto-match`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2109,7 +2109,7 @@
                     this.loadingMessage = 'A limpar associações...';
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/clear-associations`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/clear-associations`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2155,7 +2155,7 @@
                     this.loadingMessage = 'A calcular IVA por período com compensação...';
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate-period`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/calculate-period`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2224,7 +2224,7 @@
                     this.loadingMessage = 'A calcular IVA e gerar relatório...';
 
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/calculate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2937,7 +2937,7 @@
                     if (!this.sessionId) return;
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/session/${this.sessionId}`, {}, 10000);
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/session/${this.sessionId}`, {}, 10000);
                         const data = await response.json();
                         
                         this.sales = data.sales;
@@ -3222,7 +3222,7 @@
                     this.loadingMessage = 'A gerar ficheiro Excel...';
 
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/calculate`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/calculate`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -3291,7 +3291,7 @@
                     this.loadingMessage = 'A gerar relatório PDF...';
                     
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/export-pdf`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/export-pdf`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -3333,7 +3333,7 @@
                     this.loading = true;
                     this.loadingMessage = 'A gerar pré-visualização do relatório...';
                     try {
-                        const response = await this.apiFetch(`${this.apiUrl}/api/export-pdf`, {
+                        const response = await this.apiFetch(`${this.apiUrl}/api/api/export-pdf`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
