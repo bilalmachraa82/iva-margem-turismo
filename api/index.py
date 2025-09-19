@@ -9,7 +9,22 @@ backend_path = current_dir.parent / "backend"
 if str(backend_path) not in sys.path:
     sys.path.append(str(backend_path))
 
-from app.main import app
+try:
+    from app.main import app
+    # Vercel expects a function called 'handler'
+    handler = app
+except ImportError as e:
+    print(f"Import error: {e}")
+    print(f"Current path: {current_dir}")
+    print(f"Backend path: {backend_path}")
+    print(f"Sys path: {sys.path}")
 
-# Vercel expects a function called 'handler'
-handler = app
+    # Fallback simple handler for debugging
+    from fastapi import FastAPI
+    app = FastAPI()
+
+    @app.get("/")
+    def read_root():
+        return {"message": "API is running but backend import failed", "error": str(e)}
+
+    handler = app
