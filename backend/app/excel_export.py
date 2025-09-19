@@ -1,33 +1,66 @@
 """
-Excel export module for IVA Margem calculations
-Generates professional multi-sheet Excel reports with PT locale formatting
+Excel export module for IVA Margem cálculos.
+
+Provides a rich OpenPyXL-powered export when the library is available.
+Falls back to a simplified XLSX generator (via XlsxWriter) when OpenPyXL
+is unavailable or explicitly disabled (useful in constrained environments
+where the binary wheels are incompatible).
 """
-import pandas as pd
-from datetime import datetime
-import os
+
+import json
 import locale
-from typing import List, Dict, Optional
-from openpyxl import load_workbook
-from openpyxl.styles import Font, Fill, PatternFill, Alignment, Border, Side, NamedStyle
-from openpyxl.utils import get_column_letter
-from openpyxl.worksheet.table import Table, TableStyleInfo
-# Custom number formats (openpyxl constants may vary by version)
-try:
-    from openpyxl.styles.numbers import FORMAT_CURRENCY_EUR, FORMAT_PERCENTAGE
-except ImportError:
-    # Fallback definitions
-    FORMAT_CURRENCY_EUR = '#,##0.00" €"'
-    FORMAT_PERCENTAGE = '0.00%'
 import logging
+import os
+from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Optional
+
+import xlsxwriter
 
 logger = logging.getLogger(__name__)
+
+
+DISABLE_OPENPYXL = os.getenv("DISABLE_OPENPYXL") == "1"
+OPENPYXL_AVAILABLE = False
+
+if not DISABLE_OPENPYXL:
+    try:  # pragma: no cover - simple import guard
+        from openpyxl import load_workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side, NamedStyle
+        from openpyxl.utils import get_column_letter
+        from openpyxl.worksheet.table import Table, TableStyleInfo
+        try:
+            from openpyxl.styles.numbers import FORMAT_CURRENCY_EUR, FORMAT_PERCENTAGE
+        except ImportError:
+            FORMAT_CURRENCY_EUR = '#,##0.00" €"'
+            FORMAT_PERCENTAGE = '0.00%'
+        OPENPYXL_AVAILABLE = True
+    except Exception as exc:  # pragma: no cover - diagnostic only
+        logger.warning("openpyxl indisponível (%s). Exportação avançada desativada.", exc)
+else:
+    logger.info("openpyxl desativado via variável DISABLE_OPENPYXL. A usar export básico.")
+
+
+DISABLE_PANDAS = os.getenv("DISABLE_PANDAS") == "1"
+PANDAS_AVAILABLE = False
+
+if not DISABLE_PANDAS:
+    try:  # pragma: no cover - import guard
+        import pandas as pd
+        PANDAS_AVAILABLE = True
+    except Exception as exc:  # pragma: no cover
+        logger.warning("pandas indisponível (%s). Exportação avançada desativada.", exc)
+        pd = None
+else:
+    logger.info("pandas desativado via variável DISABLE_PANDAS. A usar export básico.")
+    pd = None
 
 
 class ExcelExporter:
     """Professional Excel report generator"""
     
     def __init__(self):
+        self.openpyxl_enabled = OPENPYXL_AVAILABLE and PANDAS_AVAILABLE
         # Setup Portuguese locale for number formatting
         try:
             locale.setlocale(locale.LC_ALL, 'pt_PT.UTF-8')
@@ -37,32 +70,41 @@ class ExcelExporter:
             except locale.Error:
                 logger.warning("Portuguese locale not available, using default")
 
-        # Define styles
-        self.header_fill = PatternFill(start_color="667eea", end_color="667eea", fill_type="solid")
-        self.header_font = Font(bold=True, color="FFFFFF", size=12)
-        self.title_font = Font(bold=True, size=14)
-        self.subtitle_font = Font(bold=True, size=11, color="666666")
+        if self.openpyxl_enabled:
+            # Define styles using OpenPyXL
+            self.header_fill = PatternFill(start_color="667eea", end_color="667eea", fill_type="solid")
+            self.header_font = Font(bold=True, color="FFFFFF", size=12)
+            self.title_font = Font(bold=True, size=14)
+            self.subtitle_font = Font(bold=True, size=11, color="666666")
 
-        # Alternating row colors
-        self.row_fill_1 = PatternFill(start_color="F8F9FA", end_color="F8F9FA", fill_type="solid")
-        self.row_fill_2 = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+            self.row_fill_1 = PatternFill(start_color="F8F9FA", end_color="F8F9FA", fill_type="solid")
+            self.row_fill_2 = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
 
-        # Borders
-        self.thin_border = Border(
-            left=Side(style='thin', color='DDDDDD'),
-            right=Side(style='thin', color='DDDDDD'),
-            top=Side(style='thin', color='DDDDDD'),
-            bottom=Side(style='thin', color='DDDDDD')
-        )
+            self.thin_border = Border(
+                left=Side(style='thin', color='DDDDDD'),
+                right=Side(style='thin', color='DDDDDD'),
+                top=Side(style='thin', color='DDDDDD'),
+                bottom=Side(style='thin', color='DDDDDD')
+            )
 
-        self.thick_border = Border(
-            left=Side(style='medium'),
-            right=Side(style='medium'),
-            top=Side(style='medium'),
-            bottom=Side(style='medium')
-        )
+            self.thick_border = Border(
+                left=Side(style='medium'),
+                right=Side(style='medium'),
+                top=Side(style='medium'),
+                bottom=Side(style='medium')
+            )
+        else:
+            # Placeholders to avoid attribute errors
+            self.header_fill = None
+            self.header_font = None
+            self.title_font = None
+            self.subtitle_font = None
+            self.row_fill_1 = None
+            self.row_fill_2 = None
+            self.thin_border = None
+            self.thick_border = None
 
-        # PT locale number formats
+        # PT locale number formats (used in both modes)
         self.pt_currency_format = '#,##0.00€;[RED]-#,##0.00€'
         self.pt_number_format = '#,##0.00;[RED]-#,##0.00'
         self.pt_percentage_format = '0.00%;[RED]-0.00%'
@@ -89,32 +131,23 @@ class ExcelExporter:
         filename = str(base_dir / f"iva_margem_{timestamp}.xlsx")
         
         try:
-            # Create Excel writer
+            if not self.openpyxl_enabled:
+                generated = self._generate_basic_workbook(filename, calculations, raw_data, metadata)
+                logger.info("Excel report (basic) gerado: %s", generated)
+                return generated
+
+            # Create Excel writer com OpenPyXL
             with pd.ExcelWriter(filename, engine='openpyxl') as writer:
-                # 1. Summary sheet (main calculations)
                 self._create_summary_sheet(writer, calculations, metadata)
-                
-                # 2. Sales sheet
                 self._create_sales_sheet(writer, raw_data.get('sales', []))
-                
-                # 3. Costs sheet
                 self._create_costs_sheet(writer, raw_data.get('costs', []))
-                
-                # 4. Associations sheet
                 self._create_associations_sheet(writer, calculations)
-                
-                # 5. Totals and statistics sheet
                 self._create_totals_sheet(writer, calculations, metadata)
-
-                # 6. Reconciliation sheet
                 self._create_reconciliation_sheet(writer, calculations, raw_data)
-
-                # 7. Warnings & Validations sheet
                 self._create_warnings_sheet(writer, calculations, raw_data)
-                
-            # Apply formatting
+
             self._apply_formatting(filename)
-            
+
             logger.info(f"Excel report generated: {filename}")
             return filename
             
@@ -122,10 +155,8 @@ class ExcelExporter:
             logger.error(f"Error generating Excel: {str(e)}")
             raise
     
-    def _create_summary_sheet(self, writer, calculations: List[Dict], metadata: Dict):
-        """Create main summary sheet with VAT calculations"""
-        
-        # Prepare data
+    def _build_summary_records(self, calculations: List[Dict]) -> List[Dict]:
+        """Prepare summary records from calculation results."""
         summary_data = []
         for calc in calculations:
             summary_data.append({
@@ -142,9 +173,17 @@ class ExcelExporter:
                 'Margem (%)': calc['margin_percentage'],
                 'Nº Custos': calc['cost_count']
             })
+        return summary_data
+
+    def _build_summary_dataframe(self, calculations: List[Dict]):
+        if not PANDAS_AVAILABLE:
+            raise RuntimeError("pandas não disponível para gerar DataFrame")
+        return pd.DataFrame(self._build_summary_records(calculations))
+
+    def _create_summary_sheet(self, writer, calculations: List[Dict], metadata: Dict):
+        """Create main summary sheet with VAT calculations"""
         
-        # Create DataFrame and write to Excel
-        df = pd.DataFrame(summary_data)
+        df = self._build_summary_dataframe(calculations)
         df.to_excel(writer, sheet_name='Resumo IVA Margem', index=False, startrow=3)
         
         # Get worksheet
@@ -281,6 +320,9 @@ class ExcelExporter:
         
     def _apply_formatting(self, filename: str):
         """Apply professional formatting to all sheets"""
+
+        if not self.openpyxl_enabled:
+            return
         
         wb = load_workbook(filename)
         
@@ -383,6 +425,54 @@ class ExcelExporter:
             
         # Save formatted workbook
         wb.save(filename)
+
+    def _generate_basic_workbook(self, filename: str, calculations: List[Dict], raw_data: Dict, metadata: Dict) -> str:
+        """Fallback XLSX generator when OpenPyXL/Pandas are unavailable."""
+
+        workbook = xlsxwriter.Workbook(filename)
+        try:
+            summary_records = self._build_summary_records(calculations)
+            if not summary_records:
+                summary_records = [{
+                    "Mensagem": "Sem cálculos disponíveis",
+                    "Período": f"{metadata.get('start_date', '')} a {metadata.get('end_date', '')}"
+                }]
+
+            self._write_sheet_from_records(workbook, 'Resumo IVA Margem', summary_records)
+            self._write_sheet_from_records(workbook, 'Vendas', raw_data.get('sales', []))
+            self._write_sheet_from_records(workbook, 'Custos', raw_data.get('costs', []))
+            self._write_sheet_from_records(workbook, 'Associações', calculations)
+        finally:
+            workbook.close()
+
+        return filename
+
+    def _write_sheet_from_records(self, workbook, sheet_name: str, records: List[Dict]):
+        worksheet = workbook.add_worksheet(sheet_name[:31] or 'Sheet1')
+
+        if not records:
+            worksheet.write(0, 0, "Sem dados disponíveis")
+            return
+
+        headers = self._extract_headers(records)
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header)
+
+        for row, record in enumerate(records, start=1):
+            for col, header in enumerate(headers):
+                value = record.get(header)
+                if isinstance(value, (list, dict)):
+                    value = json.dumps(value, ensure_ascii=False)
+                worksheet.write(row, col, value)
+
+    @staticmethod
+    def _extract_headers(records: List[Dict]) -> List[str]:
+        headers: List[str] = []
+        for record in records:
+            for key in record.keys():
+                if key not in headers:
+                    headers.append(key)
+        return headers
 
     def _create_reconciliation_sheet(self, writer, calculations: List[Dict], raw_data: Dict):
         """Create reconciliation sheet comparing aggregates vs per-document sums"""

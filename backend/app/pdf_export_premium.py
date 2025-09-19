@@ -17,11 +17,27 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 import uuid
 import logging
+import os
 
 from .company_config import company_config, CompanyInfo
-from .chart_generator import generate_financial_charts
 
 logger = logging.getLogger(__name__)
+
+DISABLE_CHARTS = os.getenv("DISABLE_CHARTS") == "1"
+
+if not DISABLE_CHARTS:
+    try:  # pragma: no cover - simple import guard
+        from .chart_generator import generate_financial_charts
+    except Exception as exc:  # pragma: no cover
+        logger.warning("Chart generator indisponível (%s). Relatório premium sem gráficos.", exc)
+
+        def generate_financial_charts(*args, **kwargs):
+            return {}
+else:
+    logger.info("Chart generator desativado via DISABLE_CHARTS. Relatório premium sem gráficos.")
+
+    def generate_financial_charts(*args, **kwargs):  # type: ignore
+        return {}
 
 class PremiumPDFGenerator:
     """Premium PDF generator with company branding and enhanced charts"""

@@ -40,7 +40,6 @@ from .period_calculator import PeriodVATCalculator
 from .analytics import PremiumAnalytics, AdvancedKPICalculator
 from .kv_store import kv
 from .company_config import company_config, CompanyInfo, apply_company_profile, COMPANY_PROFILES
-from .chart_generator import generate_financial_charts
 
 # Configure logging
 logging.basicConfig(
@@ -48,6 +47,22 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+DISABLE_CHARTS = os.getenv("DISABLE_CHARTS") == "1"
+
+if not DISABLE_CHARTS:
+    try:  # pragma: no cover - diagnostic guard
+        from .chart_generator import generate_financial_charts
+    except Exception as exc:
+        logger.warning("Chart generator indisponível (%s). A desativar gráficos opcionais.", exc)
+
+        def generate_financial_charts(*args, **kwargs):  # type: ignore
+            return {}
+else:
+    logger.info("Chart generator desativado (DISABLE_CHARTS=1).")
+
+    def generate_financial_charts(*args, **kwargs):  # type: ignore
+        return {}
 
 # Runtime environment
 IS_VERCEL = bool(os.getenv("VERCEL"))
