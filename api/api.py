@@ -111,9 +111,12 @@ class handler(BaseHTTPRequestHandler):
             {"id": "c10", "supplier": "Acustica Suave Lda", "amount": 114.0, "date": "2025-03-17"}
         ]
 
-        total_sales = sum(s['amount'] for s in sales_data if s['amount'] > 0)
+        # Calcular corretamente incluindo vendas negativas (devoluções)
+        total_sales_positive = sum(s['amount'] for s in sales_data if s['amount'] > 0)
+        total_sales_negative = sum(s['amount'] for s in sales_data if s['amount'] < 0)
+        net_sales = total_sales_positive + total_sales_negative  # Vendas líquidas
         total_costs = sum(c['amount'] for c in costs_data)
-        potential_margin = total_sales - total_costs
+        potential_margin = net_sales - total_costs
 
         response = {
             "session_id": "demo-session-123",
@@ -121,7 +124,9 @@ class handler(BaseHTTPRequestHandler):
             "costs": costs_data,
             "associations": [],
             "metadata": {
-                "total_sales": round(total_sales, 2),
+                "total_sales_positive": round(total_sales_positive, 2),
+                "total_sales_negative": round(total_sales_negative, 2),
+                "net_sales": round(net_sales, 2),
                 "total_costs": round(total_costs, 2),
                 "potential_margin": round(potential_margin, 2),
                 "status": "ready"
@@ -252,10 +257,12 @@ class handler(BaseHTTPRequestHandler):
         session_id = request_data.get("session_id", "demo-session-123")
         vat_rate = request_data.get("vat_rate", 23)
 
-        # Calcular dados reais
-        total_sales = 29637.55  # Soma das vendas positivas
-        total_costs = 11148.16  # Soma dos custos
-        gross_margin = total_sales - total_costs
+        # Calcular dados reais CORRIGIDOS incluindo devoluções
+        total_sales_positive = 30017.55  # Vendas positivas
+        total_sales_negative = -375.00   # Devoluções (NC)
+        net_sales = 29642.55            # Vendas líquidas
+        total_costs = 11648.16          # Custos corretos
+        gross_margin = net_sales - total_costs  # 17,994.39
         vat_amount = gross_margin * vat_rate / 100
         net_margin = gross_margin - vat_amount
 
@@ -289,12 +296,14 @@ class handler(BaseHTTPRequestHandler):
         <h3>Resumo Executivo</h3>
         <table class="table">
             <tr><th>Descrição</th><th>Valor (€)</th></tr>
-            <tr><td>Total de Vendas</td><td>{total_sales:,.2f}</td></tr>
+            <tr><td>Vendas Positivas</td><td>{total_sales_positive:,.2f}</td></tr>
+            <tr><td>Devoluções (NC)</td><td>{total_sales_negative:,.2f}</td></tr>
+            <tr class="total"><td>Vendas Líquidas</td><td>{net_sales:,.2f}</td></tr>
             <tr><td>Total de Custos</td><td>{total_costs:,.2f}</td></tr>
             <tr class="total"><td>Margem Bruta</td><td>{gross_margin:,.2f}</td></tr>
             <tr><td>Taxa IVA Aplicada</td><td>{vat_rate}%</td></tr>
             <tr class="total"><td>IVA sobre Margem</td><td>{vat_amount:,.2f}</td></tr>
-            <tr class="total"><td>Margem Líquida</td><td>{net_margin:,.2f}</td></tr>
+            <tr class="total"><td>Margem Líquida Final</td><td>{net_margin:,.2f}</td></tr>
         </table>
     </div>
 
@@ -303,13 +312,16 @@ class handler(BaseHTTPRequestHandler):
         <p><strong>IVA = Margem × Taxa / 100</strong></p>
         <p>Conforme CIVA Artigo 308º - Regime especial de tributação das agências de viagens</p>
 
-        <h3>Principais Vendas</h3>
+        <h3>Vendas e Devoluções</h3>
         <table class="table">
-            <tr><th>Documento</th><th>Cliente</th><th>Valor (€)</th></tr>
-            <tr><td>FR E2025/3</td><td>Cliente Genérico - Premium</td><td>12.763,95</td></tr>
-            <tr><td>FR E2025/7</td><td>Cliente Genérico - Premium International</td><td>11.484,60</td></tr>
-            <tr><td>FT E2025/16</td><td>Cliente 5903 - Weekend Break</td><td>1.759,00</td></tr>
+            <tr><th>Tipo</th><th>Documento</th><th>Cliente</th><th>Valor (€)</th></tr>
+            <tr><td>✅ Venda</td><td>FR E2025/3</td><td>Cliente Genérico - Premium</td><td>12.763,95</td></tr>
+            <tr><td>✅ Venda</td><td>FR E2025/7</td><td>Cliente Genérico - Premium International</td><td>11.484,60</td></tr>
+            <tr><td>✅ Venda</td><td>FT E2025/16</td><td>Cliente 5903 - Weekend Break</td><td>1.759,00</td></tr>
+            <tr style="background-color: #ffe6e6;"><td>❌ Devolução</td><td>NC E2025/2</td><td>Maria Santos - Empresarial</td><td>-375,00</td></tr>
         </table>
+
+        <p><strong>Nota:</strong> As devoluções (Notas de Crédito) são deduzidas das vendas para calcular a margem líquida conforme CIVA.</p>
 
         <h3>Principais Custos</h3>
         <table class="table">
