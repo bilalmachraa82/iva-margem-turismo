@@ -42,7 +42,14 @@
       "mcp__claude-flow__task_status",
       "mcp__claude-flow__swarm_monitor",
       "Bash(PYTHONFAULTHANDLER=1 python3 -X faulthandler -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --timeout-keep-alive 1)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(vercel:*)",
+      "WebFetch(domain:iva-margem-turismo-1-mu69fqe5p-bilalmachraa82s-projects.vercel.app)",
+      "Bash(timeout 10 vercel logs:*)",
+      "WebFetch(domain:iva-margem-turismo-1.vercel.app)"
     ],
     "deny": []
   }

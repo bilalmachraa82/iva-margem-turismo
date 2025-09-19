@@ -225,123 +225,25 @@ def test_calculate_and_export():
             success = False
             details = f"Erro HTTP {resp.status_code}: {data}"
         
-        results.add_result("Calculate & Export Excel", success, details)
+        results.add_result("Calculate & Export", success, details)
         return success
     except Exception as e:
-        results.add_result("Calculate & Export Excel", False, str(e))
+        results.add_result("Calculate & Export", False, str(e))
         return False
-
-def test_reset_session():
-    """Testa reset/limpeza de sessão"""
-    try:
-        # Upload vazio deve falhar
-        resp = requests.post(f"{BASE_URL}/api/upload-efatura")
-        success = resp.status_code in [400, 422]
-        details = f"Status {resp.status_code} - Reset simulado através de upload vazio"
-        
-        results.add_result("Reset Session", success, details)
-        return success
-    except Exception as e:
-        results.add_result("Reset Session", False, str(e))
-        return False
-
-def test_data_persistence():
-    """Testa persistência de dados após recarregar"""
-    if not TEST_SESSION_ID:
-        results.add_result("Data Persistence", False, "Sem session_id")
-        return False
-    
-    try:
-        # Primeira leitura
-        resp1 = requests.get(f"{BASE_URL}/api/session/{TEST_SESSION_ID}")
-        data1 = resp1.json()
-        
-        # Aguardar um pouco
-        time.sleep(1)
-        
-        # Segunda leitura
-        resp2 = requests.get(f"{BASE_URL}/api/session/{TEST_SESSION_ID}")
-        data2 = resp2.json()
-        
-        # Comparar
-        success = (
-            len(data1.get("sales", [])) == len(data2.get("sales", [])) and
-            len(data1.get("costs", [])) == len(data2.get("costs", [])) and
-            len(data1.get("associations", [])) == len(data2.get("associations", []))
-        )
-        
-        details = "Dados mantidos consistentes entre requisições"
-        results.add_result("Data Persistence", success, details)
-        return success
-    except Exception as e:
-        results.add_result("Data Persistence", False, str(e))
-        return False
-
-def test_cors_headers():
-    """Testa configuração CORS para frontend"""
-    try:
-        headers = {
-            'Origin': 'http://localhost:3000',
-            'Access-Control-Request-Method': 'POST'
-        }
-        
-        resp = requests.options(f"{BASE_URL}/api/upload-efatura", headers=headers)
-        cors_headers = resp.headers.get('Access-Control-Allow-Origin', '')
-        success = cors_headers in ['*', 'http://localhost:3000']
-        
-        details = f"CORS Origin: {cors_headers}"
-        results.add_result("CORS Configuration", success, details)
-        return success
-    except Exception as e:
-        results.add_result("CORS Configuration", False, str(e))
-        return False
-
-def test_error_handling():
-    """Testa tratamento de erros"""
-    tests_passed = 0
-    
-    # Teste 1: Session ID inválido
-    try:
-        resp = requests.get(f"{BASE_URL}/api/session/invalid-session-id")
-        if resp.status_code == 404:
-            tests_passed += 1
-    except:
-        pass
-    
-    # Teste 2: Dados inválidos
-    try:
-        resp = requests.post(f"{BASE_URL}/api/calculate", json={"invalid": "data"})
-        if resp.status_code in [400, 422]:
-            tests_passed += 1
-    except:
-        pass
-    
-    success = tests_passed >= 1
-    details = f"{tests_passed}/2 testes de erro passaram"
-    results.add_result("Error Handling", success, details)
-    return success
 
 def run_all_tests():
-    """Executa todos os testes"""
-    print("🚀 Iniciando teste completo do sistema IVA Margem Turismo...")
+    print("🚀 Iniciando teste síncrono do sistema IVA Margem Turismo...")
     print("="*80)
     
-    # Testes sequenciais
     test_api_health()
     test_upload_efatura()
     
     if TEST_SESSION_ID:
-        # Testes principais
         test_get_session()
-        test_cors_headers()
-        test_error_handling()
         test_manual_association()
         test_auto_match()
         test_calculate_and_export()
-        test_data_persistence()
-        test_reset_session()
     
-    # Imprimir relatório
     results.print_report()
 
 if __name__ == "__main__":

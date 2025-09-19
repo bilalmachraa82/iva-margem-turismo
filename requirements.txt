@@ -1,26 +1,5 @@
-# Vercel-optimized requirements (lightweight)
-# Core API
-fastapi==0.104.1
-uvicorn==0.24.0
-python-multipart==0.0.6
-pydantic==2.5.0
-aiofiles==23.2.1
+# Ultra-minimal requirements for Vercel Python runtime
+# Only absolute essentials - no heavy dependencies
 
-# File processing (minimal dependencies)
-openpyxl==3.1.2
-
-# PDF generation (ReportLab only - no WeasyPrint)
-reportlab==4.0.7
-
-# HTTP/JSON
-httpx==0.25.2
-python-dotenv==1.0.0
-
-# Analytics (lightweight alternatives)
-# pandas==2.1.3  # REMOVED - too heavy for serverless
-# lxml==4.9.3    # REMOVED - C extensions problematic
-# weasyprint==61.2 # REMOVED - requires system libs
-
-# Optional: Chart generation (if needed)
-# matplotlib==3.8.2  # Can be added later if charts needed
-# seaborn==0.13.0     # Can be added later if charts needed
+# Core for data handling
+# (using only Python stdlib for now)

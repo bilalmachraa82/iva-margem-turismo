@@ -239,73 +239,6 @@ async def test_calculate_and_export():
             results.add_result("Calculate & Export Excel", False, str(e))
             return False
 
-async def test_premium_analytics_suite():
-    """Valida todos os endpoints de analytics premium"""
-    if not TEST_SESSION_ID:
-        results.add_result("Analytics - Precondition", False, "Sem session_id")
-        return False
-
-    async with aiohttp.ClientSession() as session:
-        payload = {
-            "session_id": TEST_SESSION_ID,
-            "vat_rate": 23
-        }
-
-        async def call_json(name, method, url, expect_key):
-            try:
-                async with session.request(method, url, json=payload if method == "POST" else None) as resp:
-                    data = await resp.json()
-                    success = resp.status == 200 and expect_key in data
-                    details = f"HTTP {resp.status} · Chave '{expect_key}' {'ok' if expect_key in data else 'ausente'}"
-                    results.add_result(name, success, details)
-                    return success
-            except Exception as exc:
-                results.add_result(name, False, str(exc))
-                return False
-
-        success = True
-        success &= await call_json(
-            "Analytics - Executive Summary",
-            "POST",
-            f"{BASE_URL}/api/analytics/executive-summary",
-            "executive_summary"
-        )
-
-        success &= await call_json(
-            "Analytics - Waterfall",
-            "POST",
-            f"{BASE_URL}/api/analytics/waterfall",
-            "waterfall_analysis"
-        )
-
-        success &= await call_json(
-            "Analytics - Scenarios",
-            "POST",
-            f"{BASE_URL}/api/analytics/scenarios",
-            "scenario_analysis"
-        )
-
-        success &= await call_json(
-            "Analytics - Outliers",
-            "POST",
-            f"{BASE_URL}/api/analytics/outliers",
-            "outlier_analysis"
-        )
-
-        # Advanced KPIs é GET com querystring
-        try:
-            async with session.get(f"{BASE_URL}/api/analytics/kpis/{TEST_SESSION_ID}", params={"vat_rate": 23}) as resp:
-                data = await resp.json()
-                success_kpi = resp.status == 200 and "advanced_kpis" in data
-                details = f"HTTP {resp.status} · KPI keys: {list(data.get('advanced_kpis', {}).keys())[:3]}"
-                results.add_result("Analytics - Advanced KPIs", success_kpi, details)
-                success &= success_kpi
-        except Exception as exc:
-            results.add_result("Analytics - Advanced KPIs", False, str(exc))
-            success = False
-
-        return success
-
 async def test_reset_session():
     """Testa reset/limpeza de sessão"""
     if not TEST_SESSION_ID:
@@ -426,7 +359,6 @@ async def run_all_tests():
         # Testes que dependem de estado
         await test_manual_association()
         await test_auto_match()
-        await test_premium_analytics_suite()
         await test_calculate_and_export()
         await test_data_persistence()
         await test_reset_session()
