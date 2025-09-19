@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="corporate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVA Margem Turismo - Executive Dashboard</title>
+
+    <!-- Premium UI Stack (Production Ready) -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.0/base.min.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Premium Styling -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-metric {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-indicator {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .trend-up { color: #16a34a; }
+        .trend-down { color: #dc2626; }
+        .trend-stable { color: #6b7280; }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Executive Dashboard -->
+<div class="min-h-screen p-6" x-data="executiveDashboard()">
+
+    <!-- Header Premium -->
+    <div class="mb-8">
+        <div class="navbar bg-base-100 shadow-xl rounded-2xl">
+            <div class="navbar-start">
+                <div class="avatar">
+                    <div class="w-12 rounded-xl">
+                        <div class="bg-gradient-to-r from-primary to-secondary p-3 text-primary-content">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h1 class="text-2xl font-bold text-primary">IVA Margem Turismo</h1>
+                    <p class="text-sm text-base-content/70">Executive Analytics Dashboard</p>
+                </div>
+            </div>
+            <div class="navbar-center">
+                <div class="badge badge-success badge-lg">
+                    <i class="fas fa-shield-check mr-2"></i>
+                    CIVA Art. 308º Compliant
+                </div>
+            </div>
+            <div class="navbar-end">
+                <button @click="refreshData()" class="btn btn-primary btn-circle">
+                    <i class="fas fa-sync-alt" :class="{'animate-spin': loading}"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div x-show="loading" class="flex justify-center items-center h-64">
+        <div class="loading loading-spinner loading-lg text-primary"></div>
+        <span class="ml-4 text-lg">Carregando analytics premium...</span>
+    </div>
+
+    <!-- Error State -->
+    <div x-show="error && !loading" class="alert alert-error mb-8">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span x-text="error"></span>
+        <button @click="refreshData()" class="btn btn-sm btn-outline">Tentar novamente</button>
+    </div>
+
+    <!-- Executive Summary Cards -->
+    <div x-show="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <template x-for="kpi in kpiCards" :key="kpi.title">
+            <div class="card bg-base-100 shadow-xl status-indicator">
+                <div class="card-body">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="card-title text-sm text-base-content/70" x-text="kpi.title"></h3>
+                            <div class="hero-metric" x-text="kpi.value"></div>
+                            <p class="text-sm text-base-content/60" x-text="kpi.subtitle || kpi.percentage"></p>
+                        </div>
+                        <div class="indicator">
+                            <div :class="'badge badge-sm ' + getStatusColor(kpi.status)" x-text="kpi.status.toUpperCase()"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <i :class="'fas ' + getTrendIcon(kpi.trend) + ' ' + getTrendColor(kpi.trend) + ' mr-2'"></i>
+                        <span class="text-xs" x-text="getTrendText(kpi.trend)"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Performance Narrative -->
+    <div x-show="!loading && !error" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+        <!-- Executive Narrative -->
+        <div class="lg:col-span-2">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-xl mb-4">
+                        <i class="fas fa-chart-line text-primary"></i>
+                        Executive Summary
+                    </h2>
+
+                    <!-- Headline -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="font-semibold" x-text="narrative.headline"></span>
+                    </div>
+
+                    <!-- Performance & Drivers -->
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">PERFORMANCE</h4>
+                            <p class="text-sm leading-relaxed" x-text="narrative.performance"></p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">DRIVERS</h4>
+                            <p class="text-sm leading-relaxed" x-text="narrative.drivers"></p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-sm text-base-content/70 mb-2">MARKET CONTEXT</h4>
+                            <p class="text-sm leading-relaxed" x-text="narrative.market_context"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Assessment (RAG) -->
+        <div>
+            <div class="card bg-base-100 shadow-xl h-full">
+                <div class="card-body">
+                    <h2 class="card-title text-lg mb-4">
+                        <i class="fas fa-shield-exclamation text-warning"></i>
+                        Risk Assessment
+                    </h2>
+
+                    <!-- Overall Status -->
+                    <div class="text-center mb-4">
+                        <div :class="'radial-progress text-' + getRagColor(riskAssessment.overall_status)"
+                             :style="'--value:' + getRagScore(riskAssessment.overall_status)" x-text="riskAssessment.overall_status?.toUpperCase()">
+                        </div>
+                    </div>
+
+                    <!-- Risk List -->
+                    <div class="space-y-2" x-show="riskAssessment.risks && riskAssessment.risks.length > 0">
+                        <template x-for="risk in riskAssessment.risks.slice(0, 3)" :key="risk.category">
+                            <div :class="'alert alert-' + getRiskAlertType(risk.level) + ' alert-sm'">
+                                <i :class="'fas fa-' + getRiskIcon(risk.level)"></i>
+                                <div class="text-xs">
+                                    <div class="font-medium" x-text="risk.message"></div>
+                                    <div class="text-xs opacity-70" x-text="risk.action"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- No Risks -->
+                    <div x-show="!riskAssessment.risks || riskAssessment.risks.length === 0" class="text-center text-success">
+                        <i class="fas fa-check-circle text-3xl mb-2"></i>
+                        <p class="text-sm">Perfil de risco controlado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div x-show="!loading && !error" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+        <!-- Waterfall Chart -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">
+                    <i class="fas fa-chart-waterfall text-info"></i>
+                    Margin Bridge Analysis
+                </h2>
+                <div class="chart-container">
+                    <canvas id="waterfallChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario Analysis -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-lg mb-4">
+                    <i class="fas fa-chart-area text-warning"></i>
+                    Scenario Analysis
+                </h2>
+                <div class="space-y-3">
+                    <template x-for="(scenario, key) in scenarios" :key="key">
+                        <div class="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                            <div>
+                                <h4 class="font-medium" x-text="scenario.name"></h4>
+                                <p class="text-xs text-base-content/70" x-text="scenario.description"></p>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold" x-text="formatCurrency(scenario.net_margin)"></div>
+                                <div class="text-xs" x-text="'IVA ' + scenario.vat_rate + '%'"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div x-show="!loading && !error && recommendations.length > 0" class="card bg-base-100 shadow-xl mb-8">
+        <div class="card-body">
+            <h2 class="card-title text-xl mb-4">
+                <i class="fas fa-lightbulb text-warning"></i>
+                Top 5 Recomendações Acionáveis
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Prioridade</th>
+                            <th>Ação</th>
+                            <th>Responsável</th>
+                            <th>Prazo</th>
+                            <th>KPI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="rec in recommendations.slice(0, 5)" :key="rec.action">
+                            <tr>
+                                <td>
+                                    <div :class="'badge badge-' + getPriorityColor(rec.priority)" x-text="rec.priority?.toUpperCase()"></div>
+                                </td>
+                                <td>
+                                    <div class="font-medium" x-text="rec.action"></div>
+                                    <div class="text-xs text-base-content/70" x-text="rec.category"></div>
+                                </td>
+                                <td x-text="rec.owner"></td>
+                                <td x-text="rec.timeframe"></td>
+                                <td class="font-mono text-xs" x-text="rec.kpi"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer footer-center bg-base-100 text-base-content rounded-2xl p-6 shadow-xl">
+        <div class="grid grid-flow-col gap-4">
+            <div class="stat">
+                <div class="stat-title text-xs">Gerado em</div>
+                <div class="stat-value text-sm" x-text="new Date().toLocaleString('pt-PT')"></div>
+            </div>
+            <div class="stat">
+                <div class="stat-title text-xs">Conformidade</div>
+                <div class="stat-value text-sm">CIVA Art. 308º</div>
+            </div>
+            <div class="stat">
+                <div class="stat-title text-xs">Motor</div>
+                <div class="stat-value text-sm">PremiumAnalytics v1.0</div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+function executiveDashboard() {
+    return {
+        loading: true,
+        error: null,
+        sessionId: 'demo-345f',
+        apiUrl: 'http://localhost:8000',
+
+        // Data
+        kpiCards: [],
+        narrative: {},
+        riskAssessment: {},
+        scenarios: {},
+        waterfallData: {},
+        recommendations: [],
+
+        async init() {
+            await this.loadData();
+        },
+
+        async loadData() {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                // Load all analytics data
+                await Promise.all([
+                    this.loadExecutiveSummary(),
+                    this.loadScenarioAnalysis(),
+                    this.loadWaterfallData()
+                ]);
+
+                // Initialize charts after data is loaded
+                this.$nextTick(() => {
+                    this.initCharts();
+                });
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                this.error = 'Erro ao carregar dados: ' + error.message;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async refreshData() {
+            await this.loadData();
+        },
+
+        async loadExecutiveSummary() {
+            const response = await this.apiCall('/api/analytics/executive-summary', {
+                method: 'POST',
+                body: JSON.stringify({ session_id: this.sessionId, vat_rate: 23 })
+            });
+
+            const data = await response.json();
+
+            this.kpiCards = data.executive_summary?.kpi_cards || [];
+            this.narrative = data.executive_summary?.narrative || {};
+            this.riskAssessment = data.executive_summary?.risk_assessment || {};
+            this.recommendations = data.executive_summary?.recommendations || [];
+        },
+
+        async loadScenarioAnalysis() {
+            const response = await this.apiCall('/api/analytics/scenarios', {
+                method: 'POST',
+                body: JSON.stringify({ session_id: this.sessionId, vat_rate: 23 })
+            });
+
+            const data = await response.json();
+            this.scenarios = data.scenario_analysis?.scenarios || {};
+        },
+
+        async loadWaterfallData() {
+            const response = await this.apiCall('/api/analytics/waterfall', {
+                method: 'POST',
+                body: JSON.stringify({ session_id: this.sessionId, vat_rate: 23 })
+            });
+
+            const data = await response.json();
+            this.waterfallData = data.waterfall_analysis || {};
+        },
+
+        async apiCall(endpoint, options = {}) {
+            const response = await fetch(`${this.apiUrl}${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            return response;
+        },
+
+        initCharts() {
+            // Waterfall Chart
+            const ctx = document.getElementById('waterfallChart');
+            if (ctx && this.waterfallData.waterfall_data) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: this.waterfallData.waterfall_data.map(d => d.category),
+                        datasets: [{
+                            label: 'Margem por Tipo',
+                            data: this.waterfallData.waterfall_data.map(d => d.value),
+                            backgroundColor: [
+                                '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '€' + value.toLocaleString('pt-PT');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        },
+
+        // Utility Functions
+        formatCurrency(value) {
+            return new Intl.NumberFormat('pt-PT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(value || 0);
+        },
+
+        getStatusColor(status) {
+            const colors = {
+                'green': 'badge-success',
+                'amber': 'badge-warning',
+                'red': 'badge-error',
+                'ok': 'badge-info'
+            };
+            return colors[status] || 'badge-neutral';
+        },
+
+        getTrendIcon(trend) {
+            const icons = {
+                'up': 'fa-trending-up',
+                'down': 'fa-trending-down',
+                'stable': 'fa-minus'
+            };
+            return icons[trend] || 'fa-minus';
+        },
+
+        getTrendColor(trend) {
+            const colors = {
+                'up': 'trend-up',
+                'down': 'trend-down',
+                'stable': 'trend-stable'
+            };
+            return colors[trend] || 'trend-stable';
+        },
+
+        getTrendText(trend) {
+            const texts = {
+                'up': 'Crescimento',
+                'down': 'Declínio',
+                'stable': 'Estável'
+            };
+            return texts[trend] || 'Estável';
+        },
+
+        getRagColor(status) {
+            const colors = {
+                'green': 'success',
+                'amber': 'warning',
+                'red': 'error'
+            };
+            return colors[status] || 'neutral';
+        },
+
+        getRagScore(status) {
+            const scores = {
+                'green': 85,
+                'amber': 60,
+                'red': 30
+            };
+            return scores[status] || 50;
+        },
+
+        getRiskAlertType(level) {
+            const types = {
+                'critical': 'error',
+                'high': 'warning',
+                'medium': 'info'
+            };
+            return types[level] || 'info';
+        },
+
+        getRiskIcon(level) {
+            const icons = {
+                'critical': 'exclamation-triangle',
+                'high': 'exclamation-circle',
+                'medium': 'info-circle'
+            };
+            return icons[level] || 'info-circle';
+        },
+
+        getPriorityColor(priority) {
+            const colors = {
+                'critical': 'error',
+                'high': 'warning',
+                'medium': 'info'
+            };
+            return colors[priority] || 'neutral';
+        }
+    }
+}
+</script>
+
+</body>
+</html>

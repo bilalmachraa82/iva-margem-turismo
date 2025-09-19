@@ -34,9 +34,13 @@ from .excel_export import ExcelExporter
 from .validators import DataValidator
 from .pdf_export_professional import generate_pdf_report as generate_professional_pdf_report
 # from .pdf_export_enhanced import generate_enhanced_pdf_report  # Temporarily disabled due to syntax error
+from .pdf_export_premium import generate_premium_pdf_report
 from .pdf_pipeline import render_pdf_from_html, resolve_company_payload, sanitize_company_name
 from .period_calculator import PeriodVATCalculator
+from .analytics import PremiumAnalytics, AdvancedKPICalculator
 from .kv_store import kv
+from .company_config import company_config, CompanyInfo, apply_company_profile, COMPANY_PROFILES
+from .chart_generator import generate_financial_charts
 
 # Configure logging
 logging.basicConfig(
@@ -949,6 +953,242 @@ async def calculate_vat(request: CalculationRequest):
     except Exception as e:
         logger.error(f"Calculation error: {str(e)}")
         raise HTTPException(500, f"Error calculating VAT: {str(e)}")
+
+
+# -------------------------------------------------------------------------
+# PREMIUM ANALYTICS ENDPOINTS
+# -------------------------------------------------------------------------
+
+@app.post("/api/analytics/executive-summary")
+async def get_executive_summary(request: CalculationRequest):
+    """
+    Generate C-Level executive summary with KPIs, drivers, and recommendations
+
+    Returns executive dashboard suitable for Board presentation
+    """
+    # Validate session
+    if not await has_session_store(request.session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
+
+    try:
+        # Initialize analytics engine
+        analytics = PremiumAnalytics(vat_rate=request.vat_rate)
+
+        # Calculate base results first
+        calculator = VATCalculator(vat_rate=request.vat_rate)
+        calculations = calculator.calculate_all(
+            session_data["sales"],
+            session_data["costs"]
+        )
+
+        # Generate executive summary
+        executive_summary = analytics.generate_executive_summary(
+            calculations, session_data
+        )
+
+        # Add metadata
+        executive_summary["metadata"] = {
+            "session_id": request.session_id,
+            "vat_rate": request.vat_rate,
+            "generated_at": datetime.now().isoformat(),
+            "document_count": len(calculations),
+            "calculation_engine": "PremiumAnalytics v1.0"
+        }
+
+        return JSONResponse(content=executive_summary)
+
+    except Exception as e:
+        logger.error(f"Executive summary error: {str(e)}")
+        raise HTTPException(500, f"Error generating executive summary: {str(e)}")
+
+
+@app.post("/api/analytics/waterfall")
+async def get_waterfall_analysis(request: CalculationRequest):
+    """
+    Generate margin bridge/waterfall analysis for variance analysis
+
+    Returns waterfall data suitable for bridge charts
+    """
+    # Validate session
+    if not await has_session_store(request.session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
+
+    try:
+        # Initialize analytics
+        analytics = PremiumAnalytics(vat_rate=request.vat_rate)
+
+        # Calculate base results
+        calculator = VATCalculator(vat_rate=request.vat_rate)
+        calculations = calculator.calculate_all(
+            session_data["sales"],
+            session_data["costs"]
+        )
+
+        # Generate waterfall analysis
+        waterfall_data = analytics.generate_waterfall_analysis(calculations)
+
+        return JSONResponse(content={
+            "waterfall_analysis": waterfall_data,
+            "metadata": {
+                "session_id": request.session_id,
+                "generated_at": datetime.now().isoformat(),
+                "analysis_type": "margin_bridge"
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Waterfall analysis error: {str(e)}")
+        raise HTTPException(500, f"Error generating waterfall analysis: {str(e)}")
+
+
+@app.post("/api/analytics/scenarios")
+async def get_scenario_analysis(request: CalculationRequest):
+    """
+    Generate stress test scenarios and sensitivity analysis
+
+    Returns base/optimistic/pessimistic scenarios with VAT rate impacts
+    """
+    # Validate session
+    if not await has_session_store(request.session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
+
+    try:
+        # Initialize analytics
+        analytics = PremiumAnalytics(vat_rate=request.vat_rate)
+
+        # Calculate base results
+        calculator = VATCalculator(vat_rate=request.vat_rate)
+        calculations = calculator.calculate_all(
+            session_data["sales"],
+            session_data["costs"]
+        )
+
+        # Generate scenario analysis
+        scenarios = analytics.generate_scenario_analysis(calculations)
+
+        return JSONResponse(content={
+            "scenario_analysis": scenarios,
+            "metadata": {
+                "session_id": request.session_id,
+                "base_vat_rate": request.vat_rate,
+                "generated_at": datetime.now().isoformat(),
+                "analysis_type": "stress_test"
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Scenario analysis error: {str(e)}")
+        raise HTTPException(500, f"Error generating scenario analysis: {str(e)}")
+
+
+@app.post("/api/analytics/outliers")
+async def get_outlier_analysis(request: CalculationRequest):
+    """
+    Identify statistical outliers in margins and revenues (percentile 95)
+
+    Returns outlier documents requiring management attention
+    """
+    # Validate session
+    if not await has_session_store(request.session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(request.session_id)
+    session_data = session["data"]
+
+    try:
+        # Initialize analytics
+        analytics = PremiumAnalytics(vat_rate=request.vat_rate)
+
+        # Calculate base results
+        calculator = VATCalculator(vat_rate=request.vat_rate)
+        calculations = calculator.calculate_all(
+            session_data["sales"],
+            session_data["costs"]
+        )
+
+        # Identify outliers
+        outliers = analytics.identify_outliers(calculations)
+
+        return JSONResponse(content={
+            "outlier_analysis": outliers,
+            "metadata": {
+                "session_id": request.session_id,
+                "generated_at": datetime.now().isoformat(),
+                "analysis_type": "statistical_outliers",
+                "percentile_threshold": 95
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Outlier analysis error: {str(e)}")
+        raise HTTPException(500, f"Error generating outlier analysis: {str(e)}")
+
+
+@app.get("/api/analytics/kpis/{session_id}")
+async def get_advanced_kpis(session_id: str, vat_rate: float = 23.0):
+    """
+    Get advanced KPIs: ROIC, EVA, margin stability
+
+    Returns sophisticated financial metrics for executive review
+    """
+    # Validate session
+    if not await has_session_store(session_id):
+        raise HTTPException(404, "Session not found")
+    session = await get_session_store(session_id)
+    session_data = session["data"]
+
+    try:
+        # Calculate base results
+        calculator = VATCalculator(vat_rate=vat_rate)
+        calculations = calculator.calculate_all(
+            session_data["sales"],
+            session_data["costs"]
+        )
+
+        if not calculations:
+            raise HTTPException(404, "No calculations available")
+
+        # Calculate summary
+        summary = calculator.calculate_summary(calculations)
+
+        # Advanced KPIs
+        invested_capital = summary["total_costs"]  # Simplified assumption
+        cost_of_capital = 8.0  # Typical for travel agencies
+
+        advanced_kpis = {
+            "roic_simplified": AdvancedKPICalculator.calculate_roic_simplified(
+                summary["total_net_margin"], invested_capital
+            ),
+            "eva_simplified": AdvancedKPICalculator.calculate_eva_simplified(
+                summary["total_net_margin"], cost_of_capital, invested_capital
+            ),
+            "margin_stability": AdvancedKPICalculator.calculate_margin_stability(calculations),
+            "baseline_metrics": {
+                "net_margin": summary["total_net_margin"],
+                "gross_margin": summary["total_gross_margin"],
+                "margin_percentage": summary["average_margin_percentage"],
+                "invested_capital": invested_capital
+            }
+        }
+
+        return JSONResponse(content={
+            "advanced_kpis": advanced_kpis,
+            "metadata": {
+                "session_id": session_id,
+                "vat_rate": vat_rate,
+                "generated_at": datetime.now().isoformat(),
+                "kpi_version": "v1.0"
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Advanced KPIs error: {str(e)}")
+        raise HTTPException(500, f"Error calculating advanced KPIs: {str(e)}")
 
 
 @app.post("/api/export-pdf")

@@ -25,6 +25,7 @@ uvicorn main:app --reload
 Abrir browser em:
 - http://localhost:8000 - Status da API
 - http://localhost:8000/docs - Documentação interativa
+- http://localhost:8080/frontend/ - Interface com Dashboard Premium
 
 ## 📋 Funcionalidades
 
@@ -34,6 +35,7 @@ Abrir browser em:
 - ✅ Cálculo preciso do IVA sobre margem
 - ✅ Export Excel profissional com 5 folhas
 - ✅ API RESTful completa
+- ✅ Dashboard executivo premium com KPIs, cenários, waterfall e análise de outliers
 
 ## 🔧 Endpoints
 
@@ -59,6 +61,24 @@ Margem = Venda - Custos
 IVA = Margem × Taxa / (100 + Taxa)
 Margem Líquida = Margem - IVA
 ```
+
+## 🧪 Testes Recomendados
+
+```bash
+# Testes unitários do motor premium (não requer API a correr)
+python test_premium_analytics.py
+
+# Testes end-to-end (necessitam backend activo em http://localhost:8000)
+python test_complete_system.py
+python test_system_sync.py
+```
+
+## ⚙️ Variáveis de Ambiente Adicionais
+
+| Variável | Descrição |
+| --- | --- |
+| `ENABLE_PREMIUM_PDF` | Define HTTP → PDF premium (`1` para activar). Requer dependências WeasyPrint instaladas no sistema. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Credenciais Upstash KV para persistência serverless (opcional). |
 
 ## 🌐 Deploy
 

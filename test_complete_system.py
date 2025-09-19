@@ -61,8 +61,10 @@ async def test_api_health():
         try:
             async with session.get(f"{BASE_URL}/") as resp:
                 data = await resp.json()
-                success = resp.status == 200 and data.get("status") == "ok"
-                results.add_result("API Health Check", success, f"Status: {resp.status}")
+                status_text = data.get("status", "")
+                success = resp.status == 200 and "IVA Margem" in status_text
+                details = f"HTTP {resp.status} · {status_text}"
+                results.add_result("API Health Check", success, details)
                 return success
         except Exception as e:
             results.add_result("API Health Check", False, str(e))
@@ -82,8 +84,8 @@ async def test_upload_efatura():
             
             # Criar FormData
             data = aiohttp.FormData()
-            data.add_field('sales_file', vendas_data, filename='vendas.csv', content_type='text/csv')
-            data.add_field('costs_file', compras_data, filename='compras.csv', content_type='text/csv')
+            data.add_field('vendas', vendas_data, filename='vendas.csv', content_type='text/csv')
+            data.add_field('compras', compras_data, filename='compras.csv', content_type='text/csv')
             
             async with session.post(f"{BASE_URL}/api/upload-efatura", data=data) as resp:
                 result = await resp.json()
@@ -145,7 +147,7 @@ async def test_manual_association():
             # Fazer associação
             association_data = {
                 "session_id": TEST_SESSION_ID,
-                "sale_id": sale_id,
+                "sale_ids": [sale_id],
                 "cost_ids": cost_ids
             }
             
@@ -179,11 +181,11 @@ async def test_auto_match():
             
             async with session.post(f"{BASE_URL}/api/auto-match", json=match_data) as resp:
                 result = await resp.json()
-                success = resp.status == 200 and "matches" in result
+                matches_found = result.get("matches_found", len(result.get("matches", [])))
+                success = resp.status == 200 and result.get("status") == "success"
                 
                 if success:
-                    matches = result.get("matches", 0)
-                    details = f"{matches} associações automáticas criadas (threshold: 50%)"
+                    details = f"{matches_found} associações automáticas criadas (threshold: 50%)"
                 else:
                     details = f"Erro: {result}"
                 
@@ -236,6 +238,73 @@ async def test_calculate_and_export():
         except Exception as e:
             results.add_result("Calculate & Export Excel", False, str(e))
             return False
+
+async def test_premium_analytics_suite():
+    """Valida todos os endpoints de analytics premium"""
+    if not TEST_SESSION_ID:
+        results.add_result("Analytics - Precondition", False, "Sem session_id")
+        return False
+
+    async with aiohttp.ClientSession() as session:
+        payload = {
+            "session_id": TEST_SESSION_ID,
+            "vat_rate": 23
+        }
+
+        async def call_json(name, method, url, expect_key):
+            try:
+                async with session.request(method, url, json=payload if method == "POST" else None) as resp:
+                    data = await resp.json()
+                    success = resp.status == 200 and expect_key in data
+                    details = f"HTTP {resp.status} · Chave '{expect_key}' {'ok' if expect_key in data else 'ausente'}"
+                    results.add_result(name, success, details)
+                    return success
+            except Exception as exc:
+                results.add_result(name, False, str(exc))
+                return False
+
+        success = True
+        success &= await call_json(
+            "Analytics - Executive Summary",
+            "POST",
+            f"{BASE_URL}/api/analytics/executive-summary",
+            "executive_summary"
+        )
+
+        success &= await call_json(
+            "Analytics - Waterfall",
+            "POST",
+            f"{BASE_URL}/api/analytics/waterfall",
+            "waterfall_analysis"
+        )
+
+        success &= await call_json(
+            "Analytics - Scenarios",
+            "POST",
+            f"{BASE_URL}/api/analytics/scenarios",
+            "scenario_analysis"
+        )
+
+        success &= await call_json(
+            "Analytics - Outliers",
+            "POST",
+            f"{BASE_URL}/api/analytics/outliers",
+            "outlier_analysis"
+        )
+
+        # Advanced KPIs é GET com querystring
+        try:
+            async with session.get(f"{BASE_URL}/api/analytics/kpis/{TEST_SESSION_ID}", params={"vat_rate": 23}) as resp:
+                data = await resp.json()
+                success_kpi = resp.status == 200 and "advanced_kpis" in data
+                details = f"HTTP {resp.status} · KPI keys: {list(data.get('advanced_kpis', {}).keys())[:3]}"
+                results.add_result("Analytics - Advanced KPIs", success_kpi, details)
+                success &= success_kpi
+        except Exception as exc:
+            results.add_result("Analytics - Advanced KPIs", False, str(exc))
+            success = False
+
+        return success
 
 async def test_reset_session():
     """Testa reset/limpeza de sessão"""
@@ -357,6 +426,7 @@ async def run_all_tests():
         # Testes que dependem de estado
         await test_manual_association()
         await test_auto_match()
+        await test_premium_analytics_suite()
         await test_calculate_and_export()
         await test_data_persistence()
         await test_reset_session()

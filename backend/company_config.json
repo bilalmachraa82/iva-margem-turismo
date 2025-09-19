@@ -1,0 +1,21 @@
+{
+  "name": "Luxury Travel Portugal Lda",
+  "nif": "555666777",
+  "address_line1": "Quinta da Fonte, Lote 5",
+  "address_line2": "Complexo Empresarial",
+  "postal_code": "2750-642",
+  "city": "Cascais",
+  "country": "Portugal",
+  "phone": "+351 21 555 6677",
+  "email": "concierge@luxurytravel.pt",
+  "website": "www.luxurytravel.pt",
+  "cae_code": "79110",
+  "registration_number": "12345",
+  "conservatory": "Conservatória do Registo Comercial de Lisboa",
+  "logo_path": null,
+  "primary_color": "#7c3aed",
+  "secondary_color": "#5b21b6",
+  "accent_color": "#f59e0b",
+  "certified_accountant": "Dr. Patricia Oliveira (CC 11111)",
+  "legal_representative": "Ricardo Silva"
+}

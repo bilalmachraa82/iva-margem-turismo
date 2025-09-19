@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Frontend Connection</title>
+</head>
+<body>
+    <h1>Testing Frontend-Backend Connection</h1>
+    <button onclick="testConnection()">Test Connection</button>
+    <div id="result"></div>
+
+    <script>
+    async function testConnection() {
+        const resultDiv = document.getElementById('result');
+
+        try {
+            console.log('Testing connection to backend...');
+            const response = await fetch('http://localhost:8000/api/mock-data');
+
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <h3>✅ Connection Successful!</h3>
+                    <p>Session ID: ${data.session_id}</p>
+                    <p>Sales: ${data.sales_count}</p>
+                    <p>Costs: ${data.costs_count}</p>
+                `;
+            } else {
+                resultDiv.innerHTML = `❌ HTTP Error: ${response.status}`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `❌ Connection Error: ${error.message}`;
+            console.error('Connection failed:', error);
+        }
+    }
+
+    // Auto-test on load
+    window.onload = () => {
+        setTimeout(testConnection, 1000);
+    };
+    </script>
+</body>
+</html>

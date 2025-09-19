@@ -70,9 +70,9 @@ test_data_integrity() {
         return 1
     fi
     
-    # Extract counts without jq
-    SALES_COUNT=$(echo "$RESPONSE" | grep -o '"total_sales":[[:space:]]*[0-9]*' | grep -o '[0-9]*$')
-    COSTS_COUNT=$(echo "$RESPONSE" | grep -o '"total_costs":[[:space:]]*[0-9]*' | grep -o '[0-9]*$')
+    # Extract counts without jq (novas chaves: sales_count / costs_count)
+    SALES_COUNT=$(echo "$RESPONSE" | grep -o '"sales_count":[[:space:]]*[0-9]*' | head -n1 | grep -o '[0-9]*$')
+    COSTS_COUNT=$(echo "$RESPONSE" | grep -o '"costs_count":[[:space:]]*[0-9]*' | head -n1 | grep -o '[0-9]*$')
     
     echo -e "${YELLOW}Sales found: $SALES_COUNT${NC}"
     echo -e "${YELLOW}Costs found: $COSTS_COUNT${NC}"

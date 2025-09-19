@@ -56,8 +56,10 @@ def test_api_health():
     try:
         resp = requests.get(f"{BASE_URL}/")
         data = resp.json()
-        success = resp.status_code == 200 and data.get("status") == "operational"
-        results.add_result("API Health Check", success, f"Status: {resp.status_code}, Response: {data.get('status')}")
+        status_text = data.get("status", "")
+        success = resp.status_code == 200 and "IVA Margem" in status_text
+        details = f"HTTP {resp.status_code}, Mensagem: {status_text}"
+        results.add_result("API Health Check", success, details)
         return success
     except Exception as e:
         results.add_result("API Health Check", False, str(e))
@@ -171,11 +173,11 @@ def test_auto_match():
         
         resp = requests.post(f"{BASE_URL}/api/auto-match", json=match_data)
         result = resp.json()
-        success = resp.status_code == 200 and "matches" in result
+        matches_found = result.get("matches_found", len(result.get("matches", [])))
+        success = resp.status_code == 200 and result.get("status") == "success"
         
         if success:
-            matches = result.get("matches", 0)
-            details = f"{matches} associações automáticas criadas (threshold: 50%)"
+            details = f"{matches_found} associações automáticas criadas (threshold: 50%)"
         else:
             details = f"Erro: {result}"
         

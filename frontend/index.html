@@ -373,10 +373,24 @@
                             <span class="ml-3 text-sm font-medium">Resultado</span>
                         </div>
                     </div>
+                    <button @click="openPremiumDashboard()"
+                            class="inline-flex items-center px-5 py-2 rounded-lg bg-white bg-opacity-20 text-white text-sm font-semibold hover:bg-opacity-30 transition">
+                        <i class="fas fa-gem mr-2"></i>
+                        Dashboard Premium
+                    </button>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Mobile premium button -->
+    <div class="md:hidden px-4 pt-4 flex justify-end">
+        <button @click="openPremiumDashboard()"
+                class="inline-flex items-center px-4 py-2 rounded-lg bg-navy-800 text-white text-sm font-semibold shadow">
+            <i class="fas fa-gem mr-2"></i>
+            Dashboard Premium
+        </button>
+    </div>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -1193,6 +1207,228 @@
         </div>
     </main>
 
+    <!-- Premium Analytics Dashboard Modal -->
+    <div x-show="premiumDashboardOpen"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur" @click="closePremiumDashboard()"></div>
+        <div class="relative z-10 w-full max-w-6xl mx-4 my-8 overflow-y-auto max-h-[90vh]">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-navy-800 via-blue-700 to-blue-500 px-8 py-6 flex flex-col md:flex-row md:items-center md:justify-between text-white">
+                    <div>
+                        <h2 class="text-2xl font-semibold">Dashboard Executivo IVA Margem</h2>
+                        <p class="text-sm text-blue-100" x-text="premiumAnalytics.metadata ? `Sessão ${premiumAnalytics.metadata.session_id || sessionId}` : `Sessão ${sessionId || '-'}`"></p>
+                    </div>
+                    <div class="flex items-center space-x-3 mt-4 md:mt-0">
+                        <button @click.stop="fetchPremiumAnalytics()"
+                                class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Atualizar
+                        </button>
+                        <button @click="closePremiumDashboard()"
+                                class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold">
+                            <i class="fas fa-times mr-2"></i>
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="px-8 py-6 space-y-6">
+                    <template x-if="premiumAnalytics.error">
+                        <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-xl p-4 flex items-start space-x-3">
+                            <i class="fas fa-circle-exclamation mt-1"></i>
+                            <div>
+                                <h3 class="font-semibold">Erro ao carregar analytics premium</h3>
+                                <p class="text-sm" x-text="premiumAnalytics.error"></p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="premiumAnalytics.loading" class="flex flex-col items-center justify-center py-16 space-y-4">
+                        <div class="spinner"></div>
+                        <p class="text-gray-600 text-sm">A preparar indicadores de performance…</p>
+                    </div>
+
+                    <div x-show="!premiumAnalytics.loading && !premiumAnalytics.error" class="space-y-8">
+                        <!-- KPI Cards -->
+                        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                            <template x-for="card in premiumKpiCards" :key="card.title">
+                                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="text-xs uppercase tracking-wide text-slate-500" x-text="card.title"></p>
+                                                <p class="text-2xl font-semibold mt-1" x-text="card.value"></p>
+                                                <p class="text-xs text-slate-500 mt-1" x-text="card.subtitle || card.percentage"></p>
+                                            </div>
+                                        <span :class="premiumStatusBadge(card.status)" class="px-2 py-1 rounded-full text-xs font-semibold" x-text="card.status ? card.status.toUpperCase() : 'INFO'"></span>
+                                    </div>
+                                    <div class="flex items-center space-x-2 mt-4 text-xs text-slate-500">
+                                        <i class="fas" :class="premiumTrendIcon(card.trend)"></i>
+                                        <span x-text="premiumTrendText(card.trend)"></span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Narrative and Risks -->
+                        <div class="grid gap-6 lg:grid-cols-3">
+                            <div class="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                    <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                                    Narrativa Executiva
+                                </h3>
+                                <div class="space-y-3 text-sm text-slate-600">
+                                    <p><span class="font-semibold text-slate-700">Performance:</span> <span x-text="premiumNarrative.performance || '—'"></span></p>
+                                    <p><span class="font-semibold text-slate-700">Drivers:</span> <span x-text="premiumNarrative.drivers || '—'"></span></p>
+                                    <p><span class="font-semibold text-slate-700">Riscos:</span> <span x-text="premiumNarrative.risks || '—'"></span></p>
+                                    <p><span class="font-semibold text-slate-700">Contexto de Mercado:</span> <span x-text="premiumNarrative.market_context || '—'"></span></p>
+                                    <p><span class="font-semibold text-slate-700">Conclusão:</span> <span x-text="premiumNarrative.conclusion || '—'"></span></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                    <i class="fas fa-shield-halved text-amber-500 mr-2"></i>
+                                    Perfil de Risco
+                                </h3>
+                                <template x-if="premiumRiskAssessment.overall_status">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-sm text-slate-600">Estado Global</span>
+                                        <span :class="premiumStatusBadge(premiumRiskAssessment.overall_status)"
+                                              class="px-3 py-1 rounded-full text-xs font-semibold"
+                                              x-text="premiumRiskAssessment.overall_status.toUpperCase()"></span>
+                                    </div>
+                                </template>
+                                <div class="space-y-3">
+                                    <template x-for="risk in premiumRiskAssessment.risks || []" :key="risk.message">
+                                        <div :class="premiumRiskTone(risk.level)" class="rounded-xl px-3 py-2 text-sm flex items-start space-x-2">
+                                            <i class="fas mt-1" :class="premiumRiskIcon(risk.level)"></i>
+                                            <div>
+                                                <p class="font-semibold" x-text="risk.message"></p>
+                                                <p class="text-xs opacity-80" x-text="risk.action"></p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <p x-show="!(premiumRiskAssessment.risks && premiumRiskAssessment.risks.length)" class="text-sm text-slate-500">Sem riscos relevantes identificados.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Waterfall & Scenarios -->
+                        <div class="grid gap-6 lg:grid-cols-2">
+                            <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-semibold text-slate-800 flex items-center">
+                                        <i class="fas fa-water text-blue-500 mr-2"></i>
+                                        Bridge de Margem
+                                    </h3>
+                                    <span class="text-xs text-slate-500" x-text="premiumAnalytics.waterfall ? `Total: ${formatCurrency(premiumAnalytics.waterfall.total_margin || 0)}` : ''"></span>
+                                </div>
+                                <div class="h-64">
+                                    <canvas id="premiumWaterfallChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                    <i class="fas fa-chart-area text-emerald-500 mr-2"></i>
+                                    Cenários & Sensibilidades
+                                </h3>
+                                <div class="space-y-3">
+                                    <template x-for="(scenario, key) in premiumScenarios" :key="key">
+                                        <div class="rounded-xl px-4 py-3 flex items-center justify-between text-sm" :class="premiumScenarioTone(key)">
+                                            <div>
+                                                <p class="font-semibold" x-text="scenario.name"></p>
+                                                <p class="text-xs opacity-80" x-text="scenario.description"></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-semibold" x-text="formatCurrency(scenario.net_margin)"></p>
+                                                <p class="text-xs" x-text="`IVA ${scenario.vat_rate}%`"></p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recomendações e KPIs -->
+                        <div class="grid gap-6 lg:grid-cols-3">
+                            <div class="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                    <i class="fas fa-lightbulb text-amber-500 mr-2"></i>
+                                    Recomendações Prioritárias
+                                </h3>
+                                <div class="space-y-3">
+                                    <template x-for="rec in premiumRecommendations.slice(0, 5)" :key="rec.action">
+                                        <div class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between text-sm">
+                                            <div>
+                                                <p class="font-semibold" x-text="rec.action"></p>
+                                                <p class="text-xs text-slate-500" x-text="`${rec.owner} · ${rec.timeframe}`"></p>
+                                            </div>
+                                            <div class="text-right text-xs text-slate-500">
+                                                <p class="font-semibold" x-text="rec.priority?.toUpperCase()"></p>
+                                                <p x-text="rec.kpi"></p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <p x-show="!premiumRecommendations.length" class="text-sm text-slate-500">Sem recomendações — desempenho estável.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                    <i class="fas fa-gauge text-blue-500 mr-2"></i>
+                                    KPIs Avançados
+                                </h3>
+                                <div class="space-y-3 text-sm text-slate-600">
+                                    <p><span class="font-semibold">ROIC Simplificado:</span> <span x-text="premiumAnalytics.kpis ? premiumAnalytics.kpis.roic_simplified.toFixed(2) + '%' : '—'"></span></p>
+                                    <p><span class="font-semibold">EVA Simplificado:</span> <span x-text="premiumAnalytics.kpis ? formatCurrency(premiumAnalytics.kpis.eva_simplified) : '—'"></span></p>
+                                    <template x-if="premiumAnalytics.kpis">
+                                        <div>
+                                            <p class="font-semibold text-slate-700">Estabilidade Margem</p>
+                                            <p class="text-xs text-slate-500">
+                                                Volatilidade: 
+                                                <span x-text="premiumAnalytics.kpis && premiumAnalytics.kpis.margin_stability ? premiumAnalytics.kpis.margin_stability.volatility.toFixed(2) : '—'"></span>
+                                                · Consistência: 
+                                                <span x-text="premiumAnalytics.kpis && premiumAnalytics.kpis.margin_stability ? premiumAnalytics.kpis.margin_stability.consistency.toFixed(1) + '%' : '—'"></span>
+                                            </p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outliers -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                <i class="fas fa-magnifying-glass-chart text-purple-500 mr-2"></i>
+                                Outliers Estatísticos
+                            </h3>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm text-slate-600">
+                                <div class="border border-slate-200 rounded-xl p-4">
+                                    <p class="font-semibold text-slate-700 mb-2">Margens Elevadas</p>
+                                    <p class="text-xs text-slate-500" x-text="premiumAnalytics.outliers && premiumAnalytics.outliers.margin_outliers ? `Limite P95: ${premiumAnalytics.outliers.margin_outliers.threshold.toFixed(2)}%` : '—'"></p>
+                                    <p class="text-xs text-slate-500" x-text="premiumAnalytics.outliers && premiumAnalytics.outliers.margin_outliers ? `${premiumAnalytics.outliers.margin_outliers.count} documentos` : '—'"></p>
+                                </div>
+                                <div class="border border-slate-200 rounded-xl p-4">
+                                    <p class="font-semibold text-slate-700 mb-2">Receitas Elevadas</p>
+                                    <p class="text-xs text-slate-500" x-text="premiumAnalytics.outliers && premiumAnalytics.outliers.revenue_outliers ? `Limite P95: ${formatCurrency(premiumAnalytics.outliers.revenue_outliers.threshold || 0)}` : '—'"></p>
+                                    <p class="text-xs text-slate-500" x-text="premiumAnalytics.outliers && premiumAnalytics.outliers.revenue_outliers ? `${premiumAnalytics.outliers.revenue_outliers.count} documentos` : '—'"></p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-4" x-text="premiumAnalytics.outliers ? premiumAnalytics.outliers.analysis : ''"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div x-show="loading" 
          x-transition:enter="transition ease-out duration-300"
@@ -1310,6 +1546,20 @@
                 
                 // Notifications
                 notifications: [],
+
+                // Premium analytics dashboard state
+                premiumDashboardOpen: false,
+                premiumAnalytics: {
+                    loading: false,
+                    error: null,
+                    executiveSummary: null,
+                    waterfall: null,
+                    scenarios: null,
+                    outliers: null,
+                    kpis: null,
+                    metadata: null
+                },
+                premiumWaterfallChart: null,
                 
                 // NEW: Real-time computed properties for associated costs
                 get associatedCostsTotal() {
@@ -1359,10 +1609,35 @@
                 get realVAT() {
                     return this.realMargin > 0 ? this.realMargin * this.vatRate / 100 : 0;
                 },
-                
+
                 get vatSavings() {
                     const vatOnTotal = this.totalSales * this.vatRate / 100;
                     return vatOnTotal - this.realVAT;
+                },
+
+                // Premium dashboard computed helpers
+                get premiumExecutiveSummary() {
+                    return this.premiumAnalytics.executiveSummary || {};
+                },
+
+                get premiumKpiCards() {
+                    return this.premiumExecutiveSummary.kpi_cards || [];
+                },
+
+                get premiumNarrative() {
+                    return this.premiumExecutiveSummary.narrative || {};
+                },
+
+                get premiumRiskAssessment() {
+                    return this.premiumExecutiveSummary.risk_assessment || {};
+                },
+
+                get premiumRecommendations() {
+                    return this.premiumExecutiveSummary.recommendations || [];
+                },
+
+                get premiumScenarios() {
+                    return (this.premiumAnalytics.scenarios && this.premiumAnalytics.scenarios.scenarios) || {};
                 },
                 
                 // Old computed properties (for comparison)
@@ -2694,6 +2969,217 @@
                         this.startNew();
                     }
                 },
+
+                formatCurrency(value) {
+                    return new Intl.NumberFormat('pt-PT', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        maximumFractionDigits: 2
+                    }).format(value || 0);
+                },
+
+                premiumStatusBadge(status) {
+                    const map = {
+                        green: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+                        amber: 'bg-amber-100 text-amber-700 border border-amber-200',
+                        red: 'bg-rose-100 text-rose-700 border border-rose-200',
+                        ok: 'bg-blue-100 text-blue-700 border border-blue-200'
+                    };
+                    return map[status] || 'bg-slate-100 text-slate-600 border border-slate-200';
+                },
+
+                premiumTrendIcon(trend) {
+                    const map = {
+                        up: 'fa-arrow-trend-up text-emerald-500',
+                        down: 'fa-arrow-trend-down text-rose-500',
+                        stable: 'fa-wave-square text-slate-400'
+                    };
+                    return map[trend] || 'fa-wave-square text-slate-400';
+                },
+
+                premiumTrendText(trend) {
+                    const map = {
+                        up: 'Crescimento',
+                        down: 'Declínio',
+                        stable: 'Estável'
+                    };
+                    return map[trend] || 'Estável';
+                },
+
+                premiumRiskTone(level) {
+                    const map = {
+                        critical: 'bg-rose-50 border border-rose-200 text-rose-700',
+                        high: 'bg-amber-50 border border-amber-200 text-amber-700',
+                        medium: 'bg-yellow-50 border border-yellow-200 text-yellow-700'
+                    };
+                    return map[level] || 'bg-slate-50 border border-slate-200 text-slate-600';
+                },
+
+                premiumRiskIcon(level) {
+                    const map = {
+                        critical: 'fa-triangle-exclamation',
+                        high: 'fa-circle-exclamation',
+                        medium: 'fa-exclamation'
+                    };
+                    return map[level] || 'fa-info-circle';
+                },
+
+                premiumScenarioTone(key) {
+                    const map = {
+                        base: 'bg-slate-100 text-slate-700',
+                        stress: 'bg-rose-100 text-rose-700',
+                        optimistic: 'bg-emerald-100 text-emerald-700'
+                    };
+                    return map[key] || 'bg-blue-100 text-blue-700';
+                },
+
+                resetPremiumAnalytics() {
+                    if (this.premiumWaterfallChart) {
+                        this.premiumWaterfallChart.destroy();
+                        this.premiumWaterfallChart = null;
+                    }
+                    this.premiumAnalytics = {
+                        loading: false,
+                        error: null,
+                        executiveSummary: null,
+                        waterfall: null,
+                        scenarios: null,
+                        outliers: null,
+                        kpis: null,
+                        metadata: null
+                    };
+                },
+
+                openPremiumDashboard() {
+                    if (!this.sessionId) {
+                        this.showNotification('Aviso', 'Carregue dados antes de abrir o Dashboard Premium', 'warning');
+                        return;
+                    }
+                    this.premiumDashboardOpen = true;
+                    this.resetPremiumAnalytics();
+                    this.$nextTick(() => this.fetchPremiumAnalytics());
+                },
+
+                closePremiumDashboard() {
+                    this.premiumDashboardOpen = false;
+                    this.resetPremiumAnalytics();
+                },
+
+                async fetchPremiumAnalytics() {
+                    if (!this.sessionId) {
+                        return;
+                    }
+
+                    this.premiumAnalytics.loading = true;
+                    this.premiumAnalytics.error = null;
+
+                    const payload = {
+                        session_id: this.sessionId,
+                        vat_rate: this.vatRate
+                    };
+
+                    try {
+                        const headers = { 'Content-Type': 'application/json' };
+
+                        const execResp = await this.apiFetch(`${this.apiUrl}/api/analytics/executive-summary`, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(payload)
+                        }, 20000);
+                        if (!execResp.ok) throw new Error(`Executive summary falhou (${execResp.status})`);
+                        const execData = await execResp.json();
+                        this.premiumAnalytics.executiveSummary = execData.executive_summary || null;
+                        this.premiumAnalytics.metadata = execData.metadata || null;
+
+                        const waterfallResp = await this.apiFetch(`${this.apiUrl}/api/analytics/waterfall`, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(payload)
+                        }, 20000);
+                        if (!waterfallResp.ok) throw new Error(`Waterfall falhou (${waterfallResp.status})`);
+                        const waterfallData = await waterfallResp.json();
+                        this.premiumAnalytics.waterfall = waterfallData.waterfall_analysis || null;
+
+                        const scenarioResp = await this.apiFetch(`${this.apiUrl}/api/analytics/scenarios`, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(payload)
+                        }, 20000);
+                        if (!scenarioResp.ok) throw new Error(`Scenarios falhou (${scenarioResp.status})`);
+                        const scenarioData = await scenarioResp.json();
+                        this.premiumAnalytics.scenarios = scenarioData.scenario_analysis || null;
+
+                        const outlierResp = await this.apiFetch(`${this.apiUrl}/api/analytics/outliers`, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify(payload)
+                        }, 20000);
+                        if (!outlierResp.ok) throw new Error(`Outliers falhou (${outlierResp.status})`);
+                        const outlierData = await outlierResp.json();
+                        this.premiumAnalytics.outliers = outlierData.outlier_analysis || null;
+
+                        const kpiResp = await this.apiFetch(`${this.apiUrl}/api/analytics/kpis/${this.sessionId}?vat_rate=${this.vatRate}`, {
+                            method: 'GET'
+                        }, 20000);
+                        if (!kpiResp.ok) throw new Error(`KPIs falhou (${kpiResp.status})`);
+                        const kpiData = await kpiResp.json();
+                        this.premiumAnalytics.kpis = kpiData.advanced_kpis || null;
+
+                        this.renderPremiumWaterfallChart();
+                    } catch (error) {
+                        console.error('[Premium Analytics] error', error);
+                        this.premiumAnalytics.error = error.message || 'Erro ao carregar analytics premium';
+                    } finally {
+                        this.premiumAnalytics.loading = false;
+                    }
+                },
+
+                renderPremiumWaterfallChart() {
+                    this.$nextTick(() => {
+                        if (!this.premiumAnalytics.waterfall || !this.premiumAnalytics.waterfall.waterfall_data) {
+                            return;
+                        }
+
+                        const ctx = document.getElementById('premiumWaterfallChart');
+                        if (!ctx) {
+                            return;
+                        }
+
+                        const labels = this.premiumAnalytics.waterfall.waterfall_data.map(item => item.category);
+                        const values = this.premiumAnalytics.waterfall.waterfall_data.map(item => item.value);
+
+                        if (this.premiumWaterfallChart) {
+                            this.premiumWaterfallChart.destroy();
+                        }
+
+                        this.premiumWaterfallChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels,
+                                datasets: [{
+                                    label: 'Contributo para margem',
+                                    data: values,
+                                    backgroundColor: ['#1e3a8a', '#4338ca', '#6366f1', '#818cf8', '#a5b4fc'],
+                                    borderRadius: 8
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: false }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: (value) => this.formatCurrency(value)
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                },
                 
                 // Notifications
                 showNotification(title, message, type = 'info') {
@@ -2784,10 +3270,12 @@
                             vendas: null,
                             compras: null
                         };
-                        
+
+                        this.closePremiumDashboard();
+
                         // Clear session storage
                         localStorage.removeItem('ivaSession');
-                        
+
                         this.showNotification('Nova Análise', 'Pronto para iniciar nova análise', 'info');
                     }
                 },
