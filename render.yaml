@@ -1,0 +1,27 @@
+# Render Configuration - Auto-generated
+services:
+  - type: web
+    name: iva-margem-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && ./render_start.sh
+    healthCheckPath: /api/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: *
+      - key: ENABLE_PREMIUM_PDF
+        value: "1"
+      - key: MAX_UPLOAD_SIZE_MB
+        value: "50"
+      - key: SESSION_TIMEOUT_HOURS
+        value: "24"
+      - key: PORT
+        value: "8000"
+
+  - type: web
+    name: iva-margem-frontend
+    env: static
+    buildCommand: echo 'Frontend ready'
+    staticPublishPath: frontend

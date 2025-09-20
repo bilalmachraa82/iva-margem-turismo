@@ -1,0 +1,522 @@
+{
+  "sales": [
+    {
+      "id": "s1",
+      "number": "NC E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 7720",
+      "amount": -375.0,
+      "doc_type": "Nota de crºdito"
+    },
+    {
+      "id": "s2",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 9990",
+      "amount": 11484.6,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s3",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 5840",
+      "amount": 400.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s4",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 7720",
+      "amount": 750.0,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s5",
+      "number": "NC E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": -420.0,
+      "doc_type": "Nota de crºdito"
+    },
+    {
+      "id": "s6",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 220.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s7",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 200.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s8",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 5903",
+      "amount": 1759.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s9",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 1363",
+      "amount": 280.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s10",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 420.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s11",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 6612",
+      "amount": 360.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s12",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 6612",
+      "amount": 945.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s13",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0015",
+      "amount": 351.78,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s14",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 1363",
+      "amount": 560.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s15",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 161.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s16",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 125.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s17",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 9990",
+      "amount": 12763.95,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s18",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 9990",
+      "amount": 109.94,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s19",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 9990",
+      "amount": 335.0,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s20",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 1363",
+      "amount": 1215.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s21",
+      "number": "FR E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 9990",
+      "amount": 492.66,
+      "doc_type": "Fatura-recibo"
+    },
+    {
+      "id": "s22",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 7386",
+      "amount": 300.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s23",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 161.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s24",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 161.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s25",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 0688",
+      "amount": 406.0,
+      "doc_type": "Fatura"
+    },
+    {
+      "id": "s26",
+      "number": "FT E2025",
+      "date": "2025-01-15",
+      "client": "Cliente 7162",
+      "amount": 195.0,
+      "doc_type": "Fatura"
+    }
+  ],
+  "costs": [
+    {
+      "id": "c1",
+      "supplier": "Auto Taxis Andrafer Lda",
+      "amount": 17710.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c211",
+      "supplier": "Jose Pedro Moreira Melo",
+      "amount": 3365.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c228",
+      "supplier": "Mariana Fonseca da Silva Delgado",
+      "amount": 1985.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c239",
+      "supplier": "Jose Pedro Moreira Melo",
+      "amount": 1880.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c253",
+      "supplier": "Mariana Fonseca da Silva Delgado",
+      "amount": 1695.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c252",
+      "supplier": "Ricardo Filipe da Mota Santos",
+      "amount": 1450.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c251",
+      "supplier": "Ricardo Filipe da Mota Santos",
+      "amount": 1415.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c248",
+      "supplier": "Madalena dos Santos Ferreira de Almei...",
+      "amount": 1245.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c237",
+      "supplier": "Ricardo Filipe da Mota Santos",
+      "amount": 900.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c244",
+      "supplier": "Rita Cid-Torres Portugal Azevedo",
+      "amount": 830.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c230",
+      "supplier": "Madalena dos Santos Ferreira de Almei...",
+      "amount": 795.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c235",
+      "supplier": "Margarida Nobre Nunes",
+      "amount": 765.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c245",
+      "supplier": "Maria Eduarda Facury Pedro",
+      "amount": 660.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c233",
+      "supplier": "Rita Cid-Torres Portugal Azevedo",
+      "amount": 650.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c236",
+      "supplier": "Ana Margarida da Silva Calºada",
+      "amount": 630.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c218",
+      "supplier": "Mariana Fonseca da Silva Delgado",
+      "amount": 625.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c2",
+      "supplier": "Mauro Hugo de Oliveira e Prucha",
+      "amount": 608.85,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c3",
+      "supplier": "Simplicityspirit Unipessoal Lda",
+      "amount": 545.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c254",
+      "supplier": "Hugo Miguel Pinto Calado",
+      "amount": 540.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c223",
+      "supplier": "Margarida Nobre Nunes",
+      "amount": 450.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c4",
+      "supplier": "Paberesbares Actividades Hotelaria Lda",
+      "amount": 424.5,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c220",
+      "supplier": "Rita Cid-Torres Portugal Azevedo",
+      "amount": 370.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c232",
+      "supplier": "Hugo Miguel Pinto Calado",
+      "amount": 315.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c22",
+      "supplier": "Amiroad, Lda",
+      "amount": 290.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c213",
+      "supplier": "Margarida Nobre Nunes",
+      "amount": 270.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c229",
+      "supplier": "Hugo Miguel Pinto Calado",
+      "amount": 270.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c234",
+      "supplier": "Maria Eduarda Facury Pedro",
+      "amount": 270.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c5",
+      "supplier": "Pedro de Almeida Gomes Pinto Patarelo",
+      "amount": 233.7,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c222",
+      "supplier": "Ana Margarida da Silva Calºada",
+      "amount": 225.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c70",
+      "supplier": "Edenred Portugal, S.A.",
+      "amount": 209.04,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c71",
+      "supplier": "Edenred Portugal, S.A.",
+      "amount": 209.04,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c10",
+      "supplier": "Resumocurioso - Restaurante Lda",
+      "amount": 208.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c11",
+      "supplier": "Actions Sport Cafe - Comercio de Arti...",
+      "amount": 190.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c6",
+      "supplier": "Hdc - Hora das Contas Lda",
+      "amount": 184.78,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c7",
+      "supplier": "Hdc - Hora das Contas Lda",
+      "amount": 184.78,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c8",
+      "supplier": "Parques de Sintra - Monte da Lua S A",
+      "amount": 175.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c9",
+      "supplier": "Parques de Sintra - Monte da Lua S A",
+      "amount": 175.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c90",
+      "supplier": "Edenred Portugal, S.A.",
+      "amount": 159.27,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c18",
+      "supplier": "Marques & Pacheco Actividades Hotelei...",
+      "amount": 155.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c16",
+      "supplier": "Actions Sport Cafe - Comercio de Arti...",
+      "amount": 143.38,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c14",
+      "supplier": "Actions Sport Cafe - Comercio de Arti...",
+      "amount": 136.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c15",
+      "supplier": "Actions Sport Cafe - Comercio de Arti...",
+      "amount": 136.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c20",
+      "supplier": "Sete Mares Actividades Hoteleiras Lda",
+      "amount": 133.2,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c12",
+      "supplier": "Parques de Sintra - Monte da Lua S A",
+      "amount": 119.1,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c13",
+      "supplier": "Club Des Chateaux Lisboa Lda",
+      "amount": 111.6,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c214",
+      "supplier": "Bernardo Franco Rufino",
+      "amount": 100.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c225",
+      "supplier": "Bernardo Franco Rufino",
+      "amount": 100.0,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c17",
+      "supplier": "Nos Comunicaººes S A",
+      "amount": 93.91,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c19",
+      "supplier": "Nos Comunicaººes S A",
+      "amount": 91.82,
+      "date": "2025-01-15"
+    },
+    {
+      "id": "c21",
+      "supplier": "Nos Comunicaººes S A",
+      "amount": 88.19,
+      "date": "2025-01-15"
+    }
+  ],
+  "metadata": {
+    "total_sales_positive": 34155.93,
+    "total_sales_negative": -795.0,
+    "net_sales": 33360.93,
+    "total_costs": 44515.16,
+    "potential_margin": -11154.23,
+    "note": "Amostra: 26 vendas + top 50 custos"
+  }
+}

@@ -49,7 +49,8 @@
       "Bash(vercel:*)",
       "WebFetch(domain:iva-margem-turismo-1-mu69fqe5p-bilalmachraa82s-projects.vercel.app)",
       "Bash(timeout 10 vercel logs:*)",
-      "WebFetch(domain:iva-margem-turismo-1.vercel.app)"
+      "WebFetch(domain:iva-margem-turismo-1.vercel.app)",
+      "Bash(env)"
     ],
     "deny": []
   }
