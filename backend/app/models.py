@@ -132,15 +132,25 @@ class PeriodCalculateRequest(BaseModel):
     previous_negative_margin: float = 0.0
 
 
-class CompanyInfo(BaseModel):
-    """Company information for PDF reports"""
-    name: Optional[str] = Field(default="Empresa de Turismo Lda.", description="Company name")
-    nif: Optional[str] = Field(default="123456789", description="Tax identification number")
-    address: Optional[str] = Field(default="Rua do Turismo, 123", description="Company address")
-    city: Optional[str] = Field(default="Lisboa", description="City")
-    postal_code: Optional[str] = Field(default="1000-001", description="Postal code")
-    phone: Optional[str] = Field(default="+351 21 123 4567", description="Phone number")
-    email: Optional[str] = Field(default="info@empresa.com", description="Email address")
+class CompanyInfoPayload(BaseModel):
+    """Company information payload shared between frontend and backend"""
+    name: Optional[str] = Field(default=None, description="Company name")
+    nif: Optional[str] = Field(default=None, description="Tax identification number")
+    cae: Optional[str] = Field(default=None, description="CAE code")
+    address: Optional[str] = Field(default=None, description="Company address")
+    city: Optional[str] = Field(default=None, description="City")
+    postal_code: Optional[str] = Field(default=None, description="Postal code")
+    country: Optional[str] = Field(default=None, description="Country")
+    phone: Optional[str] = Field(default=None, description="Phone number")
+    email: Optional[str] = Field(default=None, description="Email address")
+    website: Optional[str] = Field(default=None, description="Website")
+
+
+class CompanyInfoUpdate(CompanyInfoPayload):
+    """Partial update model for company information"""
+
+    class Config:
+        extra = 'allow'
 
 
 class PDFExportRequest(BaseModel):
@@ -148,7 +158,7 @@ class PDFExportRequest(BaseModel):
     session_id: Optional[str] = None
     vat_rate: float = Field(default=23.0, ge=0, le=100)
     results: Optional[Dict[str, Any]] = None
-    company_info: Optional[CompanyInfo] = None
+    company_info: Optional[CompanyInfoPayload] = None
     format: Optional[str] = Field(default='html', description="'html' (preview) or 'pdf' (binary)")
 
 

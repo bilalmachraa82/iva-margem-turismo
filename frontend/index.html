@@ -18,7 +18,11 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
-        
+
+        [x-cloak] {
+            display: none !important;
+        }
+
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Work Sans', sans-serif;
         }
@@ -324,6 +328,61 @@
     </style>
 </head>
 <body class="bg-gray-50" x-data="ivaApp()">
+    <!-- Welcome Overlay -->
+    <div
+        x-cloak
+        x-show="showWelcome"
+        x-transition.opacity
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur"
+    >
+        <div class="max-w-3xl w-full mx-6 bg-white rounded-3xl shadow-2xl p-8 md:p-12 space-y-6 text-center border border-slate-100">
+            <div class="flex justify-center mb-2">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                    <i class="fas fa-compass text-2xl"></i>
+                </div>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Bem-vindo ao IVA Margem Turismo</h2>
+            <p class="text-slate-600 text-lg leading-relaxed">
+                Este assistente premium ajuda a calcular o IVA em Regime de Margem (Art. 308º CIVA) com validações
+                fiscais, relatórios profissionais e dashboards de apoio à decisão. Comece por importar os dados ou
+                explore o fluxo com um conjunto de demonstração totalmente configurado.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-4 text-left text-slate-600">
+                <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50/60">
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-blue-600">1. Carregue dados</h3>
+                    <p class="mt-2 text-sm">Use os CSV oficiais e‑Fatura ou o ficheiro SAF‑T. Identificamos automaticamente vendas e custos.</p>
+                </div>
+                <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50/60">
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-blue-600">2. Revise associações</h3>
+                    <p class="mt-2 text-sm">Relacione custos às vendas com o assistente inteligente e valide a conformidade do regime.</p>
+                </div>
+                <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50/60">
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-blue-600">3. Gere relatórios</h3>
+                    <p class="mt-2 text-sm">Exporte Excel e PDF executivo com dados da empresa personalizados e análises premium.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <button
+                    @click="showWelcome = false"
+                    class="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all"
+                >
+                    <i class="fas fa-play mr-2"></i>
+                    Iniciar Projeto
+                </button>
+                <button
+                    @click="showWelcome = false; loadMockData()"
+                    class="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors"
+                >
+                    <i class="fas fa-magic mr-2"></i>
+                    Explorar com Dados Demo
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-400">Dica: personalize os dados da empresa após o carregamento para que o relatório PDF reflita a sua marca.</p>
+        </div>
+    </div>
     <!-- Corporate Header -->
     <header class="navy-header shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -409,22 +468,22 @@
             <div class="modern-card p-8">
                 <div class="max-w-2xl mx-auto">
                     <h2 class="text-3xl font-bold heading-corporate mb-3">Iniciar Cálculo IVA</h2>
-                    <p class="text-corporate mb-8 text-lg">Importe ficheiros SAF-T ou e-Fatura, ou utilize dados de demonstração para teste</p>
+                    <p class="text-corporate mb-8 text-lg">Importe ficheiros e-Fatura (CSV) ou SAF-T, ou utilize dados de demonstração para teste</p>
                     
                     <!-- Upload Type Tabs Corporate -->
                     <div class="mb-8">
                         <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button @click="uploadType = 'efatura'"
+                                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-md transition-all interactive-element"
+                                    :class="uploadType === 'efatura' ? 'bg-white text-navy-800 shadow-sm' : 'text-gray-600 hover:text-gray-800'">
+                                <i class="fas fa-file-csv mr-2"></i>
+                                e-Fatura (CSV Vendas &amp; Compras)
+                            </button>
                             <button @click="uploadType = 'saft'"
                                     class="flex-1 px-6 py-3 text-sm font-semibold rounded-md transition-all interactive-element"
                                     :class="uploadType === 'saft' ? 'bg-white text-navy-800 shadow-sm' : 'text-gray-600 hover:text-gray-800'">
                                 <i class="fas fa-file-code mr-2"></i>
                                 SAF-T (XML)
-                            </button>
-                            <button @click="uploadType = 'efatura'"
-                                    class="flex-1 px-6 py-3 text-sm font-semibold rounded-md transition-all interactive-element"
-                                    :class="uploadType === 'efatura' ? 'bg-white text-navy-800 shadow-sm' : 'text-gray-600 hover:text-gray-800'">
-                                <i class="fas fa-file-csv mr-2"></i>
-                                e-Fatura (CSV)
                             </button>
                         </div>
                     </div>
@@ -688,6 +747,115 @@
                 </div>
             </div>
 
+            <!-- Company Information Editor -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                    <div class="text-left">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 text-blue-600">
+                                <i class="fas fa-building"></i>
+                            </span>
+                            Dados da Empresa no Relatório
+                        </h3>
+                        <p class="text-sm text-gray-500 mt-1">Personalize o cabeçalho do relatório PDF premium com a identidade da sua empresa.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button
+                            @click="saveCompanyInfo()"
+                            :disabled="companyInfoSaving || !sessionId"
+                            class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20 hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            <template x-if="!companyInfoSaving">
+                                <span class="flex items-center gap-2"><i class="fas fa-save"></i>Guardar Dados</span>
+                            </template>
+                            <template x-if="companyInfoSaving">
+                                <span class="flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i>A guardar…</span>
+                            </template>
+                        </button>
+                        <button
+                            @click="resetCompanyInfo()"
+                            class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors"
+                        >
+                            <i class="fas fa-undo-alt mr-2"></i>Repor padrão
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Nome da Empresa</label>
+                        <input type="text" x-model="companyInfo.name" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Ex.: Viagens &amp; Descobertas Lda">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">NIF</label>
+                        <input type="text" x-model="companyInfo.nif" @input="saveSession()"
+                               inputmode="numeric"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="123456789">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">CAE</label>
+                        <input type="text" x-model="companyInfo.cae" @input="saveSession()"
+                               inputmode="numeric"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="79110">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Morada / Endereço</label>
+                        <input type="text" x-model="companyInfo.address" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Rua das Agências, 123">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cidade</label>
+                        <input type="text" x-model="companyInfo.city" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Lisboa">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Código Postal</label>
+                        <input type="text" x-model="companyInfo.postal_code" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="1000-001">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">País</label>
+                        <input type="text" x-model="companyInfo.country" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Portugal">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                        <input type="text" x-model="companyInfo.phone" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="+351 21 123 4567">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" x-model="companyInfo.email" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="geral@empresa.pt">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Website</label>
+                        <input type="url" x-model="companyInfo.website" @input="saveSession()"
+                               class="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="https://www.empresa.pt">
+                    </div>
+                </div>
+            </div>
+
             <!-- Action Buttons -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
@@ -773,8 +941,8 @@
                         <template x-for="sale in filteredSales" :key="sale.id">
                             <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                                  :class="{
-                                     'bg-blue-50': selectedSales.includes(sale.id),
-                                     'has-associations': sale.linked_costs.length > 0
+                                    'bg-blue-50': selectedSales.includes(sale.id),
+                                    'has-associations': (sale.linked_costs || []).length > 0
                                  }"
                                  @click="toggleSale(sale.id)">
                                 <div class="flex items-start">
@@ -799,10 +967,10 @@
                                         </div>
                                         
                                         <!-- Linked Costs -->
-                                        <div x-show="sale.linked_costs.length > 0" class="mt-2">
+                                        <div x-show="(sale.linked_costs || []).length > 0" class="mt-2">
                                             <div class="flex items-center text-xs text-green-700">
                                                 <i class="fas fa-check-circle mr-1"></i>
-                                                <span x-text="sale.linked_costs.length + ' custos associados'"></span>
+                                                <span x-text="(sale.linked_costs || []).length + ' custos associados'"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -838,7 +1006,7 @@
                             <div class="p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                                  :class="{
                                      'bg-blue-50': selectedCosts.includes(cost.id),
-                                     'has-associations': cost.linked_sales.length > 0
+                                    'has-associations': (cost.linked_sales || []).length > 0
                                  }"
                                  @click="toggleCost(cost.id)">
                                 <div class="flex items-start">
@@ -870,10 +1038,10 @@
                                         </div>
                                         
                                         <!-- Linked Sales -->
-                                        <div x-show="cost.linked_sales.length > 0" class="mt-2">
+                                        <div x-show="(cost.linked_sales || []).length > 0" class="mt-2">
                                             <div class="flex items-center text-xs text-green-700">
                                                 <i class="fas fa-check-circle mr-1"></i>
-                                                <span x-text="'Associado a ' + cost.linked_sales.length + ' venda(s)'"></span>
+                                                <span x-text="'Associado a ' + (cost.linked_sales || []).length + ' venda(s)'"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1502,6 +1670,19 @@
     <!-- Alpine.js App -->
     <script>
         function ivaApp() {
+            const defaultCompanyInfo = () => ({
+                name: '',
+                nif: '',
+                cae: '',
+                address: '',
+                city: '',
+                postal_code: '',
+                country: '',
+                phone: '',
+                email: '',
+                website: ''
+            });
+
             return {
                 // API base URL: use local backend during development, production falls back to Render backend
                 apiUrl: (() => {
@@ -1516,12 +1697,13 @@
                 })(),
                 
                 // App State
+                showWelcome: true,
                 currentStep: 1,
                 sessionId: null,
                 loading: false,
                 loadingMessage: 'A processar...',
                 dragOver: false,
-                uploadType: 'saft', // 'saft' or 'efatura'
+                uploadType: 'efatura', // 'saft' or 'efatura'
                 efaturaFiles: {
                     vendas: null,
                     compras: null
@@ -1533,6 +1715,8 @@
                 selectedSales: [],
                 selectedCosts: [],
                 vatRate: 23,
+                companyInfo: defaultCompanyInfo(),
+                companyInfoSaving: false,
                 
                 // Search
                 salesSearch: '',
@@ -1679,12 +1863,14 @@
                     const savedSession = localStorage.getItem('ivaSession');
                     if (savedSession) {
                         const data = JSON.parse(savedSession);
-                        this.sessionId = data.sessionId;
+                        this.sessionId = data.sessionId || null;
                         this.sales = data.sales || [];
                         this.costs = data.costs || [];
+                        this.setCompanyInfo(data.companyInfo || null, { replace: true });
                         if (this.sales.length > 0 || this.costs.length > 0) {
                             this.currentStep = 2;
                         }
+                        this.showWelcome = false;
                     }
                 },
                 
@@ -1840,6 +2026,8 @@
                         this.sessionId = data.session_id;
                         this.sales = data.sales || [];
                         this.costs = data.costs || [];
+                        this.setCompanyInfo(data.metadata?.company_info || null, { replace: true });
+                        this.showWelcome = false;
 
                         console.log(`[e-Fatura] Successfully imported ${this.sales.length} sales and ${this.costs.length} costs`);
 
@@ -1899,6 +2087,8 @@
                         this.sessionId = data.session_id;
                         this.sales = data.sales;
                         this.costs = data.costs;
+                        this.setCompanyInfo(data.metadata?.company_info || null, { replace: true });
+                        this.showWelcome = false;
                         
                         this.saveSession();
                         
@@ -1943,6 +2133,8 @@
                         this.sessionId = data.session_id;
                         this.sales = data.sales;
                         this.costs = data.costs;
+                        this.setCompanyInfo(data.metadata?.company_info || null, { replace: true });
+                        this.showWelcome = false;
 
                         console.log(`[Mock Data] Loaded ${this.sales.length} sales and ${this.costs.length} costs`);
 
@@ -2929,12 +3121,71 @@
                     const sale = this.sales.find(s => s.id === saleId);
                     return sale ? sale.number.split('/')[0] : saleId;
                 },
-                
+
+                setCompanyInfo(info, options = {}) {
+                    const base = defaultCompanyInfo();
+                    if (options.replace) {
+                        this.companyInfo = { ...base, ...(info || {}) };
+                    } else {
+                        this.companyInfo = { ...base, ...(this.companyInfo || {}), ...(info || {}) };
+                    }
+                },
+
+                async saveCompanyInfo() {
+                    if (!this.sessionId) {
+                        this.showNotification('Erro', 'Carregue dados antes de atualizar a empresa.', 'error');
+                        return;
+                    }
+
+                    this.companyInfoSaving = true;
+
+                    try {
+                        const payload = {};
+                        Object.entries(this.companyInfo || {}).forEach(([key, value]) => {
+                            if (value === undefined || value === null) {
+                                return;
+                            }
+                            if (typeof value === 'string') {
+                                payload[key] = value.trim();
+                            } else {
+                                payload[key] = value;
+                            }
+                        });
+
+                        const response = await this.apiFetch(`${this.apiUrl}/api/session/${this.sessionId}/company-info`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }, 10000);
+
+                        if (!response.ok) {
+                            throw new Error('Erro ao guardar dados da empresa');
+                        }
+
+                        const result = await response.json();
+                        this.setCompanyInfo(result.company_info || {}, { replace: true });
+                        this.saveSession();
+                        this.showNotification('Sucesso!', 'Dados da empresa atualizados', 'success');
+
+                    } catch (error) {
+                        console.error('Company info save error:', error);
+                        this.showNotification('Erro', error.message || 'Não foi possível atualizar os dados da empresa', 'error');
+                    } finally {
+                        this.companyInfoSaving = false;
+                    }
+                },
+
+                resetCompanyInfo() {
+                    this.setCompanyInfo(defaultCompanyInfo(), { replace: true });
+                    this.saveSession();
+                },
+
                 saveSession() {
                     localStorage.setItem('ivaSession', JSON.stringify({
                         sessionId: this.sessionId,
                         sales: this.sales,
-                        costs: this.costs
+                        costs: this.costs,
+                        companyInfo: this.companyInfo
                     }));
                 },
                 
@@ -2947,6 +3198,7 @@
                         
                         this.sales = data.sales;
                         this.costs = data.costs;
+                        this.setCompanyInfo(data.metadata?.company_info || null, { replace: true });
                         
                         this.saveSession();
                     } catch (error) {
@@ -2963,6 +3215,9 @@
                     this.selectedCosts = [];
                     this.finalResults = {};
                     this.currentStep = 1;
+                    this.companyInfo = defaultCompanyInfo();
+                    this.companyInfoSaving = false;
+                    this.showWelcome = true;
                     
                     localStorage.removeItem('ivaSession');
                     
@@ -3275,6 +3530,9 @@
                             vendas: null,
                             compras: null
                         };
+                        this.companyInfo = defaultCompanyInfo();
+                        this.companyInfoSaving = false;
+                        this.showWelcome = true;
 
                         this.closePremiumDashboard();
 
@@ -3303,6 +3561,7 @@
                                 session_id: this.sessionId,
                                 vat_rate: this.vatRate,
                                 results: this.finalResults,
+                                company_info: this.companyInfo,
                                 format: 'pdf'
                             })
                         }, 30000);
@@ -3345,6 +3604,7 @@
                                 session_id: this.sessionId,
                                 vat_rate: this.vatRate,
                                 results: this.finalResults,
+                                company_info: this.companyInfo,
                                 format: 'html'
                             })
                         }, 30000);

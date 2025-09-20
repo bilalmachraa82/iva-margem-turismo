@@ -178,11 +178,11 @@ class EnhancedReportGenerator:
             ('Margem Líquida', data.get('netMargin', 0), self.colors['success'])
         ]
 
-        size = 400
+        size = 520
         center = size / 2
-        radius = 120
+        radius = 170
 
-        svg = f'''<svg width="{size}" height="{size}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}">
+        svg = f'''<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" preserveAspectRatio="xMidYMid meet" style="max-width: 560px; margin: 0 auto;">
             <defs>
                 <filter id="pieShadow">
                     <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
@@ -201,7 +201,7 @@ class EnhancedReportGenerator:
             <circle cx="{center}" cy="{center}" r="{radius + 10}" fill="{self.colors['light']}" opacity="0.3"/>
 
             <!-- Title -->
-            <text x="{center}" y="30" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors['dark']}">{title}</text>
+            <text x="{center}" y="32" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="{self.colors['dark']}">{title}</text>
         '''
 
         # Calculate angles
@@ -247,10 +247,12 @@ class EnhancedReportGenerator:
             label_rad = math.radians(label_angle)
 
             # Line from center to label
-            line_end_x = center + (radius + 20) * math.cos(label_rad)
-            line_end_y = center + (radius + 20) * math.sin(label_rad)
-            label_x = center + (radius + 60) * math.cos(label_rad)
-            label_y = center + (radius + 60) * math.sin(label_rad)
+            label_direction = 1 if math.cos(label_rad) >= 0 else -1
+            line_end_x = center + (radius + 25) * math.cos(label_rad)
+            line_end_y = center + (radius + 25) * math.sin(label_rad)
+            label_x = center + (radius + 90) * math.cos(label_rad)
+            label_y = center + (radius + 90) * math.sin(label_rad)
+            text_anchor = "start" if label_direction > 0 else "end"
 
             svg += f'''
             <line x1="{center + radius * 0.8 * math.cos(label_rad)}"
@@ -258,15 +260,15 @@ class EnhancedReportGenerator:
                   x2="{line_end_x}" y2="{line_end_y}"
                   stroke="{color}" stroke-width="1" opacity="0.5"/>
 
-            <text x="{label_x}" y="{label_y - 5}" text-anchor="middle"
+            <text x="{label_x}" y="{label_y - 10}" text-anchor="{text_anchor}"
                   font-family="Arial" font-size="12" font-weight="bold" fill="{color}">
                 {label}
             </text>
-            <text x="{label_x}" y="{label_y + 10}" text-anchor="middle"
+            <text x="{label_x}" y="{label_y + 8}" text-anchor="{text_anchor}"
                   font-family="Arial" font-size="11" fill="{self.colors['gray']}">
                 €{value:,.2f}
             </text>
-            <text x="{label_x}" y="{label_y + 25}" text-anchor="middle"
+            <text x="{label_x}" y="{label_y + 24}" text-anchor="{text_anchor}"
                   font-family="Arial" font-size="10" fill="{self.colors['dark']}">
                 ({percentage:.1f}%)
             </text>
@@ -276,13 +278,13 @@ class EnhancedReportGenerator:
 
         # Center text
         svg += f'''
-            <circle cx="{center}" cy="{center}" r="40" fill="white" opacity="0.9"/>
-            <text x="{center}" y="{center - 5}" text-anchor="middle"
-                  font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors['dark']}">
+            <circle cx="{center}" cy="{center}" r="55" fill="white" opacity="0.92"/>
+            <text x="{center}" y="{center - 6}" text-anchor="middle"
+                  font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors['dark']}">
                 Total
             </text>
-            <text x="{center}" y="{center + 15}" text-anchor="middle"
-                  font-family="Arial" font-size="12" fill="{self.colors['gray']}">
+            <text x="{center}" y="{center + 18}" text-anchor="middle"
+                  font-family="Arial" font-size="13" fill="{self.colors['gray']}">
                 €{total:,.2f}
             </text>
         </svg>
@@ -1193,9 +1195,17 @@ class EnhancedReportGenerator:
                     text-align: center;
                 }}
 
+                .chart-container svg {{
+                    max-width: 600px;
+                    width: 100%;
+                    height: auto;
+                    margin: 0 auto;
+                    display: block;
+                }}
+
                 .chart-grid {{
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
                     gap: 24px;
                 }}
 

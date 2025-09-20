@@ -23,7 +23,20 @@ def resolve_company_payload(company_info: Any, session_data: Dict[str, Any]) -> 
         if isinstance(metadata_company, dict):
             payload = metadata_company
 
-    return payload or {}
+    if not payload:
+        try:
+            from .company_config import company_config  # Local import to avoid circular dependency
+
+            info = company_config.get_company_info()
+            payload = {
+                "name": getattr(info, "name", None),
+                "nif": getattr(info, "nif", None),
+                "cae": getattr(info, "cae_code", None),
+            }
+        except Exception:  # pragma: no cover - defensive fallback
+            payload = {}
+
+    return {k: v for k, v in (payload or {}).items() if v}
 
 
 def sanitize_company_name(name: str) -> str:

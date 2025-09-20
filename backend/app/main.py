@@ -26,7 +26,8 @@ from .models import (
     Sale, Cost, Association, CalculationRequest,
     AIMatchRequest, UnlinkRequest, UploadResponse,
     CalculationResult, AIMatchResult, PeriodCalculateRequest,
-    CompanyInfo, PDFExportRequest, ErrorDetail, ErrorResponse
+    CompanyInfoPayload, CompanyInfoUpdate, PDFExportRequest,
+    ErrorDetail, ErrorResponse
 )
 from .saft_parser import SAFTParser
 from .efatura_parser import EFaturaParser
@@ -41,7 +42,7 @@ from .period_calculator import PeriodVATCalculator
 from .analytics import PremiumAnalytics, AdvancedKPICalculator
 from .kv_store import kv
 from .session_store import FileSessionStore
-from .company_config import company_config, CompanyInfo, apply_company_profile, COMPANY_PROFILES
+from .company_config import company_config
 
 # Configure logging
 logging.basicConfig(
@@ -80,21 +81,93 @@ file_session_store = FileSessionStore(SESSION_STORAGE_DIR)
 
 SESSION_TTL_SECONDS = 24 * 3600
 
+
+def build_default_company_payload() -> Dict[str, Any]:
+    """Return default company metadata from configuration."""
+    info = company_config.get_company_info()
+    payload = {
+        "name": getattr(info, "name", None),
+        "nif": getattr(info, "nif", None),
+        "cae": getattr(info, "cae_code", None),
+        "address": info.get_full_address() if hasattr(info, "get_full_address") else None,
+        "city": getattr(info, "city", None),
+        "postal_code": getattr(info, "postal_code", None),
+        "country": getattr(info, "country", None),
+        "phone": getattr(info, "phone", None),
+        "email": getattr(info, "email", None),
+        "website": getattr(info, "website", None),
+    }
+    return {k: v for k, v in payload.items() if v}
+
+
+def ensure_company_metadata(session_data: Dict[str, Any]) -> None:
+    """Ensure company_info exists and is normalized inside session metadata."""
+    metadata = session_data.setdefault("metadata", {})
+    company_info = metadata.get("company_info")
+
+    if not isinstance(company_info, dict):
+        metadata["company_info"] = build_default_company_payload()
+        return
+
+    # Normalize legacy keys and ensure required fields
+    if "cae" not in company_info and company_info.get("cae_code"):
+        company_info["cae"] = company_info["cae_code"]
+
+    defaults = build_default_company_payload()
+    for key in ("name", "nif", "cae"):
+        if not company_info.get(key) and defaults.get(key):
+            company_info[key] = defaults[key]
+
+    company_info.pop("cae_code", None)
+
+    # Clean None values to keep payload lean
+    metadata["company_info"] = {k: v for k, v in company_info.items() if v is not None}
+
+
+def normalize_session_data(session_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Ensure required structures exist inside the session payload."""
+    for sale in session_data.get("sales", []):
+        if not isinstance(sale.get("linked_costs"), list):
+            sale["linked_costs"] = []
+
+    for cost in session_data.get("costs", []):
+        if not isinstance(cost.get("linked_sales"), list):
+            cost["linked_sales"] = []
+        # Guarantee optional fields exist to avoid KeyError downstream
+        if "description" not in cost or cost["description"] is None:
+            cost["description"] = ""
+        if "supplier" not in cost or cost["supplier"] is None:
+            cost["supplier"] = ""
+
+    ensure_company_metadata(session_data)
+    return session_data
+
+
 async def set_session_store(session_id: str, value: Dict) -> None:
+    stored_value = dict(value)
+    data_payload = stored_value.get("data")
+    if isinstance(data_payload, dict):
+        # Normalize a shallow copy to avoid mutating caller payload
+        stored_value["data"] = normalize_session_data(dict(data_payload))
+
     if IS_VERCEL and kv.enabled:
-        await kv.set_json(f"session:{session_id}", value, ttl=SESSION_TTL_SECONDS)
+        await kv.set_json(f"session:{session_id}", stored_value, ttl=SESSION_TTL_SECONDS)
     else:
-        sessions[session_id] = value
-        await file_session_store.set(session_id, value)
+        sessions[session_id] = stored_value
+        await file_session_store.set(session_id, stored_value)
 
 async def get_session_store(session_id: str) -> Optional[Dict]:
     if IS_VERCEL and kv.enabled:
         return await kv.get_json(f"session:{session_id}")
     cached = sessions.get(session_id)
     if cached is not None:
+        if isinstance(cached.get("data"), dict):
+            cached["data"] = normalize_session_data(cached["data"])
         return cached
     record = await file_session_store.get(session_id)
     if record is not None:
+        if isinstance(record.get("data"), dict):
+            record["data"] = normalize_session_data(record["data"])
         sessions[session_id] = record
     return record
 
@@ -531,6 +604,7 @@ async def upload_saft(file: UploadFile = File(...)):
             content = f.read()
             
         data = parser.parse(content)
+        data = normalize_session_data(data)
         
         # Clean up upload file
         os.remove(temp_path)
@@ -626,6 +700,7 @@ async def upload_efatura_files(
         # Parse e-Fatura files
         parser = EFaturaParser()
         data = parser.parse(vendas_content, compras_content)
+        data = normalize_session_data(data)
         
         # Store in session (KV on Vercel or in-memory locally)
         await set_session_store(session_id, {
@@ -1395,6 +1470,40 @@ async def get_session(session_id: str):
     }
 
 
+@app.patch("/api/session/{session_id}/company-info")
+async def update_company_info(session_id: str, payload: CompanyInfoUpdate):
+    """Update company metadata for a given session."""
+
+    if not await has_session_store(session_id):
+        raise HTTPException(404, "Session not found")
+
+    updates = payload.dict(exclude_none=True, exclude_unset=True)
+    if not updates:
+        raise HTTPException(400, "No company data provided")
+
+    session = await get_session_store(session_id)
+    session_data = session["data"]
+    metadata = session_data.setdefault("metadata", {})
+    company_info = metadata.get("company_info")
+
+    if not isinstance(company_info, dict):
+        company_info = {}
+
+    company_info.update(updates)
+    metadata["company_info"] = {k: v for k, v in company_info.items() if v is not None}
+    session_data["metadata"] = metadata
+    session["data"] = session_data
+
+    await set_session_store(session_id, session)
+    logger.info("Company info updated for session %s", session_id)
+
+    return {
+        "session_id": session_id,
+        "company_info": metadata["company_info"],
+        "updated_at": datetime.now().isoformat()
+    }
+
+
 @app.delete("/api/session/{session_id}")
 async def delete_session(session_id: str):
     """Delete a session and its data"""
@@ -1499,6 +1608,7 @@ async def load_mock_data():
             "costs": complete_data["costs"],
             "metadata": complete_data["metadata"]
         }
+        mock_data = normalize_session_data(mock_data)
     except (FileNotFoundError, KeyError) as e:
         print(f"⚠️ Erro carregando dados completos: {e}")
         # Retornar erro se não conseguir carregar dados completos
@@ -1523,7 +1633,8 @@ async def load_mock_data():
         "sales_count": len(mock_data["sales"]),
         "costs_count": len(mock_data["costs"]),
         "sales": mock_data["sales"],
-        "costs": mock_data["costs"]
+        "costs": mock_data["costs"],
+        "metadata": mock_data.get("metadata", {})
     }
 
 

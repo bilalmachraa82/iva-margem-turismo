@@ -227,7 +227,7 @@ class ExcelExporter:
             costs_data.append({
                 'ID': cost['id'],
                 'Fornecedor': cost['supplier'],
-                'Descrição': cost['description'],
+                'Descrição': cost.get('description', ''),
                 'Data': cost['date'],
                 'Nº Documento': cost.get('document_number', ''),
                 'Valor s/ IVA (€)': cost.get('amount', 0),

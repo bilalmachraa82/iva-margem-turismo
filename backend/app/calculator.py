@@ -89,7 +89,7 @@ class VATCalculator:
                         self.validation_errors.append({
                             "type": "warning",
                             "sale": sale.get('number'),
-                            "message": f"Associação unidirecional com custo {cost['supplier']}"
+                            "message": f"Associação unidirecional com custo {cost.get('supplier', 'N/A')}"
                         })
     
     def _calculate_sale_margin(self, sale: Dict, costs_map: Dict[str, Dict]) -> Optional[Dict]:
@@ -147,8 +147,8 @@ class VATCalculator:
             
             linked_cost_details.append({
                 "cost_id": cost_id,
-                "supplier": cost["supplier"],
-                "description": cost["description"],
+                "supplier": cost.get("supplier", ""),
+                "description": cost.get("description", ""),
                 "total_amount": cost["amount"],
                 "allocated_amount": round(allocated_amount, 2),
                 "allocated_vat": round(allocated_vat, 2),
