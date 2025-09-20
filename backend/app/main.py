@@ -34,7 +34,7 @@ from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
 from .pdf_export_professional import generate_pdf_report as generate_professional_pdf_report
-# from .pdf_export_enhanced import generate_enhanced_pdf_report  # Temporarily disabled due to syntax error
+from .pdf_export_enhanced import generate_enhanced_pdf_report
 from .pdf_export_premium import generate_premium_pdf_report
 from .pdf_pipeline import render_pdf_from_html, resolve_company_payload, sanitize_company_name
 from .period_calculator import PeriodVATCalculator
@@ -1263,13 +1263,31 @@ async def export_pdf(request: PDFExportRequest = None):
         safe_company = sanitize_company_name(company_name)
         filename = f"Relatório IVA sobre Margem - {safe_company}.pdf"
 
-        pdf_html_bytes = generate_professional_pdf_report(
-            session_data=session_data,
-            calculation_results=calculations,
-            vat_rate=vat_rate,
-            final_results=final_results or {},
-            company_info=company_payload,
-        )
+        saft_hash = None
+        metadata = session_data.get('metadata') if isinstance(session_data, dict) else None
+        if isinstance(metadata, dict):
+            saft_hash = metadata.get('saft_hash')
+
+        try:
+            pdf_html_bytes = generate_enhanced_pdf_report(
+                session_data=session_data,
+                calculation_results=calculations,
+                vat_rate=vat_rate,
+                final_results=final_results or {},
+                company_info=company_payload,
+                saft_hash=saft_hash,
+            )
+            logger.info('Enhanced PDF report generated successfully.')
+        except Exception as enhanced_error:  # pragma: no cover - fallback path
+            logger.exception('Enhanced PDF generation failed. Falling back to professional template: %s', enhanced_error)
+            pdf_html_bytes = generate_professional_pdf_report(
+                session_data=session_data,
+                calculation_results=calculations,
+                vat_rate=vat_rate,
+                final_results=final_results or {},
+                company_info=company_payload,
+            )
+
         html_content = pdf_html_bytes.decode('utf-8')
 
         if out_format.lower() == 'pdf':

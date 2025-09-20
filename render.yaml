@@ -20,7 +20,7 @@ services:
       - key: PORT
         value: "8000"
       - key: PYTHON_VERSION
-          value: 3.9.1
+        value: "3.9.1"
 
   - type: web
     name: iva-margem-frontend

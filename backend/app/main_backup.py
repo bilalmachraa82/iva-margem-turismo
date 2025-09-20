@@ -33,7 +33,7 @@ from .calculator import VATCalculator
 from .excel_export import ExcelExporter
 from .validators import DataValidator
 from .pdf_export_professional import generate_pdf_report as generate_professional_pdf_report
-# from .pdf_export_enhanced import generate_enhanced_pdf_report  # Temporarily disabled due to syntax error
+from .pdf_export_enhanced import generate_enhanced_pdf_report
 from .pdf_export_premium import generate_premium_pdf_report
 from .pdf_pipeline import render_pdf_from_html, resolve_company_payload, sanitize_company_name
 from .period_calculator import PeriodVATCalculator

@@ -381,6 +381,36 @@ class EnhancedReportGenerator:
         is_saft = 'SAF' in data_source.upper()
         is_efatura = 'E-FATURA' in data_source.upper()
 
+
+
+        period_info = final_results.get('period', {})
+        period_quarter_html = ""
+        quarter = period_info.get('quarter')
+        if quarter:
+            period_quarter_html = (
+                "<div style='font-size: 0.85em; color: #0891b2; margin-top: 4px;'>"
+                f"Trimestre {quarter}/{period_info.get('year', '')}"
+                "</div>"
+            )
+
+        saft_disclaimer_html = ""
+        if is_saft:
+            saft_disclaimer_html = (
+                "<div class=\"disclaimer\">\n"
+                "    <h4>🗄️ SAF‑T e Portaria 302/2016</h4>\n"
+                "    <p>Os dados utilizados neste relatório foram extraídos do ficheiro SAF‑T (Standard Audit File for Tax), em conformidade com a Portaria n.º 302/2016. A integridade dos dados pode ser comprovada por hash (SHA‑256) quando disponível.</p>\n"
+                "</div>"
+            )
+
+        efatura_disclaimer_html = ""
+        if is_efatura:
+            efatura_disclaimer_html = (
+                "<div class=\"disclaimer\">\n"
+                "    <h4>📑 e‑Fatura — Exportação CSV</h4>\n"
+                "    <p>Os dados utilizados neste relatório foram importados do Portal e‑Fatura (exportação CSV de Vendas e Compras). Foram aplicadas rotinas de normalização (datas, valores PT, entidades) e validações de integridade de associações.</p>\n"
+                "</div>"
+            )
+
         html_content = f"""
         <!DOCTYPE html>
         <html lang="pt-PT">
@@ -1544,15 +1574,8 @@ class EnhancedReportGenerator:
                             <p>Este relatório foi elaborado com base no regime especial de tributação sobre a margem, aplicável a agências de viagem e operadores turísticos, conforme previsto no Artigo 308º do Código do IVA. O IVA incide apenas sobre a margem de lucro das operações.</p>
                         </div>
 
-                        {('<div class=\"disclaimer\">
-                            <h4>🗄️ SAF‑T e Portaria 302/2016</h4>
-                            <p>Os dados utilizados neste relatório foram extraídos do ficheiro SAF‑T (Standard Audit File for Tax), em conformidade com a Portaria n.º 302/2016. A integridade dos dados pode ser comprovada por hash (SHA‑256) quando disponível.</p>
-                        </div>') if is_saft else ''}
-                        {('<div class=\"disclaimer\">
-                            <h4>📑 e‑Fatura — Exportação CSV</h4>
-                            <p>Os dados utilizados neste relatório foram importados do Portal e‑Fatura (exportação CSV de Vendas e Compras). Foram aplicadas rotinas de normalização (datas, valores PT, entidades) e validações de integridade de associações.</p>
-                        </div>') if is_efatura else ''}
-
+                        {saft_disclaimer_html}
+                        {efatura_disclaimer_html}
                         <div class="disclaimer">
                             <h4>ℹ️ Caráter Informativo</h4>
                             <p>Este documento tem caráter puramente informativo e não substitui a declaração oficial de IVA. Os cálculos apresentados devem ser validados pelo contabilista certificado ou ROC da empresa antes da submissão às autoridades fiscais.</p>
@@ -1562,6 +1585,7 @@ class EnhancedReportGenerator:
                             <h4>✅ Validação Profissional Obrigatória</h4>
                             <p>É obrigatória a validação por Revisor Oficial de Contas (ROC) ou Técnico Oficial de Contas (TOC) habilitado. Este relatório não substitui o parecer técnico profissional nem a responsabilidade fiscal da empresa.</p>
                         </div>
+
                     </div>
                 </div>
 
@@ -1751,7 +1775,7 @@ class EnhancedReportGenerator:
                             <div style="font-size: 1.3em; font-weight: 700; color: #0369a1;">
                                 {final_results.get('period', {}).get('start', '')} a {final_results.get('period', {}).get('end', '')}
                             </div>
-                            {"<div style='font-size: 0.85em; color: #0891b2; margin-top: 4px;'>Trimestre " + str(final_results.get('period', {}).get('quarter', '')) + "/" + str(final_results.get('period', {}).get('year', '')) + "</div>" if final_results.get('period', {}).get('quarter') else ""}
+                            {period_quarter_html}
                         </div>
 
                         <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">

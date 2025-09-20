@@ -128,7 +128,7 @@ def create_render_config():
         f.write("      - key: PORT\n")
         f.write("        value: \"8000\"\n")
         f.write("      - key: PYTHON_VERSION\n")
-        f.write("        value: \"3.9.0\"\n\n")
+        f.write("        value: \"3.9.1\"\n\n")
         
         # Frontend service
         f.write("  - type: web\n")
