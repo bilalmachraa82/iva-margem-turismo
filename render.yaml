@@ -1,11 +1,9 @@
-previews:
-  generation: automatic  # Ativa ambientes de preview para PRs
 services:
   - type: web
     name: iva-margem-backend
     env: python
     region: frankfurt  # Região atual do serviço existente
-    plan: starter
+    plan: free
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && ./render_start.sh
     healthCheckPath: /api/health
@@ -40,7 +38,7 @@ services:
   - type: web
     name: iva-margem-frontend
     env: static
-    plan: starter
+    plan: free
     buildCommand: "echo 'Frontend build complete'"
     staticPublishPath: frontend
     autoDeploy: true
