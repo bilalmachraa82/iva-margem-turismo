@@ -1,7 +1,7 @@
 """
 Main FastAPI application for IVA Margem Turismo
 API for VAT margin calculation for travel agencies
-Python 3.9.0 - Render deployment
+Python 3.9.1 - Render deployment
 """
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware

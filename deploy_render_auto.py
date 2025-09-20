@@ -83,7 +83,7 @@ def create_render_config():
                     {"key": "MAX_UPLOAD_SIZE_MB", "value": "50"},
                     {"key": "SESSION_TIMEOUT_HOURS", "value": "24"},
                     {"key": "PORT", "value": "8000"},
-                    {"key": "PYTHON_VERSION", "value": "3.9.0"}
+                    {"key": "PYTHON_VERSION", "value": "3.9.1"}
                 ]
             },
             {
