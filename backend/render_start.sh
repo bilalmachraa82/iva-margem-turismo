@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 # Criar diretórios necessários
 echo "📁 Criando diretórios..."
-mkdir -p uploads temp
+mkdir -p uploads temp temp/sessions
 
 # Iniciar aplicação
 echo "🎯 Iniciando servidor..."

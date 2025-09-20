@@ -9,6 +9,7 @@
 **Nome**: `iva-margem-backend`
 **Build Command**: `cd backend && pip install -r requirements.txt`
 **Start Command**: `cd backend && ./render_start.sh`
+> O backend cria `temp/sessions` automaticamente para partilhar dados entre workers, por isso podes manter `--workers 4` sem perdas de sessão.
 
 ## Passo 3: Deploy Frontend  
 **Nome**: `iva-margem-frontend`

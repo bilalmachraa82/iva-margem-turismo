@@ -21,6 +21,8 @@ MAX_UPLOAD_SIZE_MB=50
 SESSION_TIMEOUT_HOURS=24
 ```
 
+> ℹ️ A API guarda as sessões de utilizador em disco (`temp/sessions`) quando não há KV. Este diretório é criado automaticamente e funciona com vários workers sem precisar reduzir `uvicorn` para 1 processo.
+
 ## Passo 3: Configurar Frontend
 **Nome**: `iva-margem-frontend`  
 **Tipo**: Static Site  

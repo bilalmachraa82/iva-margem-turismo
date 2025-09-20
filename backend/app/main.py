@@ -40,6 +40,7 @@ from .pdf_pipeline import render_pdf_from_html, resolve_company_payload, sanitiz
 from .period_calculator import PeriodVATCalculator
 from .analytics import PremiumAnalytics, AdvancedKPICalculator
 from .kv_store import kv
+from .session_store import FileSessionStore
 from .company_config import company_config, CompanyInfo, apply_company_profile, COMPANY_PROFILES
 
 # Configure logging
@@ -71,9 +72,11 @@ IS_VERCEL = bool(os.getenv("VERCEL"))
 # Directories (use /tmp on Vercel)
 TEMP_DIR = Path('/tmp') if IS_VERCEL else Path('temp')
 UPLOAD_DIR = TEMP_DIR / 'uploads'
+SESSION_STORAGE_DIR = TEMP_DIR / 'sessions'
 
 # Session storage (in-memory fallback; KV used on Vercel when configured)
 sessions = {}
+file_session_store = FileSessionStore(SESSION_STORAGE_DIR)
 
 SESSION_TTL_SECONDS = 24 * 3600
 
@@ -82,11 +85,18 @@ async def set_session_store(session_id: str, value: Dict) -> None:
         await kv.set_json(f"session:{session_id}", value, ttl=SESSION_TTL_SECONDS)
     else:
         sessions[session_id] = value
+        await file_session_store.set(session_id, value)
 
 async def get_session_store(session_id: str) -> Optional[Dict]:
     if IS_VERCEL and kv.enabled:
         return await kv.get_json(f"session:{session_id}")
-    return sessions.get(session_id)
+    cached = sessions.get(session_id)
+    if cached is not None:
+        return cached
+    record = await file_session_store.get(session_id)
+    if record is not None:
+        sessions[session_id] = record
+    return record
 
 async def has_session_store(session_id: str) -> bool:
     rec = await get_session_store(session_id)
@@ -97,11 +107,13 @@ async def delete_session_store(session_id: str) -> None:
         await kv.delete(f"session:{session_id}")
     else:
         sessions.pop(session_id, None)
+        await file_session_store.delete(session_id)
 
 async def clear_sessions_store() -> None:
     # Avoid global clears on KV to prevent cross-user data loss; no-op on Vercel
     if not (IS_VERCEL and kv.enabled):
         sessions.clear()
+        await file_session_store.clear()
 
 # Global reference to cleanup task
 cleanup_task = None
@@ -133,6 +145,7 @@ async def lifespan(app: FastAPI):
     # Ensure required directories exist
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    SESSION_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
     
     # Clean old temp files
     clean_old_files()
@@ -320,25 +333,36 @@ def clean_old_files():
                             except Exception:
                                 pass
         
-        # Skip session cleanup on Vercel; rely on KV TTL. Local: cleanup in-memory sessions
-        cleaned_sessions = 0
+        # Skip session cleanup on Vercel; rely on KV TTL. Local: cleanup file + in-memory cache
+        cleaned_session_files = 0
+        cleaned_session_cache = 0
         if not (IS_VERCEL and kv.enabled):
+            cleaned_session_files = file_session_store.purge_expired(timedelta(seconds=SESSION_TTL_SECONDS))
+
             sessions_to_remove = []
-            for session_id, session_data in sessions.items():
+            for session_id, session_data in list(sessions.items()):
                 created_at_str = session_data.get("created_at", "")
                 if created_at_str:
                     try:
                         created_at = datetime.fromisoformat(created_at_str)
-                        if now - created_at > timedelta(hours=24):
+                        if now - created_at > timedelta(seconds=SESSION_TTL_SECONDS):
                             sessions_to_remove.append(session_id)
                     except Exception:
                         sessions_to_remove.append(session_id)
+                else:
+                    sessions_to_remove.append(session_id)
+
             for session_id in sessions_to_remove:
                 sessions.pop(session_id, None)
-                cleaned_sessions += 1
+            cleaned_session_cache = len(sessions_to_remove)
 
-        if cleaned_files > 0 or cleaned_sessions > 0:
-            logger.info(f"Cleanup completed: {cleaned_files} files, {cleaned_sessions} sessions removed")
+        if cleaned_files > 0 or cleaned_session_files > 0 or cleaned_session_cache > 0:
+            logger.info(
+                "Cleanup completed: %s files, %s session files, %s cached sessions removed",
+                cleaned_files,
+                cleaned_session_files,
+                cleaned_session_cache,
+            )
             
     except Exception as e:
         logger.error(f"Error cleaning old files: {str(e)}")
@@ -1487,14 +1511,6 @@ async def load_mock_data():
             }
         )
     
-    # Store in sessions
-    sessions[session_id] = {
-        "created_at": datetime.now().isoformat(),
-        "data": mock_data,
-        "filename": "demo_data.xml"
-    }
-    
-    # Store in session store for consistency with other endpoints
     await set_session_store(session_id, {
         "created_at": datetime.now().isoformat(),
         "data": mock_data,
