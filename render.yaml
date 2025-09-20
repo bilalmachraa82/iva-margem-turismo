@@ -1,16 +1,14 @@
-renderApiVersion: 1
 previews:
   generation: automatic  # Ativa ambientes de preview para PRs
 services:
   - type: web
     name: iva-margem-backend
     env: python
-    region: oregon  # Podes mudar para frankfurt ou singapore se for melhor
-    plan: starter  # Podes mudar para standard ou pro conforme necessário
+    region: frankfurt  # Região atual do serviço existente
+    plan: starter
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && ./render_start.sh
     healthCheckPath: /api/health
-    healthCheckTimeout: 100
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
@@ -42,7 +40,7 @@ services:
   - type: web
     name: iva-margem-frontend
     env: static
-    region: oregon
+    region: frankfurt  # Região atual do serviço existente
     plan: starter
     buildCommand: "echo 'Frontend build complete'"
     staticPublishPath: frontend
