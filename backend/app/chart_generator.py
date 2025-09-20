@@ -75,16 +75,21 @@ class ProfessionalChartGenerator:
         categories = list(data.keys())
         values = list(data.values())
 
-        # Calculate cumulative positions
+        # Calculate cumulative positions for waterfall
         cumulative = []
         running_total = 0
 
         for i, value in enumerate(values):
             if i == 0:  # First bar starts at 0
                 cumulative.append(0)
+                running_total = value
             else:
-                cumulative.append(running_total)
-            running_total += value
+                # For negative values, position them correctly below previous total
+                if value < 0:
+                    cumulative.append(running_total + value)  # Start from below
+                else:
+                    cumulative.append(running_total)  # Start from current total
+                running_total += value
 
         # Create bars
         colors = []
@@ -106,7 +111,12 @@ class ProfessionalChartGenerator:
         # Add value labels
         for i, (bar, value) in enumerate(zip(bars, values)):
             height = bar.get_height()
-            label_y = bar.get_y() + height / 2
+
+            # Position label correctly for positive and negative values
+            if value >= 0:
+                label_y = bar.get_y() + height / 2
+            else:
+                label_y = bar.get_y() + height / 2  # Center in negative bar
 
             # Format value
             if abs(value) >= 1000:
@@ -114,17 +124,26 @@ class ProfessionalChartGenerator:
             else:
                 label = f"€{value:.0f}"
 
+            # Choose text color based on bar size and value
+            max_abs_value = max(abs(v) for v in values)
+            text_color = 'white' if abs(value) > max_abs_value * 0.1 else self.colors['text']
+
             ax.text(bar.get_x() + bar.get_width()/2, label_y,
                    label, ha='center', va='center',
                    fontweight='bold', fontsize=self.CHART_STYLE['label_size'],
-                   color='white' if abs(value) > max(values) * 0.1 else self.colors['text'])
+                   color=text_color)
 
         # Add connecting lines
         for i in range(len(values) - 1):
             x1 = i + 0.4
             x2 = i + 0.6
-            y = cumulative[i+1]
-            ax.plot([x1, x2], [y, y], 'k--', alpha=0.5, linewidth=1)
+            # Connect from top of current bar to start of next bar
+            y_from = cumulative[i] + values[i]  # Top of current bar
+            y_to = cumulative[i+1]  # Start of next bar
+            ax.plot([x1, x2], [y_from, y_to], 'k--', alpha=0.5, linewidth=1)
+
+        # Add zero line for reference
+        ax.axhline(y=0, color=self.colors['neutral'], linestyle='-', linewidth=2, alpha=0.8)
 
         # Styling
         ax.set_title(title, fontsize=self.CHART_STYLE['title_size'],

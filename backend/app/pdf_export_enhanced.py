@@ -51,10 +51,10 @@ class EnhancedReportGenerator:
             ('Margem Líquida', data.get('netMargin', 0), self.colors["primary"], True)
         ]
 
-        # Calculate dimensions
-        width = 800
-        height = 500
-        margin = {'top': 60, 'right': 40, 'bottom': 80, 'left': 80}
+        # A4-optimized dimensions
+        width = 680
+        height = 360
+        margin = {'top': 50, 'right': 40, 'bottom': 70, 'left': 70}
         chart_width = width - margin["left"] - margin["right"]
         chart_height = height - margin["top"] - margin["bottom"]
 
@@ -150,7 +150,7 @@ class EnhancedReportGenerator:
                 <!-- Percentage of sales -->
                 <text x="{x + bar_width/2}" y="{margin["top"] + chart_height + 45}"
                       text-anchor="middle" font-family="Arial" font-size="10" fill="{self.colors["gray"]}">
-                    ({value / data.get('totalSales', 1) * 100:.1f}% vendas)
+                    ({value / max(data.get('totalSales', 1), 1) * 100:.1f}% vendas)
                 </text>
             </g>
             '''
@@ -167,7 +167,7 @@ class EnhancedReportGenerator:
         return svg
 
     def generate_margin_waterfall_chart(self, data: Dict[str, float]) -> str:
-        """Generate a waterfall chart highlighting how sales convert into net margin."""
+        """Visualize positive and negative contributors around a zero baseline."""
         total_sales = float(data.get('totalSales', 0) or 0)
         total_costs = float(data.get('totalCosts', 0) or 0)
         gross_margin = float(data.get('grossMargin', total_sales - total_costs) or 0)
@@ -177,53 +177,32 @@ class EnhancedReportGenerator:
             net_margin = gross_margin - total_vat
         net_margin = float(net_margin or 0)
 
-        steps = [
-            {"label": "Total de Vendas", "type": "total", "amount": total_sales, "color": self.colors["success"]},
-            {"label": "(-) Custos Diretos", "type": "delta", "amount": -total_costs, "color": self.colors["danger"]},
-            {"label": "Margem Bruta", "type": "subtotal", "amount": gross_margin, "color": self.colors["info"]},
-            {"label": "(-) IVA Regime Margem", "type": "delta", "amount": -total_vat, "color": self.colors["purple"]},
-            {"label": "Margem Líquida", "type": "total", "amount": net_margin, "color": self.colors["primary"]},
+        bars = [
+            {"label": "Total de Vendas", "amount": total_sales, "color": self.colors["success"]},
+            {"label": "(-) Custos Diretos", "amount": -total_costs, "color": self.colors["danger"]},
+            {"label": "Margem Bruta", "amount": gross_margin, "color": self.colors["info"]},
+            {"label": "(-) IVA Regime Margem", "amount": -total_vat, "color": self.colors["purple"]},
+            {"label": "Margem Líquida", "amount": net_margin, "color": self.colors["primary"]},
         ]
 
-        width = 1024
-        height = 520
-        margin = {"top": 70, "right": 60, "bottom": 110, "left": 120}
+        max_abs = max((abs(bar["amount"]) for bar in bars), default=0.0)
+        if max_abs == 0:
+            max_abs = 1.0
+        magnitude = 10 ** max(0, len(str(int(max_abs))) - 2)
+        scale_max = math.ceil(max_abs / magnitude) * magnitude
+
+        # A4-optimized dimensions (~180mm printable width)
+        width = 680
+        height = 360
+        margin = {"top": 60, "right": 50, "bottom": 80, "left": 90}
         chart_width = width - margin["left"] - margin["right"]
         chart_height = height - margin["top"] - margin["bottom"]
+        half_height = chart_height / 2
+        baseline_y = margin["top"] + half_height
 
-        step_spacing = chart_width / max(len(steps), 1)
-        bar_width = step_spacing * 0.52
+        step_spacing = chart_width / max(len(bars), 1)
+        bar_width = step_spacing * 0.45
         gap = (step_spacing - bar_width) / 2
-
-        chart_points = []
-        running_total = 0.0
-        for step in steps:
-            if step["type"] in {"total", "subtotal"}:
-                start_value = 0.0
-                end_value = step["amount"]
-                running_total = end_value
-            else:
-                start_value = running_total
-                end_value = running_total + step["amount"]
-                running_total = end_value
-            chart_points.append({
-                "step": step,
-                "start": start_value,
-                "end": end_value,
-            })
-
-        values_for_scale = [0.0]
-        for point in chart_points:
-            values_for_scale.extend([point["start"], point["end"]])
-        min_value = min(values_for_scale)
-        max_value = max(values_for_scale)
-        if min_value == max_value:
-            max_value = min_value + 1.0
-
-        def value_to_y(value: float) -> float:
-            return margin["top"] + (max_value - value) / (max_value - min_value) * chart_height
-
-        baseline_y = value_to_y(0.0)
 
         svg_parts = [
             f'<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">',
@@ -241,68 +220,66 @@ class EnhancedReportGenerator:
             '    </filter>',
             '</defs>',
             f'<rect width="{width}" height="{height}" fill="white"/>',
-            f'<text x="{width/2}" y="38" text-anchor="middle" font-family="Arial" font-size="22" font-weight="bold" fill="{self.colors["dark"]}">Formação da Margem (Waterfall)</text>',
+            f'<text x="{width/2}" y="44" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold" fill="{self.colors["dark"]}">Mapa de Contribuições da Margem</text>',
         ]
 
-        grid_steps = 6
-        for i in range(grid_steps + 1):
-            value = min_value + (max_value - min_value) * i / grid_steps
-            y = value_to_y(value)
+        steps = 4
+        for i in range(1, steps + 1):
+            value = scale_max * i / steps
+            y = baseline_y - (value / scale_max) * half_height
             svg_parts.append(
                 f'<line x1="{margin["left"]}" y1="{y}" x2="{width - margin["right"]}" y2="{y}" stroke="{self.colors["light"]}" stroke-dasharray="3,3" stroke-width="1"/>'
             )
             svg_parts.append(
-                f'<text x="{margin["left"] - 16}" y="{y + 5}" text-anchor="end" font-family="Arial" font-size="12" fill="{self.colors["gray"]}">€{value:,.0f}</text>'
+                f'<text x="{margin["left"] - 18}" y="{y + 4}" text-anchor="end" font-family="Arial" font-size="12" fill="{self.colors["gray"]}">€{value:,.0f}</text>'
+            )
+
+        for i in range(1, steps + 1):
+            value = -scale_max * i / steps
+            y = baseline_y - (value / scale_max) * half_height
+            svg_parts.append(
+                f'<line x1="{margin["left"]}" y1="{y}" x2="{width - margin["right"]}" y2="{y}" stroke="{self.colors["light"]}" stroke-dasharray="3,3" stroke-width="1"/>'
+            )
+            svg_parts.append(
+                f'<text x="{margin["left"] - 18}" y="{y + 12}" text-anchor="end" font-family="Arial" font-size="12" fill="{self.colors["gray"]}">€{value:,.0f}</text>'
             )
 
         svg_parts.append(
-            f'<line x1="{margin["left"]}" y1="{baseline_y}" x2="{width - margin["right"]}" y2="{baseline_y}" stroke="{self.colors["dark"]}" stroke-width="2" opacity="0.8"/>'
+            f'<line x1="{margin["left"]}" y1="{baseline_y}" x2="{width - margin["right"]}" y2="{baseline_y}" stroke="{self.colors["dark"]}" stroke-width="2" opacity="0.85"/>'
         )
 
-        for index, point in enumerate(chart_points):
-            step = point["step"]
-            start_value = point["start"]
-            end_value = point["end"]
+        for index, bar in enumerate(bars):
+            amount = bar["amount"]
+            height_ratio = abs(amount) / scale_max
+            bar_height = max(height_ratio * half_height, 2)
             x = margin["left"] + index * step_spacing + gap
             label_x = x + bar_width / 2
 
-            top_value = max(start_value, end_value)
-            bottom_value = min(start_value, end_value)
-            top_y = value_to_y(top_value)
-            bottom_y = value_to_y(bottom_value)
-            bar_height = abs(bottom_y - top_y)
-            if bar_height < 2:
-                bar_height = 2
-            bar_y = top_y
-
-            svg_parts.append(
-                f'<rect x="{x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" fill="{step["color"]}" rx="6" ry="6" filter="url(#wfShadow)" opacity="0.92"/>'
-            )
-
-            if step["type"] == "delta":
-                value_label = f"Δ €{step['amount']:,.2f}"
-                if step["amount"] < 0:
-                    label_y = max(bottom_y + 26, baseline_y + 26)
-                    svg_parts.append(
-                        f'<text x="{label_x}" y="{label_y}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="{self.colors["danger"]}">{value_label}</text>'
-                    )
-                else:
-                    label_y = top_y - 12
-                    svg_parts.append(
-                        f'<text x="{label_x}" y="{label_y}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="{self.colors["success"]}">{value_label}</text>'
-                    )
-
-                svg_parts.append(
-                    f'<line x1="{label_x}" y1="{baseline_y}" x2="{label_x}" y2="{bottom_y}" stroke="{self.colors["gray"]}" stroke-dasharray="2,2" stroke-width="1" opacity="0.5"/>'
-                )
+            if amount >= 0:
+                bar_y = baseline_y - bar_height
             else:
-                svg_parts.append(
-                    f'<text x="{label_x}" y="{top_y - 16}" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["dark"]}">€{end_value:,.2f}</text>'
-                )
+                bar_y = baseline_y
 
             svg_parts.append(
-                f'<text x="{label_x}" y="{margin["top"] + chart_height + 44}" text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors["dark"]}">{step["label"]}</text>'
+                f'<rect x="{x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" fill="{bar["color"]}" rx="6" ry="6" filter="url(#wfShadow)" opacity="0.92"/>'
             )
+
+            label_offset = 16 if amount >= 0 else bar_height + 20
+            label_y = (bar_y - 8) if amount >= 0 else (bar_y + label_offset)
+            label_color = self.colors["dark"] if amount >= 0 else self.colors["danger"]
+            svg_parts.append(
+                f'<text x="{label_x}" y="{label_y}" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="{label_color}">€{amount:,.2f}</text>'
+            )
+
+            svg_parts.append(
+                f'<text x="{label_x}" y="{margin["top"] + chart_height + 48}" text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors["dark"]}">{bar["label"]}</text>'
+            )
+
+            if total_sales > 0 and bar["label"].startswith("(") is False:
+                percentage = (amount / total_sales) * 100 if total_sales else 0
+                svg_parts.append(
+                    f'<text x="{label_x}" y="{margin["top"] + chart_height + 66}" text-anchor="middle" font-family="Arial" font-size="11" fill="{self.colors["gray"]}">{percentage:.1f}% das vendas</text>'
+                )
 
         svg_parts.append('</svg>')
         return ''.join(f"{part}\n" for part in svg_parts)
@@ -312,10 +289,17 @@ class EnhancedReportGenerator:
         normal_vat = data.get('totalSales', 0) * vat_rate / 100
         margin_vat = data.get('totalVAT', 0)
         savings = normal_vat - margin_vat
+        savings_percentage = (savings / normal_vat * 100) if normal_vat > 0 else 0.0
 
-        width = 600
+        # A4-optimized dimensions for comparison chart
+        width = 680
         height = 300
         bar_height = 60
+
+        # Avoid division by zero
+        max_value = max(normal_vat, margin_vat, 1.0)  # Ensure minimum value of 1
+        normal_width = (normal_vat / max_value) * 480 if max_value > 0 else 480
+        margin_width = (margin_vat / max_value) * 480 if max_value > 0 else 0
 
         svg = f'''<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
             <rect width="{width}" height="{height}" fill="white"/>
@@ -327,9 +311,9 @@ class EnhancedReportGenerator:
             <!-- Normal VAT -->
             <g transform="translate(50, 70)">
                 <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors["dark"]}">IVA Regime Normal ({vat_rate}%)</text>
-                <rect x="0" y="10" width="{(normal_vat / normal_vat) * 400}" height="{bar_height}"
+                <rect x="0" y="10" width="{normal_width}" height="{bar_height}"
                       fill="{self.colors["danger"]}" opacity="0.8" rx="4"/>
-                <text x="{(normal_vat / normal_vat) * 400 + 10}" y="{10 + bar_height/2 + 5}"
+                <text x="{normal_width + 10}" y="{10 + bar_height/2 + 5}"
                       font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["danger"]}">
                     €{normal_vat:,.2f}
                 </text>
@@ -338,9 +322,9 @@ class EnhancedReportGenerator:
             <!-- Margin VAT -->
             <g transform="translate(50, 150)">
                 <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors["dark"]}">IVA Regime Margem</text>
-                <rect x="0" y="10" width="{(margin_vat / normal_vat) * 400}" height="{bar_height}"
+                <rect x="0" y="10" width="{margin_width}" height="{bar_height}"
                       fill="{self.colors["success"]}" opacity="0.8" rx="4"/>
-                <text x="{(margin_vat / normal_vat) * 400 + 10}" y="{10 + bar_height/2 + 5}"
+                <text x="{margin_width + 10}" y="{10 + bar_height/2 + 5}"
                       font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["success"]}">
                     €{margin_vat:,.2f}
                 </text>
@@ -349,7 +333,7 @@ class EnhancedReportGenerator:
             <!-- Savings -->
             <rect x="50" y="240" width="500" height="40" fill="{self.colors["success"]}" opacity="0.1" rx="20"/>
             <text x="{width/2}" y="265" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors["success"]}">
-                Poupança: €{savings:,.2f} ({(savings/normal_vat*100):.1f}%)
+                Poupança: €{savings:,.2f} ({savings_percentage:.1f}%)
             </text>
         </svg>
         '''
@@ -390,6 +374,12 @@ class EnhancedReportGenerator:
         total_documents = len(session_data.get('sales', []))
         total_costs_docs = len(session_data.get('costs', []))
         margin_percentage = (final_results.get('grossMargin', 0) / final_results.get('totalSales', 1) * 100) if final_results.get('totalSales', 0) > 0 else 0
+
+        # Calculate VAT savings for display
+        normal_vat_total = final_results.get('totalSales', 0) * vat_rate / 100
+        margin_vat_total = final_results.get('totalVAT', 0)
+        vat_savings = normal_vat_total - margin_vat_total
+        vat_savings_percentage = (vat_savings / normal_vat_total * 100) if normal_vat_total > 0 else 0
 
         # Start building HTML content
         # Detect data source
@@ -459,34 +449,267 @@ class EnhancedReportGenerator:
                 }}
 
                 @media print {{
+                    /* A4 Page Setup */
+                    @page {{
+                        size: A4 portrait;
+                        margin: 15mm 10mm 20mm 10mm;
+                    }}
+
+                    /* Base Print Styles */
+                    * {{
+                        box-sizing: border-box;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        box-shadow: none !important;
+                        text-shadow: none !important;
+                        filter: none !important;
+                    }}
+
+                    body {{
+                        font-family: 'Inter', Arial, sans-serif !important;
+                        font-size: 11pt;
+                        line-height: 1.35;
+                        color: #1a1a1a;
+                        margin: 0;
+                        padding: 0;
+                        background: white !important;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }}
+
+                    /* Container and Layout */
                     .container {{
-                        max-width: 100%;
-                        padding: 10px;
+                        width: 100% !important;
+                        max-width: none !important;
+                        margin: 0 !important;
+                        padding: 5mm !important;
                     }}
-                    .no-print {{
-                        display: none !important;
-                    }}
+
+                    /* Page Break Controls */
                     .page-break {{
                         page-break-after: always;
+                        break-after: page;
                     }}
-                    body {{
-                        font-size: 11pt;
+
+                    .page-break-before {{
+                        page-break-before: always;
+                        break-before: page;
                     }}
-                    .toc, .executive-summary {{
+
+                    .avoid-break {{
+                        page-break-inside: avoid;
+                        break-inside: avoid;
+                    }}
+
+                    /* Section-specific breaks */
+                    .toc {{
                         page-break-after: always;
+                        break-after: page;
+                        margin-bottom: 0 !important;
                     }}
-                    /* Keep table headers and avoid splitting rows */
+
+                    .executive-summary {{
+                        page-break-after: always;
+                        break-after: page;
+                        margin-bottom: 0 !important;
+                    }}
+
+                    .legal-compliance {{
+                        page-break-before: always;
+                        break-before: page;
+                    }}
+
+                    /* Charts Optimization for A4 */
+                    .chart-container {{
+                        width: 100%;
+                        max-width: 180mm;
+                        margin: 8pt auto 12pt auto;
+                        page-break-inside: avoid;
+                        break-inside: avoid;
+                        overflow: hidden;
+                    }}
+
+                    .chart-container svg {{
+                        width: 100% !important;
+                        height: auto !important;
+                        max-height: 110mm !important;
+                        display: block;
+                    }}
+
+                    /* Waterfall chart specific */
+                    svg[viewBox*="1024"] {{
+                        max-height: 95mm !important;
+                    }}
+
+                    /* Tables Optimization */
+                    .data-table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 9.5pt;
+                        margin: 8pt 0 12pt 0;
+                    }}
+
                     .data-table thead {{
                         display: table-header-group;
                     }}
+
                     .data-table tfoot {{
                         display: table-footer-group;
                     }}
+
                     .data-table tr {{
                         page-break-inside: avoid;
+                        break-inside: avoid;
                     }}
-                    svg, img {{
+
+                    .data-table th {{
+                        background-color: #f8f9fa !important;
+                        border: 0.5pt solid #666 !important;
+                        padding: 4pt 6pt !important;
+                        font-weight: bold;
+                        font-size: 9pt;
+                        text-align: left;
+                    }}
+
+                    .data-table td {{
+                        border: 0.5pt solid #999 !important;
+                        padding: 3pt 6pt !important;
+                        vertical-align: top;
+                    }}
+
+                    .data-table .value {{
+                        text-align: right;
+                        font-family: 'Courier New', monospace;
+                        font-size: 9pt;
+                    }}
+
+                    /* Summary Grids */
+                    .summary-grid {{
+                        display: grid !important;
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 8pt !important;
+                        margin: 8pt 0;
                         page-break-inside: avoid;
+                    }}
+
+                    .metrics-grid {{
+                        display: grid !important;
+                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+                        gap: 6pt !important;
+                        margin: 8pt 0;
+                    }}
+
+                    .summary-card {{
+                        border: 1pt solid #ccc !important;
+                        padding: 8pt !important;
+                        background: #fafafa !important;
+                        font-size: 10pt;
+                        page-break-inside: avoid;
+                    }}
+
+                    .summary-value {{
+                        font-size: 13pt !important;
+                        font-weight: bold;
+                        font-family: 'Courier New', monospace;
+                    }}
+
+                    /* Typography Hierarchy */
+                    h1 {{
+                        font-size: 16pt;
+                        margin: 0 0 8pt 0;
+                        page-break-after: avoid;
+                        text-align: center;
+                    }}
+
+                    h2 {{
+                        font-size: 13pt;
+                        margin: 12pt 0 6pt 0;
+                        page-break-after: avoid;
+                        border-bottom: 0.5pt solid #666;
+                        padding-bottom: 2pt;
+                    }}
+
+                    h3 {{
+                        font-size: 11pt;
+                        margin: 8pt 0 4pt 0;
+                        page-break-after: avoid;
+                    }}
+
+                    /* Legal and Compliance */
+                    .legal-notice {{
+                        background: #f9f9f9 !important;
+                        border: 1pt solid #999 !important;
+                        padding: 8pt !important;
+                        margin: 8pt 0;
+                        font-size: 9pt;
+                        page-break-inside: avoid;
+                    }}
+
+                    .disclaimer {{
+                        background: #fff8dc !important;
+                        border: 1pt solid #daa520 !important;
+                        padding: 8pt !important;
+                        margin: 8pt 0;
+                        font-size: 9pt;
+                        page-break-inside: avoid;
+                    }}
+
+                    /* Financial Highlights */
+                    .key-metrics-highlight {{
+                        background: #f0f8ff !important;
+                        border: 2pt solid #4169e1 !important;
+                        padding: 8pt !important;
+                        margin: 8pt 0;
+                        page-break-inside: avoid;
+                    }}
+
+                    .highlight-item {{
+                        background: #fffacd !important;
+                        border-left: 3pt solid #d4a017 !important;
+                        padding: 6pt !important;
+                        margin: 4pt 0;
+                        font-size: 10pt;
+                    }}
+
+                    /* Hide Screen Elements */
+                    .no-print,
+                    .print-btn,
+                    button:not(.print-only),
+                    .screen-only,
+                    [onclick*="print"] {{
+                        display: none !important;
+                    }}
+
+                    /* Color Adjustments for Print */
+                    .positive {{
+                        color: #2e7d32 !important;
+                    }}
+
+                    .negative {{
+                        color: #d32f2f !important;
+                    }}
+
+                    /* Waterfall Legend */
+                    .waterfall-legend {{
+                        font-size: 9pt !important;
+                        margin-top: 6pt;
+                        display: flex;
+                        justify-content: center;
+                        gap: 12pt;
+                        flex-wrap: wrap;
+                    }}
+
+                    .waterfall-legend span {{
+                        display: flex;
+                        align-items: center;
+                        gap: 4pt;
+                        font-size: 8pt;
+                    }}
+
+                    .waterfall-legend .swatch {{
+                        width: 12pt;
+                        height: 8pt;
+                        border: 0.5pt solid #333;
                     }}
                 }}
 
@@ -1211,7 +1434,7 @@ class EnhancedReportGenerator:
                 }}
 
                 .chart-container svg {{
-                    max-width: 600px;
+                    max-width: 920px;
                     width: 100%;
                     height: auto;
                     margin: 0 auto;
@@ -1514,8 +1737,8 @@ class EnhancedReportGenerator:
                             <div class="highlight-item">
                                 <span class="highlight-icon">💰</span>
                                 <span>
-                                    <strong>Poupança de {(((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)) / (final_results.get('totalSales', 0) * vat_rate / 100) * 100):.1f}%:</strong>
-                                    Em comparação com o regime normal, a empresa economiza €{((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)):,.2f}
+                                    <strong>Poupança de {vat_savings_percentage:.1f}%:</strong>
+                                    Em comparação com o regime normal, a empresa economiza €{vat_savings:,.2f}
                                     em IVA no período analisado.
                                 </span>
                             </div>
@@ -1971,11 +2194,11 @@ class EnhancedReportGenerator:
                         </div>
                         <div>
                             <div style="font-size: 0.9em; color: #6b7280;">Poupança Total</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">€{((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)):,.2f}</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">€{vat_savings:,.2f}</div>
                         </div>
                         <div>
                             <div style="font-size: 0.9em; color: #6b7280;">Redução Percentual</div>
-                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">{(((final_results.get('totalSales', 0) * vat_rate / 100) - final_results.get('totalVAT', 0)) / (final_results.get('totalSales', 0) * vat_rate / 100) * 100):.1f}%</div>
+                            <div style="font-size: 1.5em; font-weight: 700; color: #16a34a;">{vat_savings_percentage:.1f}%</div>
                         </div>
                     </div>
                 </div>
