@@ -1,16 +1,24 @@
-# Render Configuration - Auto-generated
+renderApiVersion: 1
+previews:
+  generation: automatic  # Ativa ambientes de preview para PRs
 services:
   - type: web
     name: iva-margem-backend
     env: python
+    region: oregon  # Podes mudar para frankfurt ou singapore se for melhor
+    plan: starter  # Podes mudar para standard ou pro conforme necessário
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && ./render_start.sh
     healthCheckPath: /api/health
+    healthCheckTimeout: 100
+    autoDeploy: true
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.10.12"
       - key: ENVIRONMENT
         value: production
       - key: CORS_ORIGINS
-        value: *
+        value: "*"
       - key: ENABLE_PREMIUM_PDF
         value: "1"
       - key: MAX_UPLOAD_SIZE_MB
@@ -19,11 +27,39 @@ services:
         value: "24"
       - key: PORT
         value: "8000"
-      - key: PYTHON_VERSION
-        value: "3.9.1"
+    buildFilter:
+      paths:
+        - backend/**
+        - render.yaml
+      ignoredPaths:
+        - backend/**/*.pyc
+        - backend/**/__pycache__/**
+        - frontend/**
+        - "*.md"
+        - "*.pdf"
+        - "*.xlsx"
 
   - type: web
     name: iva-margem-frontend
     env: static
-    buildCommand: echo 'Frontend ready'
+    region: oregon
+    plan: starter
+    buildCommand: "echo 'Frontend build complete'"
     staticPublishPath: frontend
+    autoDeploy: true
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: sameorigin
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    buildFilter:
+      paths:
+        - frontend/**
+        - render.yaml
+      ignoredPaths:
+        - backend/**
+        - "*.md"
+        - "*.pdf"
+        - "*.xlsx"
