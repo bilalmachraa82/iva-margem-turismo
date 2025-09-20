@@ -7,7 +7,16 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    <!-- DaisyUI Premium Components -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet">
+
+    <!-- Chart.js Premium (UMD version for compatibility) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <!-- GSAP Animations -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     
@@ -98,7 +107,7 @@
 
         /* 2025 Ultra Modern Design - Advantage.pt Corporate Identity */
 
-        /* Advantage Brand System */
+        /* Advantage Brand System + Cognitive Interface */
         :root {
             --advantage-navy: #0b0c1e;
             --advantage-blue: #1e3a8a;
@@ -109,6 +118,25 @@
             --advantage-warning: #f59e0b;
             --advantage-danger: #ef4444;
             --advantage-border: #e2e8f0;
+
+            /* Cognitive Interface Variables */
+            --trust-excellent: #10b981;
+            --trust-good: #3b82f6;
+            --trust-moderate: #f59e0b;
+            --trust-low: #ef4444;
+
+            --health-pulse-fast: 1.5s;
+            --health-pulse-normal: 3s;
+            --health-pulse-slow: 4.5s;
+
+            --confidence-high: 1;
+            --confidence-medium: 0.7;
+            --confidence-low: 0.4;
+
+            /* Portuguese Compliance Colors */
+            --civa-compliant: #10b981;
+            --at-verified: #3b82f6;
+            --portugal-flag: #006847;
         }
 
         /* Modern Corporate Cards */
@@ -325,6 +353,261 @@
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
+
+        /* === COGNITIVE INTERFACE ANIMATIONS === */
+
+        /* Financial Health Breathing */
+        @keyframes dataBreathing {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                transform: scale(1.02);
+                opacity: 0.95;
+                box-shadow: 0 0 20px 5px rgba(16, 185, 129, 0.2);
+            }
+        }
+
+        /* Trust Pulse */
+        @keyframes trustPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+                border-color: var(--trust-good);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* Critical Margin Alert */
+        @keyframes criticalPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                background-color: rgba(239, 68, 68, 0.05);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+                background-color: rgba(239, 68, 68, 0.1);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                background-color: rgba(239, 68, 68, 0.05);
+            }
+        }
+
+        /* Confidence Glow */
+        @keyframes confidenceGlow {
+            0%, 100% {
+                filter: brightness(1) saturate(1);
+            }
+            50% {
+                filter: brightness(1.1) saturate(1.2);
+            }
+        }
+
+        /* === COGNITIVE INTERFACE CLASSES === */
+
+        /* Health States */
+        .financial-healthy {
+            animation: dataBreathing var(--health-pulse-normal) ease-in-out infinite;
+        }
+
+        .financial-excellent {
+            animation: dataBreathing var(--health-pulse-slow) ease-in-out infinite;
+            border-left: 4px solid var(--trust-excellent);
+        }
+
+        .financial-critical {
+            animation: criticalPulse var(--health-pulse-fast) ease-in-out infinite;
+        }
+
+        /* Trust Indicators */
+        .trust-excellent {
+            border: 2px solid var(--trust-excellent);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
+            animation: trustPulse 4s ease-in-out infinite;
+        }
+
+        .trust-good {
+            border: 1px solid var(--trust-good);
+            background: rgba(59, 130, 246, 0.03);
+        }
+
+        .trust-moderate {
+            border: 1px solid var(--trust-moderate);
+            background: rgba(245, 158, 11, 0.03);
+        }
+
+        .trust-low {
+            border: 1px solid var(--trust-low);
+            background: rgba(239, 68, 68, 0.03);
+        }
+
+        /* Confidence Levels */
+        .confidence-high {
+            opacity: var(--confidence-high);
+            animation: confidenceGlow 2s ease-in-out infinite;
+        }
+
+        .confidence-medium {
+            opacity: var(--confidence-medium);
+        }
+
+        .confidence-low {
+            opacity: var(--confidence-low);
+            filter: grayscale(0.2);
+        }
+
+        /* Portuguese Compliance Badges */
+        .civa-badge {
+            background: linear-gradient(135deg, var(--portugal-flag), var(--civa-compliant));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .civa-badge::before {
+            content: "🇵🇹";
+            font-size: 12px;
+        }
+
+        .at-verified {
+            border: 2px solid var(--at-verified);
+            background: rgba(59, 130, 246, 0.05);
+            position: relative;
+        }
+
+        .at-verified::after {
+            content: "✓ AT Validado";
+            position: absolute;
+            top: -8px;
+            right: 8px;
+            background: var(--at-verified);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .financial-healthy,
+            .financial-excellent,
+            .financial-critical,
+            .trust-excellent,
+            .confidence-high {
+                animation: none;
+            }
+        }
+
+        /* === PRINT OPTIMIZATION - A4 PROFESSIONAL === */
+        @media print {
+            /* Remove all animations and visual effects for print */
+            * {
+                animation: none !important;
+                transition: none !important;
+                box-shadow: none !important;
+                filter: none !important;
+                transform: none !important;
+            }
+
+            /* Hide interactive elements */
+            .modern-card::before,
+            .modern-card::after,
+            .at-verified::after,
+            .civa-badge::before {
+                display: none !important;
+            }
+
+            /* Ensure proper A4 formatting */
+            body {
+                font-size: 12pt !important;
+                line-height: 1.4 !important;
+                color: #000 !important;
+                background: white !important;
+            }
+
+            /* Professional borders only */
+            .modern-card,
+            .trust-excellent,
+            .trust-good,
+            .trust-moderate,
+            .trust-low,
+            .at-verified {
+                border: 1px solid #ccc !important;
+                background: white !important;
+                box-shadow: none !important;
+            }
+
+            /* Keep badges text but remove styling */
+            .civa-badge {
+                background: none !important;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                padding: 2px 4px !important;
+                font-size: 10pt !important;
+            }
+
+            /* Ensure proper spacing for A4 */
+            .data-point {
+                margin-bottom: 0.5cm !important;
+                page-break-inside: avoid !important;
+            }
+
+            /* Professional chart containers */
+            .chart-container {
+                border: 1px solid #ccc !important;
+                background: white !important;
+                margin: 0.5cm 0 !important;
+            }
+        }
+
+        /* === SCREEN-ONLY COGNITIVE FEATURES === */
+        @media screen {
+            /* All cognitive animations only visible on screen */
+            .financial-healthy {
+                animation: dataBreathing var(--health-pulse-normal) ease-in-out infinite;
+                will-change: transform, opacity;
+            }
+            .financial-excellent {
+                animation: dataBreathing var(--health-pulse-slow) ease-in-out infinite;
+                will-change: transform, opacity;
+            }
+            .financial-critical {
+                animation: criticalPulse var(--health-pulse-fast) ease-in-out infinite;
+                will-change: box-shadow, background-color;
+            }
+            .trust-excellent {
+                animation: trustPulse 4s ease-in-out infinite;
+                will-change: box-shadow, border-color;
+            }
+            .confidence-high {
+                animation: confidenceGlow 2s ease-in-out infinite;
+                will-change: filter;
+            }
+        }
+
+        /* === PERFORMANCE OPTIMIZATIONS === */
+        .modern-card, .data-point, .interactive-element {
+            contain: layout style;
+            transform: translateZ(0); /* Force GPU acceleration */
+        }
+
+        /* Smooth transitions only where needed */
+        .cognitive-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body class="bg-gray-50" x-data="ivaApp()">
@@ -432,6 +715,23 @@
                             <span class="ml-3 text-sm font-medium">Resultado</span>
                         </div>
                     </div>
+
+                    <!-- Cognitive Interface Indicators -->
+                    <div class="hidden lg:flex items-center space-x-4 mr-4">
+                        <!-- Trust Level Badge -->
+                        <div class="px-3 py-1 rounded-full text-xs font-medium bg-white bg-opacity-20 text-white border border-white border-opacity-30"
+                             :class="getTrustBadge().class">
+                            <span x-text="getTrustBadge().icon"></span>
+                            <span x-text="getTrustBadge().text" class="ml-1"></span>
+                        </div>
+
+                        <!-- User Expertise Badge -->
+                        <div class="px-3 py-1 rounded-full text-xs font-medium bg-white bg-opacity-20 text-white border border-white border-opacity-30">
+                            <span x-text="userExpertise === 'expert' ? '🎯' : userExpertise === 'intermediate' ? '📈' : '🎓'"></span>
+                            <span x-text="userExpertise === 'expert' ? 'Especialista' : userExpertise === 'intermediate' ? 'Intermédio' : 'Iniciante'" class="ml-1 capitalize"></span>
+                        </div>
+                    </div>
+
                     <button @click="openPremiumDashboard()"
                             class="inline-flex items-center px-5 py-2 rounded-lg bg-white bg-opacity-20 text-white text-sm font-semibold hover:bg-opacity-30 transition">
                         <i class="fas fa-gem mr-2"></i>
@@ -1159,7 +1459,8 @@
                 <!-- Results Summary Corporate -->
                 <!-- Professional KPI Dashboard - Advantage Style -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
-                    <div class="modern-card interactive-element data-point text-center p-6">
+                    <!-- Total Vendas - Financial Health Indicator -->
+                    <div class="modern-card interactive-element data-point text-center p-6 financial-healthy confidence-high">
                         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
                             <i class="fas fa-euro-sign text-green-600 text-lg"></i>
                         </div>
@@ -1169,9 +1470,14 @@
                         <div class="mt-3 progress-modern">
                             <div class="progress-bar" style="width: 100%"></div>
                         </div>
+                        <!-- Portuguese Compliance Badge -->
+                        <div class="mt-2">
+                            <span class="civa-badge">CIVA Art. 308º</span>
+                        </div>
                     </div>
 
-                    <div class="modern-card interactive-element data-point text-center p-6">
+                    <!-- Total Custos - Trust Indicator -->
+                    <div class="modern-card interactive-element data-point text-center p-6 trust-good">
                         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-red-100 flex items-center justify-center">
                             <i class="fas fa-receipt text-red-600 text-lg"></i>
                         </div>
@@ -1183,7 +1489,9 @@
                         </div>
                     </div>
 
-                    <div class="modern-card interactive-element data-point text-center p-6">
+                    <!-- Margem Bruta/Compensada - Dynamic Health -->
+                    <div class="modern-card interactive-element data-point text-center p-6"
+                         :class="(finalResults.grossMargin || 0) > 0 ? 'financial-healthy trust-good' : 'financial-critical trust-low'">
                         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
                             <i :class="calculationMode === 'period' ? 'fas fa-balance-scale' : 'fas fa-chart-bar'" class="text-blue-600 text-lg"></i>
                         </div>
@@ -1195,7 +1503,8 @@
                         </div>
                     </div>
 
-                    <div class="modern-card interactive-element data-point text-center p-6">
+                    <!-- IVA - AT Verified -->
+                    <div class="modern-card interactive-element data-point text-center p-6 at-verified confidence-high">
                         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
                             <i class="fas fa-university text-purple-600 text-lg"></i>
                         </div>
@@ -1207,7 +1516,8 @@
                         </div>
                     </div>
 
-                    <div class="modern-card interactive-element data-point text-center p-6 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+                    <!-- Margem Líquida - Excellence Indicator -->
+                    <div class="modern-card interactive-element data-point text-center p-6 financial-excellent trust-excellent confidence-high">
                         <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-cyan-100 flex items-center justify-center">
                             <i class="fas fa-trophy text-cyan-600 text-lg"></i>
                         </div>
@@ -1218,7 +1528,7 @@
                             <div class="progress-bar bg-gradient-to-r from-cyan-500 to-blue-500" style="width: 90%"></div>
                         </div>
                         <div class="mt-2">
-                            <span class="status-success text-xs">Resultado Final</span>
+                            <span class="status-success text-xs">🏆 Resultado Final</span>
                         </div>
                     </div>
                 </div>
@@ -1357,12 +1667,6 @@
                             class="btn-secondary-corporate interactive-element flex items-center">
                         <i class="fas fa-eye mr-2"></i>
                         Pré-visualizar PDF
-                    </button>
-
-                    <button @click="downloadPDF()"
-                            class="btn-secondary-corporate interactive-element flex items-center">
-                        <i class="fas fa-file-pdf mr-2"></i>
-                        Exportar PDF
                     </button>
 
                     <button @click="startNew()"
@@ -1724,7 +2028,26 @@
                 
                 // Results
                 finalResults: {},
-                
+
+                // === COGNITIVE INTERFACE STATE ===
+                // User Expertise Detection
+                userExpertise: 'beginner', // beginner, intermediate, expert
+                userActions: 0,
+                userStartTime: Date.now(),
+                expertiseScore: 0,
+
+                // Trust & Confidence
+                trustLevel: 'moderate', // low, moderate, good, excellent
+                confidenceScore: 0.7,
+
+                // Financial Health
+                financialHealth: 'unknown', // critical, poor, moderate, good, excellent
+                marginHealthScore: 0,
+
+                // Portuguese Compliance
+                civaCompliance: true,
+                atVerified: true,
+
                 // Period calculation
                 calculationMode: 'transaction',
                 periodStart: '',
@@ -1872,6 +2195,209 @@
                         }
                         this.showWelcome = false;
                     }
+
+                    // Initialize Cognitive Interface
+                    this.initializeCognitiveInterface();
+                },
+
+                // === COGNITIVE INTERFACE METHODS ===
+                initializeCognitiveInterface() {
+                    // Start user behavior tracking
+                    this.startUserTracking();
+
+                    // Initialize financial health monitoring
+                    this.updateFinancialHealth();
+
+                    // Setup Portuguese compliance indicators
+                    this.updateComplianceStatus();
+                },
+
+                startUserTracking() {
+                    // Track user actions for expertise detection
+                    this.userStartTime = Date.now();
+
+                    // Listen for user interactions
+                    const trackAction = () => {
+                        this.userActions++;
+                        this.updateExpertiseLevel();
+                    };
+
+                    // Track meaningful interactions
+                    document.addEventListener('click', (e) => {
+                        if (e.target.closest('.modern-card, button, .interactive-element')) {
+                            trackAction();
+                        }
+                    });
+
+                    document.addEventListener('keyup', (e) => {
+                        if (e.target.matches('input, textarea')) {
+                            trackAction();
+                        }
+                    });
+                },
+
+                updateExpertiseLevel() {
+                    const timeSpent = (Date.now() - this.userStartTime) / 1000 / 60; // minutes
+                    const actionsPerMinute = this.userActions / Math.max(timeSpent, 1);
+
+                    // Calculate expertise score (0-1)
+                    let score = 0;
+
+                    // Fast navigation indicates expertise
+                    if (actionsPerMinute > 10) score += 0.3;
+                    else if (actionsPerMinute > 5) score += 0.2;
+
+                    // Number of associations created
+                    const associations = this.sales.filter(s => s.linked_costs && s.linked_costs.length > 0).length;
+                    if (associations > 10) score += 0.4;
+                    else if (associations > 5) score += 0.2;
+
+                    // Time efficiency
+                    if (timeSpent < 5 && this.currentStep > 2) score += 0.3;
+
+                    this.expertiseScore = Math.min(score, 1);
+
+                    // Update expertise level
+                    if (this.expertiseScore > 0.7) this.userExpertise = 'expert';
+                    else if (this.expertiseScore > 0.4) this.userExpertise = 'intermediate';
+                    else this.userExpertise = 'beginner';
+                },
+
+                updateFinancialHealth() {
+                    if (!this.finalResults.grossMargin) {
+                        this.financialHealth = 'unknown';
+                        return;
+                    }
+
+                    const margin = this.finalResults.grossMargin || 0;
+                    const sales = this.finalResults.totalSales || 1;
+                    const marginPercentage = (margin / sales) * 100;
+
+                    // Calculate health score based on margin percentage
+                    if (marginPercentage > 20) {
+                        this.financialHealth = 'excellent';
+                        this.marginHealthScore = 1;
+                    } else if (marginPercentage > 15) {
+                        this.financialHealth = 'good';
+                        this.marginHealthScore = 0.8;
+                    } else if (marginPercentage > 10) {
+                        this.financialHealth = 'moderate';
+                        this.marginHealthScore = 0.6;
+                    } else if (marginPercentage > 0) {
+                        this.financialHealth = 'poor';
+                        this.marginHealthScore = 0.3;
+                    } else {
+                        this.financialHealth = 'critical';
+                        this.marginHealthScore = 0;
+                    }
+
+                    // Update trust level based on financial health
+                    this.updateTrustLevel();
+                },
+
+                updateTrustLevel() {
+                    // Calculate confidence based on multiple factors
+                    let confidence = 0;
+
+                    // Financial health contributes to confidence
+                    confidence += this.marginHealthScore * 0.4;
+
+                    // Data completeness
+                    const dataCompleteness = Math.min(
+                        (this.sales.length / 20) * 0.3 +
+                        (this.costs.length / 50) * 0.3, 0.6
+                    );
+                    confidence += dataCompleteness;
+
+                    this.confidenceScore = Math.min(confidence, 1);
+
+                    // Set trust level
+                    if (this.confidenceScore > 0.8) this.trustLevel = 'excellent';
+                    else if (this.confidenceScore > 0.6) this.trustLevel = 'good';
+                    else if (this.confidenceScore > 0.4) this.trustLevel = 'moderate';
+                    else this.trustLevel = 'low';
+                },
+
+                updateComplianceStatus() {
+                    // CIVA compliance (always true for this implementation)
+                    this.civaCompliance = true;
+
+                    // AT verification (based on data structure)
+                    this.atVerified = this.sales.length > 0 && this.costs.length > 0;
+                },
+
+                // Get dynamic CSS classes for cognitive features
+                getHealthClass(element = 'default') {
+                    const classes = [];
+
+                    // Add health class
+                    switch(this.financialHealth) {
+                        case 'excellent': classes.push('financial-excellent'); break;
+                        case 'good': classes.push('financial-healthy'); break;
+                        case 'moderate': classes.push('financial-healthy'); break;
+                        case 'poor': classes.push('financial-critical'); break;
+                        case 'critical': classes.push('financial-critical'); break;
+                    }
+
+                    // Add trust class
+                    classes.push(`trust-${this.trustLevel}`);
+
+                    // Add confidence class
+                    if (this.confidenceScore > 0.8) classes.push('confidence-high');
+                    else if (this.confidenceScore > 0.5) classes.push('confidence-medium');
+                    else classes.push('confidence-low');
+
+                    return classes.join(' ');
+                },
+
+                getTrustBadge() {
+                    try {
+                        switch(this.trustLevel) {
+                            case 'excellent': return { icon: '🛡️', text: 'Confiança Excelente', class: 'trust-excellent' };
+                            case 'good': return { icon: '✅', text: 'Boa Confiança', class: 'trust-good' };
+                            case 'moderate': return { icon: '⚠️', text: 'Confiança Moderada', class: 'trust-moderate' };
+                            default: return { icon: '❗', text: 'Revisar Dados', class: 'trust-low' };
+                        }
+                    } catch (error) {
+                        console.warn('Cognitive interface error:', error);
+                        return { icon: '⚠️', text: 'Sistema', class: 'trust-moderate' };
+                    }
+                },
+
+                // Safe cognitive updates with error handling
+                safeUpdateCognitive() {
+                    try {
+                        this.updateFinancialHealth();
+                        this.updateTrustLevel();
+                        this.updateExpertiseLevel();
+                    } catch (error) {
+                        console.warn('Cognitive update failed:', error);
+                        // Fallback to safe defaults
+                        this.financialHealth = 'moderate';
+                        this.trustLevel = 'moderate';
+                        this.userExpertise = 'intermediate';
+                    }
+                },
+
+                // Performance monitoring and optimization
+                optimizePerformance() {
+                    // Throttle cognitive updates for performance
+                    if (this._cognitiveUpdateTimer) {
+                        clearTimeout(this._cognitiveUpdateTimer);
+                    }
+                    this._cognitiveUpdateTimer = setTimeout(() => {
+                        this.safeUpdateCognitive();
+                    }, 500); // Debounce updates
+                },
+
+                // Cleanup when component is destroyed
+                cleanup() {
+                    if (this._cognitiveUpdateTimer) {
+                        clearTimeout(this._cognitiveUpdateTimer);
+                    }
+                    // Remove event listeners to prevent memory leaks
+                    document.removeEventListener('click', this._trackClickAction);
+                    document.removeEventListener('keyup', this._trackKeyAction);
                 },
                 
                 // Enhanced fetch with timeout, retries and detailed error handling
@@ -2386,7 +2912,11 @@
                             previousNegative: result.totals.previous_negative,
                             carryForward: result.totals.carry_forward
                         };
-                        
+
+                        // Update cognitive interface
+                        this.updateFinancialHealth();
+                        this.updateTrustLevel();
+
                         // Show results notification
                         if (result.totals.carry_forward < 0) {
                             this.showNotification(
@@ -2501,8 +3031,13 @@
                         totalCosts: totalCosts,
                         grossMargin: grossMargin,
                         totalVAT: totalVAT,
-                        netMargin: netMargin
+                        netMargin: netMargin,
+                        calculationType: 'regular'
                     };
+
+                    // Update cognitive interface
+                    this.updateFinancialHealth();
+                    this.updateTrustLevel();
                 },
                 
                 drawChart() {

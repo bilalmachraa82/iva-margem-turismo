@@ -44,19 +44,19 @@ class EnhancedReportGenerator:
         margin_label = 'Margem Compensada' if is_period_mode else 'Margem Bruta'
 
         values = [
-            ('Total Vendas', data.get('totalSales', 0), self.colors['success'], True),
-            ('Total Custos', data.get('totalCosts', 0), self.colors['danger'], False),
-            (margin_label, data.get('grossMargin', 0), self.colors['info'], True),
-            ('IVA s/ Margem', data.get('totalVAT', 0), self.colors['purple'], False),
-            ('Margem Líquida', data.get('netMargin', 0), self.colors['primary'], True)
+            ('Total Vendas', data.get('totalSales', 0), self.colors["success"], True),
+            ('Total Custos', data.get('totalCosts', 0), self.colors["danger"], False),
+            (margin_label, data.get('grossMargin', 0), self.colors["info"], True),
+            ('IVA s/ Margem', data.get('totalVAT', 0), self.colors["purple"], False),
+            ('Margem Líquida', data.get('netMargin', 0), self.colors["primary"], True)
         ]
 
         # Calculate dimensions
         width = 800
         height = 500
         margin = {'top': 60, 'right': 40, 'bottom': 80, 'left': 80}
-        chart_width = width - margin['left'] - margin['right']
-        chart_height = height - margin['top'] - margin['bottom']
+        chart_width = width - margin["left"] - margin["right"]
+        chart_height = height - margin["top"] - margin["bottom"]
 
         # Find max value for scaling
         max_val = max(abs(v[1]) for v in values)
@@ -90,19 +90,19 @@ class EnhancedReportGenerator:
 
             <!-- Background -->
             <rect width="{width}" height="{height}" fill="white"/>
-            <rect x="{margin['left']}" y="{margin['top']}" width="{chart_width}" height="{chart_height}" fill="url(#gridGradient)" opacity="0.5"/>
+            <rect x="{margin["left"]}" y="{margin["top"]}" width="{chart_width}" height="{chart_height}" fill="url(#gridGradient)" opacity="0.5"/>
 
             <!-- Title -->
-            <text x="{width/2}" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="{self.colors['dark']}">{title}</text>
+            <text x="{width/2}" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="{self.colors["dark"]}">{title}</text>
 
             <!-- Grid lines -->
-            <g stroke="{self.colors['light']}" stroke-width="1" stroke-dasharray="3,3">
+            <g stroke="{self.colors["light"]}" stroke-width="1" stroke-dasharray="3,3">
         '''
 
         # Y-axis grid lines and labels
         grid_steps = 5
         for i in range(grid_steps + 1):
-            y = margin['top'] + chart_height - (i * chart_height / grid_steps)
+            y = margin["top"] + chart_height - (i * chart_height / grid_steps)
             value = i * scale_max / grid_steps
 
             svg += f'<line x1="{margin["left"]}" y1="{y}" x2="{width - margin["right"]}" y2="{y}"/>'
@@ -112,9 +112,9 @@ class EnhancedReportGenerator:
 
         # Draw bars with animations
         for i, (label, value, color, is_positive) in enumerate(values):
-            x = margin['left'] + i * (bar_width + spacing) + spacing/2
+            x = margin["left"] + i * (bar_width + spacing) + spacing/2
             bar_height = abs(value) / scale_max * chart_height
-            y = margin['top'] + chart_height - bar_height
+            y = margin["top"] + chart_height - bar_height
 
             # Create gradient for each bar
             svg += f'''
@@ -132,7 +132,7 @@ class EnhancedReportGenerator:
                 <rect x="{x}" y="{y}" width="{bar_width}" height="{bar_height}"
                       fill="url(#grad{i})" rx="4" ry="4" filter="url(#shadow)">
                     <animate attributeName="height" from="0" to="{bar_height}" dur="0.5s" begin="{i*0.1}s" fill="freeze"/>
-                    <animate attributeName="y" from="{margin['top'] + chart_height}" to="{y}" dur="0.5s" begin="{i*0.1}s" fill="freeze"/>
+                    <animate attributeName="y" from="{margin["top"] + chart_height}" to="{y}" dur="0.5s" begin="{i*0.1}s" fill="freeze"/>
                 </rect>
 
                 <!-- Value label on top of bar -->
@@ -142,14 +142,14 @@ class EnhancedReportGenerator:
                 </text>
 
                 <!-- Category label -->
-                <text x="{x + bar_width/2}" y="{margin['top'] + chart_height + 25}"
-                      text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors['dark']}">
+                <text x="{x + bar_width/2}" y="{margin["top"] + chart_height + 25}"
+                      text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors["dark"]}">
                     {label}
                 </text>
 
                 <!-- Percentage of sales -->
-                <text x="{x + bar_width/2}" y="{margin['top'] + chart_height + 45}"
-                      text-anchor="middle" font-family="Arial" font-size="10" fill="{self.colors['gray']}">
+                <text x="{x + bar_width/2}" y="{margin["top"] + chart_height + 45}"
+                      text-anchor="middle" font-family="Arial" font-size="10" fill="{self.colors["gray"]}">
                     ({value / data.get('totalSales', 1) * 100:.1f}% vendas)
                 </text>
             </g>
@@ -157,140 +157,155 @@ class EnhancedReportGenerator:
 
         # X and Y axes
         svg += f'''
-            <line x1="{margin['left']}" y1="{margin['top']}" x2="{margin['left']}" y2="{margin['top'] + chart_height}"
-                  stroke="{self.colors['dark']}" stroke-width="2"/>
-            <line x1="{margin['left']}" y1="{margin['top'] + chart_height}" x2="{width - margin['right']}" y2="{margin['top'] + chart_height}"
-                  stroke="{self.colors['dark']}" stroke-width="2"/>
+            <line x1="{margin["left"]}" y1="{margin["top"]}" x2="{margin["left"]}" y2="{margin["top"] + chart_height}"
+                  stroke="{self.colors["dark"]}" stroke-width="2"/>
+            <line x1="{margin["left"]}" y1="{margin["top"] + chart_height}" x2="{width - margin["right"]}" y2="{margin["top"] + chart_height}"
+                  stroke="{self.colors["dark"]}" stroke-width="2"/>
         </svg>
         '''
 
         return svg
 
-    def generate_pie_chart(self, data: Dict[str, float], title: str = "Distribuição de Valores") -> str:
-        """Generate professional pie chart with labels and percentages"""
-        total = data.get('totalSales', 0)
-        if total == 0:
-            return ''
+    def generate_margin_waterfall_chart(self, data: Dict[str, float]) -> str:
+        """Generate a waterfall chart highlighting how sales convert into net margin."""
+        total_sales = float(data.get('totalSales', 0) or 0)
+        total_costs = float(data.get('totalCosts', 0) or 0)
+        gross_margin = float(data.get('grossMargin', total_sales - total_costs) or 0)
+        total_vat = float(data.get('totalVAT', 0) or 0)
+        net_margin = data.get('netMargin')
+        if net_margin is None:
+            net_margin = gross_margin - total_vat
+        net_margin = float(net_margin or 0)
 
-        segments = [
-            ('Custos Diretos', data.get('totalCosts', 0), self.colors['danger']),
-            ('IVA a Pagar', data.get('totalVAT', 0), self.colors['purple']),
-            ('Margem Líquida', data.get('netMargin', 0), self.colors['success'])
+        steps = [
+            {"label": "Total de Vendas", "type": "total", "amount": total_sales, "color": self.colors["success"]},
+            {"label": "(-) Custos Diretos", "type": "delta", "amount": -total_costs, "color": self.colors["danger"]},
+            {"label": "Margem Bruta", "type": "subtotal", "amount": gross_margin, "color": self.colors["info"]},
+            {"label": "(-) IVA Regime Margem", "type": "delta", "amount": -total_vat, "color": self.colors["purple"]},
+            {"label": "Margem Líquida", "type": "total", "amount": net_margin, "color": self.colors["primary"]},
         ]
 
-        size = 520
-        center = size / 2
-        radius = 170
+        width = 1024
+        height = 520
+        margin = {"top": 70, "right": 60, "bottom": 110, "left": 120}
+        chart_width = width - margin["left"] - margin["right"]
+        chart_height = height - margin["top"] - margin["bottom"]
 
-        svg = f'''<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size} {size}" preserveAspectRatio="xMidYMid meet" style="max-width: 560px; margin: 0 auto;">
-            <defs>
-                <filter id="pieShadow">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                    <feOffset dx="0" dy="3" result="offsetblur"/>
-                    <feComponentTransfer>
-                        <feFuncA type="linear" slope="0.3"/>
-                    </feComponentTransfer>
-                    <feMerge>
-                        <feMergeNode/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-            </defs>
+        step_spacing = chart_width / max(len(steps), 1)
+        bar_width = step_spacing * 0.52
+        gap = (step_spacing - bar_width) / 2
 
-            <!-- Background circle -->
-            <circle cx="{center}" cy="{center}" r="{radius + 10}" fill="{self.colors['light']}" opacity="0.3"/>
+        chart_points = []
+        running_total = 0.0
+        for step in steps:
+            if step["type"] in {"total", "subtotal"}:
+                start_value = 0.0
+                end_value = step["amount"]
+                running_total = end_value
+            else:
+                start_value = running_total
+                end_value = running_total + step["amount"]
+                running_total = end_value
+            chart_points.append({
+                "step": step,
+                "start": start_value,
+                "end": end_value,
+            })
 
-            <!-- Title -->
-            <text x="{center}" y="32" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="{self.colors['dark']}">{title}</text>
-        '''
+        values_for_scale = [0.0]
+        for point in chart_points:
+            values_for_scale.extend([point["start"], point["end"]])
+        min_value = min(values_for_scale)
+        max_value = max(values_for_scale)
+        if min_value == max_value:
+            max_value = min_value + 1.0
 
-        # Calculate angles
-        current_angle = -90  # Start at top
-        for i, (label, value, color) in enumerate(segments):
-            if value <= 0:
-                continue
+        def value_to_y(value: float) -> float:
+            return margin["top"] + (max_value - value) / (max_value - min_value) * chart_height
 
-            percentage = value / total * 100
-            angle = value / total * 360
+        baseline_y = value_to_y(0.0)
 
-            # Calculate path
-            start_rad = math.radians(current_angle)
-            end_rad = math.radians(current_angle + angle)
+        svg_parts = [
+            f'<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">',
+            '<defs>',
+            '    <filter id="wfShadow" x="-30%" y="-30%" width="160%" height="160%">',
+            '        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>',
+            '        <feOffset dx="0" dy="2" result="offsetblur"/>',
+            '        <feComponentTransfer>',
+            '            <feFuncA type="linear" slope="0.18"/>',
+            '        </feComponentTransfer>',
+            '        <feMerge>',
+            '            <feMergeNode/>',
+            '            <feMergeNode in="SourceGraphic"/>',
+            '        </feMerge>',
+            '    </filter>',
+            '</defs>',
+            f'<rect width="{width}" height="{height}" fill="white"/>',
+            f'<text x="{width/2}" y="38" text-anchor="middle" font-family="Arial" font-size="22" font-weight="bold" fill="{self.colors["dark"]}">Formação da Margem (Waterfall)</text>',
+        ]
 
-            large_arc = 1 if angle > 180 else 0
+        grid_steps = 6
+        for i in range(grid_steps + 1):
+            value = min_value + (max_value - min_value) * i / grid_steps
+            y = value_to_y(value)
+            svg_parts.append(
+                f'<line x1="{margin["left"]}" y1="{y}" x2="{width - margin["right"]}" y2="{y}" stroke="{self.colors["light"]}" stroke-dasharray="3,3" stroke-width="1"/>'
+            )
+            svg_parts.append(
+                f'<text x="{margin["left"] - 16}" y="{y + 5}" text-anchor="end" font-family="Arial" font-size="12" fill="{self.colors["gray"]}">€{value:,.0f}</text>'
+            )
 
-            start_x = center + radius * math.cos(start_rad)
-            start_y = center + radius * math.sin(start_rad)
-            end_x = center + radius * math.cos(end_rad)
-            end_y = center + radius * math.sin(end_rad)
+        svg_parts.append(
+            f'<line x1="{margin["left"]}" y1="{baseline_y}" x2="{width - margin["right"]}" y2="{baseline_y}" stroke="{self.colors["dark"]}" stroke-width="2" opacity="0.8"/>'
+        )
 
-            # Create gradient
-            svg += f'''
-            <defs>
-                <radialGradient id="pieGrad{i}">
-                    <stop offset="0%" style="stop-color:{color};stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:{color};stop-opacity:0.7" />
-                </radialGradient>
-            </defs>
-            '''
+        for index, point in enumerate(chart_points):
+            step = point["step"]
+            start_value = point["start"]
+            end_value = point["end"]
+            x = margin["left"] + index * step_spacing + gap
+            label_x = x + bar_width / 2
 
-            # Draw segment
-            svg += f'''
-            <path d="M {center} {center} L {start_x} {start_y} A {radius} {radius} 0 {large_arc} 1 {end_x} {end_y} Z"
-                  fill="url(#pieGrad{i})" stroke="white" stroke-width="2" filter="url(#pieShadow)">
-                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="{i*0.2}s" fill="freeze"/>
-            </path>
-            '''
+            top_value = max(start_value, end_value)
+            bottom_value = min(start_value, end_value)
+            top_y = value_to_y(top_value)
+            bottom_y = value_to_y(bottom_value)
+            bar_height = abs(bottom_y - top_y)
+            if bar_height < 2:
+                bar_height = 2
+            bar_y = top_y
 
-            # Label with line
-            label_angle = current_angle + angle / 2
-            label_rad = math.radians(label_angle)
+            svg_parts.append(
+                f'<rect x="{x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" fill="{step["color"]}" rx="6" ry="6" filter="url(#wfShadow)" opacity="0.92"/>'
+            )
 
-            # Line from center to label
-            label_direction = 1 if math.cos(label_rad) >= 0 else -1
-            line_end_x = center + (radius + 25) * math.cos(label_rad)
-            line_end_y = center + (radius + 25) * math.sin(label_rad)
-            label_x = center + (radius + 90) * math.cos(label_rad)
-            label_y = center + (radius + 90) * math.sin(label_rad)
-            text_anchor = "start" if label_direction > 0 else "end"
+            if step["type"] == "delta":
+                value_label = f"Δ €{step['amount']:,.2f}"
+                if step["amount"] < 0:
+                    label_y = max(bottom_y + 26, baseline_y + 26)
+                    svg_parts.append(
+                        f'<text x="{label_x}" y="{label_y}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="{self.colors["danger"]}">{value_label}</text>'
+                    )
+                else:
+                    label_y = top_y - 12
+                    svg_parts.append(
+                        f'<text x="{label_x}" y="{label_y}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="{self.colors["success"]}">{value_label}</text>'
+                    )
 
-            svg += f'''
-            <line x1="{center + radius * 0.8 * math.cos(label_rad)}"
-                  y1="{center + radius * 0.8 * math.sin(label_rad)}"
-                  x2="{line_end_x}" y2="{line_end_y}"
-                  stroke="{color}" stroke-width="1" opacity="0.5"/>
+                svg_parts.append(
+                    f'<line x1="{label_x}" y1="{baseline_y}" x2="{label_x}" y2="{bottom_y}" stroke="{self.colors["gray"]}" stroke-dasharray="2,2" stroke-width="1" opacity="0.5"/>'
+                )
+            else:
+                svg_parts.append(
+                    f'<text x="{label_x}" y="{top_y - 16}" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["dark"]}">€{end_value:,.2f}</text>'
+                )
 
-            <text x="{label_x}" y="{label_y - 10}" text-anchor="{text_anchor}"
-                  font-family="Arial" font-size="12" font-weight="bold" fill="{color}">
-                {label}
-            </text>
-            <text x="{label_x}" y="{label_y + 8}" text-anchor="{text_anchor}"
-                  font-family="Arial" font-size="11" fill="{self.colors['gray']}">
-                €{value:,.2f}
-            </text>
-            <text x="{label_x}" y="{label_y + 24}" text-anchor="{text_anchor}"
-                  font-family="Arial" font-size="10" fill="{self.colors['dark']}">
-                ({percentage:.1f}%)
-            </text>
-            '''
+            svg_parts.append(
+                f'<text x="{label_x}" y="{margin["top"] + chart_height + 44}" text-anchor="middle" font-family="Arial" font-size="12" fill="{self.colors["dark"]}">{step["label"]}</text>'
+            )
 
-            current_angle += angle
-
-        # Center text
-        svg += f'''
-            <circle cx="{center}" cy="{center}" r="55" fill="white" opacity="0.92"/>
-            <text x="{center}" y="{center - 6}" text-anchor="middle"
-                  font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors['dark']}">
-                Total
-            </text>
-            <text x="{center}" y="{center + 18}" text-anchor="middle"
-                  font-family="Arial" font-size="13" fill="{self.colors['gray']}">
-                €{total:,.2f}
-            </text>
-        </svg>
-        '''
-
-        return svg
+        svg_parts.append('</svg>')
+        return ''.join(f"{part}\n" for part in svg_parts)
 
     def generate_comparison_chart(self, data: Dict[str, float], vat_rate: float) -> str:
         """Generate comparison chart between normal VAT and margin VAT"""
@@ -305,35 +320,35 @@ class EnhancedReportGenerator:
         svg = f'''<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
             <rect width="{width}" height="{height}" fill="white"/>
 
-            <text x="{width/2}" y="30" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors['dark']}">
+            <text x="{width/2}" y="30" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors["dark"]}">
                 Comparação: IVA Normal vs IVA Margem
             </text>
 
             <!-- Normal VAT -->
             <g transform="translate(50, 70)">
-                <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors['dark']}">IVA Regime Normal ({vat_rate}%)</text>
+                <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors["dark"]}">IVA Regime Normal ({vat_rate}%)</text>
                 <rect x="0" y="10" width="{(normal_vat / normal_vat) * 400}" height="{bar_height}"
-                      fill="{self.colors['danger']}" opacity="0.8" rx="4"/>
+                      fill="{self.colors["danger"]}" opacity="0.8" rx="4"/>
                 <text x="{(normal_vat / normal_vat) * 400 + 10}" y="{10 + bar_height/2 + 5}"
-                      font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors['danger']}">
+                      font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["danger"]}">
                     €{normal_vat:,.2f}
                 </text>
             </g>
 
             <!-- Margin VAT -->
             <g transform="translate(50, 150)">
-                <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors['dark']}">IVA Regime Margem</text>
+                <text x="0" y="0" font-family="Arial" font-size="14" fill="{self.colors["dark"]}">IVA Regime Margem</text>
                 <rect x="0" y="10" width="{(margin_vat / normal_vat) * 400}" height="{bar_height}"
-                      fill="{self.colors['success']}" opacity="0.8" rx="4"/>
+                      fill="{self.colors["success"]}" opacity="0.8" rx="4"/>
                 <text x="{(margin_vat / normal_vat) * 400 + 10}" y="{10 + bar_height/2 + 5}"
-                      font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors['success']}">
+                      font-family="Arial" font-size="14" font-weight="bold" fill="{self.colors["success"]}">
                     €{margin_vat:,.2f}
                 </text>
             </g>
 
             <!-- Savings -->
-            <rect x="50" y="240" width="500" height="40" fill="{self.colors['success']}" opacity="0.1" rx="20"/>
-            <text x="{width/2}" y="265" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors['success']}">
+            <rect x="50" y="240" width="500" height="40" fill="{self.colors["success"]}" opacity="0.1" rx="20"/>
+            <text x="{width/2}" y="265" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="{self.colors["success"]}">
                 Poupança: €{savings:,.2f} ({(savings/normal_vat*100):.1f}%)
             </text>
         </svg>
@@ -363,12 +378,12 @@ class EnhancedReportGenerator:
         # Adjust chart data for period mode
         chart_data = final_results.copy()
         if is_period_mode:
-            chart_data['grossMargin'] = final_results.get('compensatedMargin', final_results.get('grossMargin', 0))
-            chart_data['calculationType'] = 'period'
+            chart_data["grossMargin"] = final_results.get('compensatedMargin', final_results.get('grossMargin', 0))
+            chart_data["calculationType"] = 'period'
 
         # Generate all charts
         bar_chart = self.generate_advanced_bar_chart(chart_data)
-        pie_chart = self.generate_pie_chart(chart_data)
+        waterfall_chart = self.generate_margin_waterfall_chart(chart_data)
         comparison_chart = self.generate_comparison_chart(chart_data, vat_rate)
 
         # Calculate key metrics
@@ -870,7 +885,7 @@ class EnhancedReportGenerator:
 
                 /* Legal Document Header */
                 .legal-header {{
-                    background: linear-gradient(135deg, {self.colors['legal']} 0%, #0f766e 100%);
+                    background: linear-gradient(135deg, {self.colors["legal"]} 0%, #0f766e 100%);
                     color: white;
                     padding: 30px;
                     border-radius: 12px;
@@ -1203,10 +1218,34 @@ class EnhancedReportGenerator:
                     display: block;
                 }}
 
+                .waterfall-legend {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 12px;
+                    justify-content: center;
+                    margin-top: 16px;
+                    font-size: 0.85em;
+                    color: #475569;
+                }}
+
+                .waterfall-legend span {{
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                }}
+
+                .waterfall-legend .swatch {{
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    display: inline-block;
+                }}
+
                 .chart-grid {{
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
                     gap: 24px;
+                    align-items: stretch;
                 }}
 
                 /* Tables */
@@ -1885,14 +1924,21 @@ class EnhancedReportGenerator:
 
                     <div class="section">
                         <div class="section-header">
-                            <div class="section-icon" style="background: #7c3aed;">🥧</div>
+                            <div class="section-icon" style="background: #1e40af;">📈</div>
                             <div>
                                 <span class="section-number">{7 if is_period_mode else 6}.1</span>
-                                <h2 class="section-title" style="margin: 0;">Distribuição de Valores</h2>
+                                <h2 class="section-title" style="margin: 0;">Evolução da Margem (Waterfall)</h2>
                             </div>
                         </div>
                         <div class="chart-container">
-                            {pie_chart}
+                            {waterfall_chart}
+                            <div class="waterfall-legend">
+                                <span><span class="swatch" style="background: {self.colors["success"]};"></span>Total de Vendas</span>
+                                <span><span class="swatch" style="background: {self.colors["danger"]};"></span>Custos Diretos</span>
+                                <span><span class="swatch" style="background: {self.colors["info"]};"></span>Margem Bruta</span>
+                                <span><span class="swatch" style="background: {self.colors["purple"]};"></span>IVA Regime Margem</span>
+                                <span><span class="swatch" style="background: {self.colors["primary"]};"></span>Margem Líquida</span>
+                            </div>
                         </div>
                     </div>
                 </div>

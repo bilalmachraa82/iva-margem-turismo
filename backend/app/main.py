@@ -1683,7 +1683,7 @@ async def calculate_period_vat(request: PeriodCalculateRequest):
         
         # Add session info
         result['session_id'] = request.session_id
-        result['calculation_type'] = 'period_based'
+        result['calculationType'] = 'period'
         
         # Log calculation
         logger.info(f"Period VAT calculation: {start_date} to {end_date}")
