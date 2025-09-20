@@ -40,7 +40,6 @@ services:
   - type: web
     name: iva-margem-frontend
     env: static
-    region: frankfurt  # Região atual do serviço existente
     plan: starter
     buildCommand: "echo 'Frontend build complete'"
     staticPublishPath: frontend
