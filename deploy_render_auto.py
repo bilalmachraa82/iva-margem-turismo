@@ -82,7 +82,8 @@ def create_render_config():
                     {"key": "ENABLE_PREMIUM_PDF", "value": "1"},
                     {"key": "MAX_UPLOAD_SIZE_MB", "value": "50"},
                     {"key": "SESSION_TIMEOUT_HOURS", "value": "24"},
-                    {"key": "PORT", "value": "8000"}
+                    {"key": "PORT", "value": "8000"},
+                    {"key": "PYTHON_VERSION", "value": "3.9.0"}
                 ]
             },
             {
@@ -125,7 +126,9 @@ def create_render_config():
         f.write("      - key: SESSION_TIMEOUT_HOURS\n")
         f.write("        value: \"24\"\n")
         f.write("      - key: PORT\n")
-        f.write("        value: \"8000\"\n\n")
+        f.write("        value: \"8000\"\n")
+        f.write("      - key: PYTHON_VERSION\n")
+        f.write("        value: \"3.9.0\"\n\n")
         
         # Frontend service
         f.write("  - type: web\n")
